@@ -7,7 +7,10 @@ const router = Router()
 router.get('/', (_, res) => res.send('Hello, world!'))
 
 //category
-router.post('/category', CategoryController.createBodyValidator, CategoryController.create)
+router.post(
+    '/category',
+    CategoryController.createValidation,
+    CategoryController.create)
 
 
 export { router }
