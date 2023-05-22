@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "npx ts-node-dev ./src/index.ts",
     "test": "jest",
-    "knex:migrate": "knex --knexfile ./src/server/database/knex/Enviroment.ts migrate:latest",
-    "knex:rollback-all": "knex --knexfile ./src/server/database/knex/Enviroment.ts migrate:rollback --all",
-    "knex:rollback": "knex --knexfile ./src/server/database/knex/Enviroment.ts migrate:rollback",
-    "knex:seed": "knex --knexfile ./src/server/database/knex/Enviroment.ts seed:run"
+    "knex:migrate": "knex --knexfile ./src/server/database/knex/Environment.ts migrate:latest",
+    "knex:rollback-all": "knex --knexfile ./src/server/database/knex/Environment.ts migrate:rollback --all",
+    "knex:rollback": "knex --knexfile ./src/server/database/knex/Environment.ts migrate:rollback",
+    "knex:seed": "knex --knexfile ./src/server/database/knex/Environment.ts seed:run"
   },
   "keywords": [],
   "author": "",

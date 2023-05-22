@@ -1,8 +1,9 @@
-import { Request, RequestHandler, Response } from 'express'
+import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import * as yup from 'yup'
 
 import { validation } from '../../shared/middleware'
+import { CategoryProvider } from '../../database/providers/category'
 
 //Para tipar o body do request
 interface IParamProps {
@@ -17,14 +18,22 @@ export const getByIdValidation = validation(getSchema => ({
 }))
 
 export const getById = async (req: Request<IParamProps>, res: Response) => {
-    if (Number(req.params.id) === 999999) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        errors: {
-            default: 'Registro não encontrado'
-        }
-    })
+    if (!req.params.id) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            errors: {
+                default: 'O parâmetro "id" precisa ser informado.'
+            }
+        })
+    }
 
-    return res.status(StatusCodes.OK).json({
-        id: req.params.id,
-        name: 'Teste',
-    })
+    const result = await CategoryProvider.getById(req.params.id)
+    if(result instanceof Error){
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            errors: {
+                default: result.message
+            }
+        })
+    }
+
+    return res.status(StatusCodes.OK).json(result)
 }
