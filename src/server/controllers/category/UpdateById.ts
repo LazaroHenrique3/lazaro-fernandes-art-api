@@ -4,6 +4,7 @@ import * as yup from 'yup'
 
 import { validation } from '../../shared/middleware'
 import { ICategory } from '../../database/models'
+import { CategoryProvider } from '../../database/providers/category'
 
 
 interface IParamProps {
@@ -15,7 +16,7 @@ interface IBodyProps extends Omit<ICategory, 'id'> {}
 //Midleware
 export const updateByIdValidation = validation(getSchema => ({
     body: getSchema<IBodyProps>(yup.object().shape({
-        name: yup.string().required().min(3),
+        name: yup.string().required().min(3).max(100),
     })),
     params: getSchema<IParamProps>(yup.object().shape({
         id: yup.number().integer().required().moreThan(0),
@@ -23,12 +24,22 @@ export const updateByIdValidation = validation(getSchema => ({
 }))
 
 export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res: Response) => {
+    if (!req.params.id) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            errors: {
+                default: 'O parâmetro "id" precisa ser informado.'
+            }
+        })
+    }
 
-    if (Number(req.params.id) === 999999) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        errors: {
-            default: 'Registro não encontrado'
-        }
-    })
+    const result = await CategoryProvider.updateById(req.params.id, req.body)
+    if(result instanceof Error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            errors: {
+                default: result.message
+            }
+        })
+    }
 
-    return res.status(StatusCodes.NO_CONTENT).send()
+    return res.status(StatusCodes.NO_CONTENT).send(result)
 }
