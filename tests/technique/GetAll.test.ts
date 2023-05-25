@@ -3,16 +3,45 @@ import { testServer } from '../jest.setup'
 
 describe('Technique - GetAll', () => {
 
-    it('Get all registers', async () => {
+    let accessToken = ''
+
+    //Adicionando a autenticação
+    beforeAll(async () => {
+        //Logando no admin gerado pela seed
+        const adminSeed = await testServer.post('/adminsignin').send({ email: 'admin@gmail.com', password: 'secret1' })
+
+        accessToken = adminSeed.body.accessToken
+    })
+
+    it('Get all registers no token', async () => {
 
         const res1 = await testServer
             .post('/technique')
-            .send({ name: 'JestTeste'})
-        
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .send({ name: 'JestTeste1' })
+
         expect(res1.statusCode).toEqual(StatusCodes.CREATED)
 
         const resGet = await testServer
             .get('/technique')
+            .send()
+
+        expect(resGet.statusCode).toEqual(StatusCodes.UNAUTHORIZED)
+        expect(resGet.body).toHaveProperty('errors.default')
+    })
+
+    it('Get all registers', async () => {
+
+        const res1 = await testServer
+            .post('/technique')
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .send({ name: 'JestTeste2' })
+
+        expect(res1.statusCode).toEqual(StatusCodes.CREATED)
+
+        const resGet = await testServer
+            .get('/technique')
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send()
 
         expect(Number(resGet.header['x-total-count'])).toBeGreaterThan(0)

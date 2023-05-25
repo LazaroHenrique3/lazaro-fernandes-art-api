@@ -5,6 +5,7 @@ import { Knex } from '../src/server/database/knex'
 //Como está usando o banco em memória eu preciso rodar as migrations antes
 beforeAll(async () => {
     await Knex.migrate.latest()
+    await Knex.seed.run()
 })
 
 //Fecha as conexões após os testes

@@ -3,3 +3,4 @@
 /coverage
 .env
 *.sqlite
+/src/server/database/seeds/00001_insert_admin_test.ts

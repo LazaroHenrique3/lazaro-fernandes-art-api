@@ -3,12 +3,33 @@ import { testServer } from '../jest.setup'
 
 describe('Category - Create', () => {
 
+    let accessToken = ''
+
+    //Adicionando a autenticação
+    beforeAll(async () => {
+        //Logando no admin gerado pela seed
+        const adminSeed = await testServer.post('/adminsignin').send({ email: 'admin@gmail.com', password: 'secret1' })
+
+        accessToken = adminSeed.body.accessToken
+    })
+
+    it('Create register not token', async () => {
+
+        const res1 = await testServer
+            .post('/category')
+            .send({ name: 'Rock' })
+
+        expect(res1.statusCode).toEqual(StatusCodes.UNAUTHORIZED)
+        expect(res1.body).toHaveProperty('errors.default')
+    })
+
     it('Create register', async () => {
 
         const res1 = await testServer
             .post('/category')
-            .send({ name: 'Rock'})
-        
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .send({ name: 'Rock' })
+
         expect(res1.statusCode).toEqual(StatusCodes.CREATED)
         expect(typeof res1.body).toEqual('number')
     })
@@ -17,8 +38,9 @@ describe('Category - Create', () => {
 
         const res1 = await testServer
             .post('/category')
-            .send({ name: 'Ro'})
-        
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .send({ name: 'Ro' })
+
         expect(res1.statusCode).toEqual(StatusCodes.BAD_REQUEST)
         expect(res1.body).toHaveProperty('errors.body.name')
     })
@@ -27,8 +49,9 @@ describe('Category - Create', () => {
 
         const res1 = await testServer
             .post('/category')
-            .send({ name: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum lectus vitae ipsum pharetra, in pulvinar orci volutpat dictum lectus.'})
-        
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .send({ name: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum lectus vitae ipsum pharetra, in pulvinar orci volutpat dictum lectus.' })
+
         expect(res1.statusCode).toEqual(StatusCodes.BAD_REQUEST)
         expect(res1.body).toHaveProperty('errors.body.name')
     })
