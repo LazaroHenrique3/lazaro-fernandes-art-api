@@ -5,8 +5,15 @@ import { IAdministrator } from '../../models'
 
 export const create = async (administrator: Omit<IAdministrator, 'id'>): Promise<number | Error> => {
     try {
+        //Verificando se já existe admnistrator com esse email
+        const existingAdministrator = await Knex(ETableNames.administrator).where('email', administrator.email).first()
+
+        if (existingAdministrator) {
+            return new Error('Este email já esta cadastrado!')
+        }
+
         const hashedPassword = await PasswordCrypto.hashPassword(administrator.password)
-        
+
         const { permissions, ...insertAdministratorData } = administrator
 
         //Verificando se as permissões passadas são válidas
@@ -18,7 +25,7 @@ export const create = async (administrator: Omit<IAdministrator, 'id'>): Promise
 
         //Transaction, para garantir que tanto a inserção das permissions, quanto do adm foram bem sucedidas.
         const result = await Knex.transaction(async (trx) => {
-            const [administratorId] = await trx(ETableNames.administrator).insert({...insertAdministratorData, password: hashedPassword}).returning('id')
+            const [administratorId] = await trx(ETableNames.administrator).insert({ ...insertAdministratorData, password: hashedPassword }).returning('id')
 
             //Preparando o objeto de permissões
             const permissionsData = permissions.map((permissionId) => ({
@@ -35,7 +42,7 @@ export const create = async (administrator: Omit<IAdministrator, 'id'>): Promise
         //Se tudo correu bem ele deve estar com o id do novo usuário
         if (typeof result === 'number') {
             return result
-        } else if(typeof result === 'object'){
+        } else if (typeof result === 'object') {
             return result.id
         }
 

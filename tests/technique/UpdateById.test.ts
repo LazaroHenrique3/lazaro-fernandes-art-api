@@ -26,8 +26,8 @@ describe('Technique - UpdateById', () => {
             .put(`/technique/${res1.body}`)
             .send({ name: 'Teste' })
 
-        expect(resUpdated .statusCode).toEqual(StatusCodes.UNAUTHORIZED)
-        expect(resUpdated .body).toHaveProperty('errors.default')
+        expect(resUpdated.statusCode).toEqual(StatusCodes.UNAUTHORIZED)
+        expect(resUpdated.body).toHaveProperty('errors.default')
     })
 
     it('Update register', async () => {
@@ -45,6 +45,31 @@ describe('Technique - UpdateById', () => {
             .send({ name: 'Teste' })
 
         expect(resUpdated.statusCode).toEqual(StatusCodes.NO_CONTENT)
+    })
+
+    it('Update register duplicate name', async () => {
+
+        const res1 = await testServer
+            .post('/technique')
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .send({ name: 'JestTeste2' })
+
+        expect(res1.statusCode).toEqual(StatusCodes.CREATED)
+
+        const res2 = await testServer
+            .post('/technique')
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .send({ name: 'JestTeste3' })
+
+        expect(res2.statusCode).toEqual(StatusCodes.CREATED)
+
+        const resUpdated = await testServer
+            .put(`/technique/${res1.body}`)
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .send({ name: 'JestTeste3' })
+
+        expect(resUpdated.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
+        expect(resUpdated.body).toHaveProperty('errors.default')
     })
 
     it('Updating non-existent register', async () => {

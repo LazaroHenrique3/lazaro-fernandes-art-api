@@ -3,5 +3,7 @@ export enum ETableNames {
     technique = 'technique',
     accessRoles = 'access_roles',
     administrator = 'administrator',
-    administratorRoleAccess = 'administrator_role_access'
+    administratorRoleAccess = 'administrator_role_access',
+    customer = 'customer',
+    address = 'address'
 }

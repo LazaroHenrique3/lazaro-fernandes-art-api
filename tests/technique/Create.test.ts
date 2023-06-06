@@ -34,6 +34,17 @@ describe('Technique - Create', () => {
         expect(typeof res1.body).toEqual('number')
     })
 
+    it('Create register duplicate name', async () => {
+
+        const res1 = await testServer
+            .post('/technique')
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .send({ name: 'Rock' })
+
+        expect(res1.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
+        expect(res1.body).toHaveProperty('errors.default')
+    })
+
     it('Create register with name less than 3', async () => {
 
         const res1 = await testServer
