@@ -1,4 +1,4 @@
-import { IAddress, IAdministrator, ICategory, ICustomer, IRoleAccess, ITechnique } from '../../models'
+import { IAddress, IAdministrator, ICategory, ICustomer, IDimension, IRoleAccess, ITechnique } from '../../models'
 import { IAdministratorRoleAccess } from '../../models/Administrator_role_access'
 
 //Tipando o knex
@@ -11,5 +11,6 @@ declare module 'knex/types/tables' {
         administratorRoleAccess: IAdministratorRoleAccess
         address: IAddress
         customer: ICustomer
+        dimension: IDimension
     }
 }

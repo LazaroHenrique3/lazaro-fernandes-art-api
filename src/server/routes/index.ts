@@ -3,6 +3,7 @@ import { Router } from 'express'
 import {
     CategoryController,
     TechniqueController,
+    DimensionController,
     AdministratorController,
     AccessRolesController,
     CustomerController,
@@ -42,6 +43,12 @@ router.post('/technique', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3,
 router.put('/technique/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), TechniqueController.updateByIdValidation, TechniqueController.updateById)
 router.delete('/technique/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), TechniqueController.deleteByIdValidation, TechniqueController.deleteById)
 
+//--dimension
+router.get('/dimension', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.getAllValidation, DimensionController.getAll)
+router.get('/dimension/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.getByIdValidation, DimensionController.getById)
+router.post('/dimension', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.createValidation, DimensionController.create)
+router.put('/dimension/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.updateByIdValidation, DimensionController.updateById)
+router.delete('/dimension/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.deleteByIdValidation, DimensionController.deleteById)
 
 //--Address
 router.get('/address/:id', ensureAuthenticated, ensureAccess(['customer']),  AddressController.getAllValidation,  AddressController.getAll)

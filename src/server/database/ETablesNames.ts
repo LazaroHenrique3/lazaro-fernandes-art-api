@@ -5,5 +5,6 @@ export enum ETableNames {
     administrator = 'administrator',
     administratorRoleAccess = 'administrator_role_access',
     customer = 'customer',
-    address = 'address'
+    address = 'address',
+    dimension = 'dimension'
 }

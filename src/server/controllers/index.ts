@@ -1,5 +1,6 @@
 export * from './category'
 export * from './technique'
+export * from './dimension'
 export * from './administrator'
 export * from './access_roles'
 export * from './customer'
