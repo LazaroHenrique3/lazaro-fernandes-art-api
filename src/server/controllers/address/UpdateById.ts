@@ -6,7 +6,6 @@ import { validation } from '../../shared/middleware'
 import { IAddress } from '../../database/models'
 import { AddressProvider } from '../../database/providers/address'
 
-
 interface IParamProps {
     id?: number;
     idAdr?: number;
@@ -49,7 +48,7 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
         })
     }
 
-    /* const result = await AddressProvider.updateById(req.params.id, req.body)
+    const result = await AddressProvider.updateById(req.params.idAdr, req.params.id, req.body)
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {
@@ -58,5 +57,5 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
         })
     }
 
-    return res.status(StatusCodes.NO_CONTENT).send(result) */
+    return res.status(StatusCodes.NO_CONTENT).send(result)
 }

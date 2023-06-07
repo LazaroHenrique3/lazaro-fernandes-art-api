@@ -7,7 +7,7 @@ import { IAddress } from '../../database/models'
 import { AddressProvider } from '../../database/providers/address'
 
 //Para tipar o body do request
-interface IBodyProps extends Omit<IAddress, 'id' | 'customer_id'> { }
+interface IBodyProps extends Omit<IAddress, 'id' | 'customer_id' | 'status'> { }
 
 //Para tipar o param do request
 interface IParamProps {
@@ -17,7 +17,6 @@ interface IParamProps {
 //Midleware
 export const createValidation = validation((getSchema) => ({
     body: getSchema<IBodyProps>(yup.object().shape({
-        status: yup.string().required().max(20),
         city: yup.string().max(45).required(),
         state: yup.string().max(45).required(),
         number: yup.number().integer().required().moreThan(0),
@@ -40,7 +39,7 @@ export const create = async (req: Request<IParamProps, {}, IBodyProps>, res: Res
         })
     }
 
-    const result = await AddressProvider.create({...req.body, customer_id: req.params.id})
+    const result = await AddressProvider.create({...req.body, status: 'Ativo', customer_id: req.params.id})
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

@@ -44,9 +44,10 @@ router.delete('/technique/:id', ensureAuthenticated, ensureAccess(['admin'], [1,
 
 
 //--Address
-router.post('/address/:id', ensureAuthenticated, ensureAccess(['customer']),  AddressController.createValidation,  AddressController.create)
 router.get('/address/:id', ensureAuthenticated, ensureAccess(['customer']),  AddressController.getAllValidation,  AddressController.getAll)
-router.get('/address/:id/:idAdr', ensureAuthenticated, ensureAccess(['customer']),  AddressController.getByIdValidation,  AddressController.getById)
+router.get('/address/:id/:idAdr', ensureAuthenticated, ensureAccess(['customer', 'admin'], [1, 5]), AddressController.getByIdValidation,  AddressController.getById)
+router.post('/address/:id', ensureAuthenticated, ensureAccess(['customer']),  AddressController.createValidation,  AddressController.create)
+router.put('/address/:id/:idAdr', ensureAuthenticated, ensureAccess(['customer', 'admin'], [1, 5]), AddressController.updateByIdValidation,  AddressController.updateById)
 router.delete('/address/:id/:idAdr', ensureAuthenticated, ensureAccess(['customer']),  AddressController.deleteByIdValidation,  AddressController.deleteById)
 
 //--Customer
