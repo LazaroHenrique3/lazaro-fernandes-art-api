@@ -38,6 +38,17 @@ export const createValidation = validation((getSchema) => ({
                 }
                 return currentValue
             })
+            .test('before-today', 'A data não pode ser maior que hoje!', value => {
+                const currentDate = new Date()
+
+                if (value) {
+                    const productDate = new Date(value)
+
+                    return productDate <= currentDate
+                }
+
+                return false
+            })
             .test('is-adult', 'O usuário deve ter mais de 18 anos', value => {
                 const currentDate = new Date()
                 const eighteenYearsAgo = new Date(
@@ -71,10 +82,10 @@ export const createValidation = validation((getSchema) => ({
 
                 //Verificando o formato
                 const supportedFormats = ['image/jpeg', 'image/png', 'image/jpg']
-                return supportedFormats.includes(value) 
+                return supportedFormats.includes(value)
             }),
         size: yup.string()
-            .test('fileSize', 'Tamanho de imagem excede 2MB', (value) => {
+            .test('fileSize', 'Tamanho de imagem excede 1MB', (value) => {
 
                 if (value === undefined) {
                     return true // Permitir quando nenhum arquivo foi selecionado
@@ -94,7 +105,7 @@ export const createValidation = validation((getSchema) => ({
 export const create = async (req: Request<{}, {}, IBodyProps>, res: Response) => {
     //Verificar se foi inserido imagem 
     const image = (req.file) ? req.file : null
-    
+
     const result = await CustomerProvider.create({ ...req.body, status: 'Ativo', image: image })
 
     if (result instanceof Error) {
@@ -105,5 +116,5 @@ export const create = async (req: Request<{}, {}, IBodyProps>, res: Response) =>
         })
     }
 
-    return res.status(StatusCodes.CREATED).json(result) 
+    return res.status(StatusCodes.CREATED).json(result)
 }

@@ -5,7 +5,7 @@ import { ETableNames } from '../ETablesNames'
 export async function up(knex: Knex) {
     return knex.schema.createTable(ETableNames.address, table => {
         table.bigIncrements('id').primary().index()
-        table.string('status', 20).checkLength('<=', 20).notNullable()
+        table.string('status', 20).checkLength('<=', 20).notNullable().defaultTo('Ativo')
         table.string('city', 45).checkLength('<=', 45).notNullable()
         table.string('state', 45).checkLength('<=', 45).notNullable()
         table.integer('number').unsigned().notNullable()

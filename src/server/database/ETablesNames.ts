@@ -6,5 +6,8 @@ export enum ETableNames {
     administratorRoleAccess = 'administrator_role_access',
     customer = 'customer',
     address = 'address',
-    dimension = 'dimension'
+    dimension = 'dimension',
+    productDimensions = 'product_dimensions',
+    productImages = 'product_images',
+    product = 'product'
 }

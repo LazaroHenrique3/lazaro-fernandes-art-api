@@ -47,11 +47,10 @@ export const create = async (customer: Omit<ICustomer, 'id'>): Promise<number | 
 
         delete formattedCustomer.confirmPassword
 
+        //Verificando sew foi passado e inserindo imagem
         if (customer.image !== null) {
             try {
                 formattedCustomer.image = await UploadImages.uploadImage(customer.image, 'customers')
-                //Para eu poder acessar do catch mais externo
-                customer.image = formattedCustomer.image
             } catch (error) {
                 return new Error('Erro ao inserir imagem!')
             }

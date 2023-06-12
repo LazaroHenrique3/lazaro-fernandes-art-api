@@ -5,7 +5,7 @@ import { ETableNames } from '../ETablesNames'
 export async function up(knex: Knex) {
     return knex.schema.createTable(ETableNames.customer, table => {
         table.bigIncrements('id').primary().index()
-        table.string('status', 20).checkLength('<=', 20).notNullable()
+        table.string('status', 20).checkLength('<=', 20).notNullable().defaultTo('Ativo')
         table.string('image').nullable()
         table.string('name', 100).checkLength('<=', 100).checkLength('>=', 3).index().notNullable()
         table.string('email', 100).checkLength('<=', 100).checkLength('>=', 5).notNullable().unique().index()
