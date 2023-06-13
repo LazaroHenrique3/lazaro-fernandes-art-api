@@ -3,17 +3,19 @@ import { StatusCodes } from 'http-status-codes'
 import * as yup from 'yup'
 
 import { validation } from '../../shared/middleware'
-import { CustomerProvider } from '../../database/providers/customer'
+import { ProductProvider } from '../../database/providers/product'
 
 //Para tipar o body do request
 interface IParamProps {
     id?: number,
+    idProduct?: number
 }
 
 //Midleware
 export const deleteImageByIdValidation = validation(getSchema => ({
     params: getSchema<IParamProps>(yup.object().shape({
         id: yup.number().integer().required().moreThan(0),
+        idProduct: yup.number().integer().required().moreThan(0)
     })),
 }))
 
@@ -26,8 +28,16 @@ export const deleteImageById = async (req: Request<IParamProps>, res: Response) 
         })
     }
 
-    const result = await CustomerProvider.deleteImageById(req.params.id)
-    
+    if (!req.params.idProduct) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            errors: {
+                default: 'O parâmetro "idProduct" precisa ser informado.'
+            }
+        })
+    }
+
+    const result = await ProductProvider.deleteImageById(req.params.id, req.params.idProduct)
+
     if(result instanceof Error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

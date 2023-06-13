@@ -16,8 +16,11 @@ export const create = async (administrator: Omit<IAdministrator, 'id'>): Promise
 
         const { permissions, ...insertAdministratorData } = administrator
 
+        //convertendo para um array numérico, e verificando se são válidas
+        const permissionsNumberArray = permissions.map(Number)
+
         //Verificando se as permissões passadas são válidas
-        const [{ count }] = await Knex(ETableNames.accessRoles).whereIn('id', permissions).count<[{ count: number }]>('* as count')
+        const [{ count }] = await Knex(ETableNames.accessRoles).whereIn('id', permissionsNumberArray).count<[{ count: number }]>('* as count')
 
         if (count !== permissions.length) {
             return new Error('Permissões inválidas!')
@@ -28,7 +31,7 @@ export const create = async (administrator: Omit<IAdministrator, 'id'>): Promise
             const [administratorId] = await trx(ETableNames.administrator).insert({ ...insertAdministratorData, password: hashedPassword }).returning('id')
 
             //Preparando o objeto de permissões
-            const permissionsData = permissions.map((permissionId) => ({
+            const permissionsData = permissionsNumberArray.map((permissionId) => ({
                 administrator_id: administratorId.id,
                 role_access_id: permissionId
             }))

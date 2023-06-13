@@ -1,51 +1,57 @@
-import { PasswordCrypto } from '../../../shared/services'
 import { ETableNames } from '../../ETablesNames'
-import { ICustomerUpdate } from '../../models'
+import { IProductUpdate } from '../../models'
 import { Knex } from '../../knex'
 
-export const updateById = async (id: number, customer: Omit<ICustomerUpdate, 'id'>): Promise<void | Error> => {
+export const updateById = async (id: number, product: Omit<IProductUpdate, 'id'>): Promise<void | Error> => {
     try {
-        //Verificando se já existe cliente com esse email
-        const existingCustomerEmail = await Knex(ETableNames.customer).where('email', customer.email).andWhereNot('id', id).first()
+        //TODO - VERIFICAR A EXISTENCIA DO PRODUCT ANTES DE TUDO
+        //Verificando se as dimensões passadas são válidas
+        const { dimensions } = product
 
-        if (existingCustomerEmail) {
-            return new Error('Este email já esta cadastrado!')
+        //convertendo para um array numérico, e verificando se são válidas
+        const dimensionNumberArray = dimensions.map(Number)
+
+        const [{ count }] = await Knex(ETableNames.dimension).whereIn('id', dimensionNumberArray).count<[{ count: number }]>('* as count')
+
+        if (count !== dimensions.length) {
+            return new Error('Dimensões inválidas!')
         }
 
-        //Verificando se já existe cliente com esse cpf
-        const existingCustomerCpf = await Knex(ETableNames.customer).where('cpf', customer.cpf).andWhereNot('id', id).first()
+        //Formatando a data de produção
+        const formattedProductionDate = new Date(product.production_date).toISOString().split('T')[0]
 
-        if (existingCustomerCpf) {
-            return new Error('Este CPF já esta cadastrado!')
+        //Product com todas as propriedades, para fazer o insert eu devo remover algumas delas
+        const productWithAllProps = {
+            ...product,
+            production_date: formattedProductionDate
         }
 
-        //Verificando se já existe cliente com esse telefone
-        const existingCustomerCellPhone = await Knex(ETableNames.customer).where('cell_phone', customer.cell_phone).andWhereNot('id', id).first()
+        //Transaction, para garantir que todas alterações sejam bem sucedidas.
+        const result = await Knex.transaction(async (trx) => {
+            //Pegando as props que preciso para o insert de product
+            const { dimensions, ...insertProductData } = productWithAllProps
 
-        if (existingCustomerCellPhone) {
-            return new Error('Este telefone já esta cadastrado!')
-        }
+            //Atualizando a tabela de produtos
+            await trx(ETableNames.product).update(insertProductData).where('id', '=', id)
 
-        //Verificando se foi passado a senha para atualização também
-        if(customer.password && customer.confirmPassword){
-            //criptografando a senha
-            const hashedPassword = await PasswordCrypto.hashPassword(customer.password)
-            customer.password = hashedPassword
-            delete customer.confirmPassword
-        }
+            // Deletando as dimensões existentes do administrador
+            await trx(ETableNames.productDimensions).where('product_id', id).del()
 
-        //formatando corretamente o objeto de customer
-        const formattedCpf = customer.cpf.replace(/[.-]/g, '')
-        const formattedCellPhone = customer.cell_phone.replace(/[()-]/g, '')
-        const formattedDateOfBirth = new Date(customer.date_of_birth).toISOString().split('T')[0]
+            //Preparando o objeto com as novas dimensões
+            const dimensionsData = dimensions.map((dimensionId) => ({
+                product_id: id,
+                dimension_id: dimensionId
+            }))
 
-        const formattedCustomer = { ...customer, cpf: formattedCpf, cell_phone: formattedCellPhone, date_of_birth: formattedDateOfBirth }
+            //armazenando a nova relação de dimensões no banco
+            await trx(ETableNames.productDimensions).insert(dimensionsData)
 
-        const result = await Knex(ETableNames.customer).update(formattedCustomer).where('id', '=', id)
+            return true
+        })
 
-        if (result > 0) return 
+        if (result === true) return
 
-        return new Error('Erro ao atualizar registro!') 
+        return new Error('Erro ao atualizar registro!')
     } catch (error) {
         console.log(error)
         return new Error('Erro ao atualizar registro!')

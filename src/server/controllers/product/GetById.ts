@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import * as yup from 'yup'
 
 import { validation } from '../../shared/middleware'
-import { CustomerProvider } from '../../database/providers/customer'
+import { ProductProvider } from '../../database/providers/product'
 
 //Para tipar o body do request
 interface IParamProps {
@@ -26,7 +26,7 @@ export const getById = async (req: Request<IParamProps>, res: Response) => {
         })
     }
 
-    const result = await CustomerProvider.getById(req.params.id)
+    const result = await ProductProvider.getById(req.params.id)
     if(result instanceof Error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

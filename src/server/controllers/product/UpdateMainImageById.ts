@@ -8,7 +8,6 @@ import { ProductProvider } from '../../database/providers/product'
 
 interface IParamProps {
     id?: number;
-    idProduct?: number
 }
 
 //tipando o file
@@ -18,10 +17,9 @@ interface IFileProps {
 }
 
 //Midleware
-export const updateImageByIdValidation = validation(getSchema => ({
+export const updateMainImageByIdValidation = validation(getSchema => ({
     params: getSchema<IParamProps>(yup.object().shape({
         id: yup.number().integer().required().moreThan(0),
-        idProduct: yup.number().integer().required().moreThan(0)
     })),
     file: getSchema<IFileProps>(yup.object().shape({
         mimetype: yup.string().required()
@@ -45,19 +43,11 @@ export const updateImageByIdValidation = validation(getSchema => ({
     }))
 }))
 
-export const updateImageById = async (req: Request<IParamProps>, res: Response) => {
+export const updateMainImageById = async (req: Request<IParamProps>, res: Response) => {
     if (!req.params.id) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             errors: {
                 default: 'O parâmetro "id" precisa ser informado.'
-            }
-        })
-    }
-
-    if (!req.params.idProduct) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            errors: {
-                default: 'O parâmetro "idProduct" precisa ser informado.'
             }
         })
     }
@@ -70,7 +60,7 @@ export const updateImageById = async (req: Request<IParamProps>, res: Response) 
         })
     }
 
-    const result = await ProductProvider.updateImageById(req.params.id, req.params.idProduct, req.file)
+    const result = await ProductProvider.updateMainImageById(req.params.id, req.file)
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

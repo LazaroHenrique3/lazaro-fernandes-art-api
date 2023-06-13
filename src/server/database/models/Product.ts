@@ -16,3 +16,20 @@ export interface IProduct {
     technique_id: number
     category_id: number
 }
+
+export interface IProductUpdate {
+    id: number
+    status: 'Ativo' | 'Vendido' | 'Inativo'
+    status_of_sale: 'Venda' | 'Galeria'
+    title: string
+    type: 'Original' | 'Print'
+    orientation: 'Retrato' | 'Paisagem'
+    quantity?: number
+    production_date: Date | string
+    description?: string
+    weight?: number
+    price?: number
+    dimensions: string[] | number[]
+    technique_id: number
+    category_id: number
+}

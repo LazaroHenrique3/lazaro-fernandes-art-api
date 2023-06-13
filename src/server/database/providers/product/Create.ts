@@ -8,7 +8,7 @@ import { UploadImages } from '../../../shared/services/UploadImagesServices'
 export const create = async (product: Omit<IProduct, 'id'>): Promise<number | Error> => {
     try {
         //Verificando se as dimensões passadas são válidas
-        const { dimensions, product_images } = product
+        const { dimensions } = product
 
         //convertendo para um array numérico, e verificando se são válidas
         const dimensionNumberArray = dimensions.map(Number)

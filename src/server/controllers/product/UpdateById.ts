@@ -3,38 +3,25 @@ import { StatusCodes } from 'http-status-codes'
 import * as yup from 'yup'
 
 import { validation } from '../../shared/middleware'
-import { ICustomerUpdate } from '../../database/models'
-import { CustomerProvider } from '../../database/providers/customer'
-
-import { cpf } from 'cpf-cnpj-validator'
+import { IProductUpdate } from '../../database/models'
+import { ProductProvider } from '../../database/providers/product'
 
 interface IParamProps {
     id?: number;
 }
 
-interface IBodyProps extends Omit<ICustomerUpdate, 'id' | 'image'> { }
+interface IBodyProps extends Omit<IProductUpdate, 'id' | 'image'> { }
 
 //Midleware
 export const updateByIdValidation = validation(getSchema => ({
     body: getSchema<IBodyProps>(yup.object().shape({
-        status: yup.string().oneOf(['Ativo', 'Inativo']).required(),
-        name: yup.string().required().min(3).max(100),
-        email: yup.string().required().email().min(5).max(100),
-        password: yup.string().optional().min(6),
-        confirmPassword: yup.string().test({
-            name: 'password-match',
-            test: function (value) {
-                const { password } = this.parent
-                if (password) {
-                    return value === password
-                }
-                return true
-            },
-            message: 'As senhas devem ser iguais',
-        }).default('nopassword'),
-        cell_phone: yup.string().length(11).matches(/^\d{11}$/, 'O valor deve corresponder ao padrão: 44999999999').required(),
-        genre: yup.string().length(1).oneOf(['M', 'F', 'L', 'N']).required(),
-        date_of_birth: yup.date()
+        status: yup.string().oneOf(['Ativo', 'Vendido', 'Inativo']).required(),
+        status_of_sale: yup.string().oneOf(['Venda', 'Galeria']).required(),
+        title: yup.string().required().min(1).max(100),
+        type: yup.string().oneOf(['Original', 'Print']).required(),
+        orientation: yup.string().oneOf(['Retrato', 'Paisagem']).required(),
+        quantity: yup.number().moreThan(0).optional(),
+        production_date: yup.date()
             .transform((currentValue, originalValue) => {
                 if (originalValue && typeof originalValue === 'string') {
                     const date = new Date(originalValue).toISOString().split('T')[0]
@@ -44,28 +31,34 @@ export const updateByIdValidation = validation(getSchema => ({
                 }
                 return currentValue
             })
-            .test('is-adult', 'O usuário deve ter mais de 18 anos', value => {
-                const currentDate = new Date()
-                const eighteenYearsAgo = new Date(
-                    currentDate.getFullYear() - 18,
-                    currentDate.getMonth(),
-                    currentDate.getDate()
-                )
+            .test('before-2018', 'Não são aceitos produtos antes de 2018!', value => {
+                const limitDate = new Date(2018, 0, 1)
 
                 if (value) {
-                    return value <= eighteenYearsAgo
+                    const productDate = new Date(value)
+                    return productDate >= limitDate
+                }
+
+                return false
+            })
+            .test('before-today', 'A data não pode ser maior que hoje!', value => {
+                const currentDate = new Date()
+
+                if (value) {
+                    const productDate = new Date(value)
+
+                    return productDate <= currentDate
                 }
 
                 return false
             })
             .required(),
-        cpf: yup.string().test('valid-cpf', 'CPF inválido', function (value) {
-            if (!value) {
-                return false
-            }
-
-            return cpf.isValid(value)
-        }).required(),
+        description: yup.string().optional(),
+        weight: yup.number().moreThan(0).optional(),
+        price: yup.number().moreThan(0).optional(),
+        dimensions: yup.array().of(yup.string().defined()).required(),
+        technique_id: yup.number().moreThan(0).required(),
+        category_id: yup.number().moreThan(0).required(),
     })),
     params: getSchema<IParamProps>(yup.object().shape({
         id: yup.number().integer().required().moreThan(0),
@@ -81,7 +74,7 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
         })
     }
 
-    const result = await CustomerProvider.updateById(req.params.id, req.body)
+    const result = await ProductProvider.updateById(req.params.id, req.body)
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

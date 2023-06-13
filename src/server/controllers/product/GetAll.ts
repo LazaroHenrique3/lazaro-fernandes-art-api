@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import * as yup from 'yup'
 
 import { validation } from '../../shared/middleware'
-import { CustomerProvider } from '../../database/providers/customer'
+import { ProductProvider } from '../../database/providers/product'
 
 //Para tipar o body do request
 interface IQueryProps {
@@ -24,8 +24,8 @@ export const getAllValidation = validation((getSchema) => ({
 }))
 
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-    const result = await CustomerProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id))
-    const count = await CustomerProvider.count(req.query.filter)
+    const result = await ProductProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id))
+    const count = await ProductProvider.count(req.query.filter)
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
