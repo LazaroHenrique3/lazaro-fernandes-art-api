@@ -2,40 +2,41 @@ import { ETableNames } from '../../ETablesNames'
 import { IProduct } from '../../models'
 import { Knex } from '../../knex'
 
-export const getById = async (id: number): Promise<IProduct | Error> => {
+export const getById = async (idProduct: number): Promise<IProduct | Error> => {
     try {
-        const result = await Knex(ETableNames.product).select('id', 'status', 'status_of_sale', 'technique_id', 'category_id', 'title', 'orientation', 'main_image', 'type', 'quantity', 'production_date', 'description', 'weight', 'price')
-            .where('id', '=', id).first()
+        //Verificando se o id informado é valido
+        const existsProduct = await checkValidProductId(idProduct)
+        if (!existsProduct) {
+            return new Error('Id informado inválido!')
+        }
 
+        //Buscando o produto
+        const product = await getProductById(idProduct)
+        
         //Formatando a resposta com o id das dimensões e imagens do produto
-        if (result) {
-            //Buscando as dimensões do produto
-            const dimensions = await Knex(ETableNames.productDimensions)
-                .select('dimension_id')
-                .where('product_id', id)
-
+        if (product) {
+            //Buscando as dimensoes do produto
+            const dimensions = await getProductDimensionsById(idProduct)
             //Buscando as imagens do produto
-            const images = await Knex(ETableNames.productImages)
-                .select('name_image')
-                .where('product_id', id)
+            const images = await getProductImagesById(idProduct)
 
-            const formattedResult = {
-                id: result.id,
-                status: result.status,
-                status_of_sale: result.status_of_sale,
-                technique_id: result.technique_id,
-                category_id: result.category_id,
-                title: result.title,
-                orientation: result.orientation,
-                main_image: result.main_image,
-                type: result.type,
-                quantity: result.quantity,
-                production_date: result.production_date,
-                description: result.description,
-                weight: result.weight,
-                price: result.price,
-                dimensions: dimensions.map((dimension) => dimension.product_id),
-                product_images: images.map((image) => image.name_image)
+            const formattedResult: IProduct = {
+                id: product.id,
+                status: product.status,
+                status_of_sale: product.status_of_sale,
+                technique_id: product.technique_id,
+                category_id: product.category_id,
+                title: product.title,
+                orientation: product.orientation,
+                main_image: product.main_image,
+                type: product.type,
+                quantity: product.quantity,
+                production_date: product.production_date,
+                description: product.description,
+                weight: product.weight,
+                price: product.price,
+                dimensions,
+                product_images: images,
             }
 
             return formattedResult
@@ -46,4 +47,42 @@ export const getById = async (id: number): Promise<IProduct | Error> => {
         console.log(error)
         return new Error('Registro não encontrado!')
     }
+}
+
+//Funções auxiliares
+//--Faz a checagem se o id passado é valido e já impede o prcessamento desnecessário
+const checkValidProductId = async (idProduct: number): Promise<boolean> => {
+
+    const productResult = await Knex(ETableNames.product)
+        .select('id')
+        .where('id', '=', idProduct)
+        .first()
+
+    return productResult !== undefined
+}
+
+//--Busca o produto no banco de dados
+const getProductById = async (id: number): Promise<IProduct | undefined> => {
+    return Knex(ETableNames.product)
+        .select('*')
+        .where('id', '=', id)
+        .first()
+}
+
+//--Busca as dimensões do produto no banco de dados
+const getProductDimensionsById = async (id: number): Promise<number[]> => {
+    const dimensions = await Knex(ETableNames.productDimensions)
+        .select('dimension_id')
+        .where('product_id', id)
+
+    return dimensions.map((dimension) => dimension.dimension_id)
+}
+
+//--Busca as imagens do produto no banco de dados
+const getProductImagesById = async (id: number): Promise<string[]> => {
+    const images = await Knex(ETableNames.productImages)
+        .select('name_image')
+        .where('product_id', id)
+
+    return images.map((image) => image.name_image)
 }

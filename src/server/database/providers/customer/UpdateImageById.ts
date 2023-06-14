@@ -1,18 +1,10 @@
 import { ETableNames } from '../../ETablesNames'
 import { Knex } from '../../knex'
+import { IImageObject } from '../../models'
 
 import path from 'path'
 
 import { UploadImages } from '../../../shared/services/UploadImagesServices'
-
-interface IImageObject {
-    fieldname: string;
-    originalname: string;
-    encoding: string;
-    mimetype: string;
-    buffer: Buffer;
-    size: number;
-}
 
 export const updateImageById = async (id: number, newImage: IImageObject): Promise<void | Error> => {
     try {

@@ -9,3 +9,5 @@ export * from './AdministratorRoleAccess'
 export * from './Administrator'
 export * from './Customer'
 export * from './Address'
+export * from './Image'
+

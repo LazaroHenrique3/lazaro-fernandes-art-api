@@ -3,21 +3,11 @@ import { StatusCodes } from 'http-status-codes'
 import * as yup from 'yup'
 
 import { validation } from '../../shared/middleware'
-import { IProduct } from '../../database/models'
+import { IProduct, IImageObject } from '../../database/models'
 import { ProductProvider } from '../../database/providers/product'
 
 //Para tipar o body do request
 interface IBodyProps extends Omit<IProduct, 'id'> { }
-
-//Tipando o file
-interface IImageObject {
-    fieldname: string;
-    originalname: string;
-    encoding: string;
-    mimetype: string;
-    buffer: Buffer;
-    size: number;
-}
 
 //tipando o files
 interface IFilesProps {
