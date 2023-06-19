@@ -3,6 +3,7 @@ import * as create from './Create'
 import * as getAll from './GetAll'
 import * as getById from './GetById'
 import * as updateById from './UpdateById'
+import * as insertImage from './InsertImage'
 import * as updateImageById from './UpdateImageById'
 import * as updateMainImageById  from './UpdateMainImageById'
 import * as deleteById from './DeleteById' 
@@ -14,6 +15,7 @@ export const ProductProvider = {
     ...getAll,
     ...getById,
     ...updateById,
+    ...insertImage,
     ...updateImageById,
     ...updateMainImageById,
     ...deleteById,
