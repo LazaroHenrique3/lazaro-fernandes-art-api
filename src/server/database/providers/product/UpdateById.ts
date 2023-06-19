@@ -12,29 +12,22 @@ export const updateById = async (idProduct: number, product: Omit<IProductUpdate
             return new Error('Id informado inválido!')
         }
         
-        const { dimensions, production_date, ...productData } = product
-
-        //convertendo para um array numérico, e verificando se são válidos
-        const dimensionNumberArray = dimensions.map(Number)
-
-        const validDimensions = await checkValidDimensions(dimensionNumberArray)
+        //Verificando se as dimensões passadas são válidas
+        const validDimensions = await checkValidDimensions(product.dimensions.map(Number))
         if (!validDimensions) {
-            return new Error('Invalid dimensions!')
+            return new Error('Dimensões inválidas!')
         }
 
-        //Formatando a string de data de produção
-        const formattedProductionDate = formatProductionDate(production_date)
-
-        const productWithAllProps = {
-            ...productData,
-            production_date: formattedProductionDate,
-        }
+        //Formatando o objeto que será usado na inserção
+        const productWithAllProps = formatProductWithAllProps(product)
 
         //Fluxo de alteração dos dados
+        const {dimensions, ...productData} = productWithAllProps
+
         const result = await Knex.transaction(async (trx) => {
-            await updateProductInDatabase(idProduct, productWithAllProps, trx)
+            await updateProductInDatabase(idProduct, productData, trx)
             await deleteOldProductDimensionsInDatabase(idProduct, trx)
-            await insertNewProductDimensionsInDatabase(dimensionNumberArray, idProduct, trx)
+            await insertNewProductDimensionsInDatabase(dimensions.map(Number), idProduct, trx)
         })
 
         if (result === undefined) {
@@ -68,7 +61,15 @@ const checkValidDimensions = async (dimensions: number[]): Promise<boolean> => {
     return count === dimensions.length
 }
 
-//--Formata a de dato de produção da forma adequada para o banco de dados
+//--Formta corretamente o objeto que será usado para realizar a inserção no banco de dados
+const formatProductWithAllProps = (product: Omit<IProductUpdate, 'id'>): Omit<IProductUpdate, 'id'> => {
+    return {
+        ...product,
+        production_date: formatProductionDate(product.production_date),
+    }
+}
+
+//--Formata a data de produção da forma adequada para o banco de dados
 const formatProductionDate = (productionDate: Date | string): string => {
     const formattedDate = new Date(productionDate).toISOString().split('T')[0]
     return formattedDate

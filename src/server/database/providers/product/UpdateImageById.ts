@@ -23,7 +23,7 @@ export const updateImageById = async (idImage: number, idProduct: number, newIma
         try {
             newImageUpdated.name_image = await uploadNewImageOnProductDirectory(newImage)
             //Removendo a imagem antiga
-            await removeOldImageOnProductDirector(oldImage?.name_image)
+            await removeOldImageOnProductDirectory(oldImage?.name_image)
         } catch (error) {
             return new Error('Erro ao inserir imagem!')
         }
@@ -72,7 +72,7 @@ const uploadNewImageOnProductDirectory = async (newImage: IImageObject): Promise
 }
 
 //--Serve para remover a imagem antiga do diretório da aplicação
-const removeOldImageOnProductDirector = async (imageName: string | undefined): Promise<void> => {
+const removeOldImageOnProductDirectory = async (imageName: string | undefined): Promise<void> => {
     if (imageName) {
         const destinationPath = path.resolve(__dirname, `../../../images/products/${imageName}`)
         UploadImages.removeImage(imageName, destinationPath)

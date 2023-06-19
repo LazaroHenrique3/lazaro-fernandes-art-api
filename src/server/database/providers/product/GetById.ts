@@ -12,34 +12,10 @@ export const getById = async (idProduct: number): Promise<IProduct | Error> => {
 
         //Buscando o produto
         const product = await getProductById(idProduct)
-        
-        //Formatando a resposta com o id das dimensões e imagens do produto
+
+        //Retornando o objeto de produtos devidamente formatado
         if (product) {
-            //Buscando as dimensoes do produto
-            const dimensions = await getProductDimensionsById(idProduct)
-            //Buscando as imagens do produto
-            const images = await getProductImagesById(idProduct)
-
-            const formattedResult: IProduct = {
-                id: product.id,
-                status: product.status,
-                status_of_sale: product.status_of_sale,
-                technique_id: product.technique_id,
-                category_id: product.category_id,
-                title: product.title,
-                orientation: product.orientation,
-                main_image: product.main_image,
-                type: product.type,
-                quantity: product.quantity,
-                production_date: product.production_date,
-                description: product.description,
-                weight: product.weight,
-                price: product.price,
-                dimensions,
-                product_images: images,
-            }
-
-            return formattedResult
+            return await formatResultForResponse(product, idProduct)
         }
 
         return new Error('Registro não encontrado!')
@@ -52,13 +28,28 @@ export const getById = async (idProduct: number): Promise<IProduct | Error> => {
 //Funções auxiliares
 //--Faz a checagem se o id passado é valido e já impede o prcessamento desnecessário
 const checkValidProductId = async (idProduct: number): Promise<boolean> => {
-
     const productResult = await Knex(ETableNames.product)
         .select('id')
         .where('id', '=', idProduct)
         .first()
 
     return productResult !== undefined
+}
+
+//--Faz a formatação do objeto que será devolvido para o cliente
+const formatResultForResponse = async (product: IProduct, idProduct: number): Promise<IProduct> => {
+    //Buscando as dimensoes do produto
+    const dimensions = await getProductDimensionsById(idProduct)
+    //Buscando as imagens do produto
+    const images = await getProductImagesById(idProduct)
+
+    const formattedResult: IProduct = {
+        ...product,
+        dimensions,
+        product_images: images,
+    }
+
+    return formattedResult
 }
 
 //--Busca o produto no banco de dados
