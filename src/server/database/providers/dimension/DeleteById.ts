@@ -1,13 +1,22 @@
-import { ETableNames } from '../../ETablesNames'
-import { Knex } from '../../knex'
+//Funções auxiliares
+import { checkValidDimensionId, checkIfDimensionIsInUse, deleteDimensionFromDatabase } from './util'
 
-export const deleteById = async (id: number): Promise<void | Error> => {
+export const deleteById = async (idDimension: number): Promise<void | Error> => {
     try {
-        const result = await Knex(ETableNames.dimension).where('id', '=', id).del()
+        const existsDimension = await checkValidDimensionId(idDimension)
+        if (!existsDimension) {
+            return new Error('Id informado inválido!')
+        }
 
-        if(result > 0) return
+        const dimensionIsInUse = await checkIfDimensionIsInUse(idDimension)
+        if (dimensionIsInUse) {
+            return new Error('Registro associado á produtos!')
+        }
 
-        return new Error('Erro ao apagar registro!')
+        const result = await deleteDimensionFromDatabase(idDimension)
+
+        return (result > 0) ? void 0 : new Error('Erro ao apagar registro!')
+
     } catch (error) {
         console.log(error)
         return new Error('Erro ao apagar registro!')

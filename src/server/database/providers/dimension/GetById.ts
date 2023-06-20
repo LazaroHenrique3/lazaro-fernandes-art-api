@@ -1,10 +1,12 @@
-import { ETableNames } from '../../ETablesNames'
 import { IDimension } from '../../models'
-import { Knex } from '../../knex'
 
-export const getById = async (id: number): Promise<IDimension | Error> => {
+//Funções auxiliares
+import { getDimensionById } from './util'
+
+export const getById = async (idDimension: number): Promise<IDimension | Error> => {
+    
     try {
-        const result = await Knex(ETableNames.dimension).select('*').where('id', '=', id).first()
+        const result = await getDimensionById(idDimension)
         
         if(result) return result
 
@@ -13,4 +15,5 @@ export const getById = async (id: number): Promise<IDimension | Error> => {
         console.log(error)
         return new Error('Registro não encontrado!')
     }
+
 }

@@ -1,22 +1,24 @@
-import { ETableNames } from '../../ETablesNames'
 import { IDimension } from '../../models'
-import { Knex } from '../../knex'
 
-export const updateById = async (id: number, dimension: Omit<IDimension, 'id'>): Promise<void | Error> => {
+//Funções auxiliares
+import { checkValidDimensionId, checkValidDimensionName, updateDimensionInDatabase } from './util'
+
+export const updateById = async (idDimension: number, dimension: Omit<IDimension, 'id'>): Promise<void | Error> => {
     try {
-        //Verificando se já existe essa dimension 
-        const existingDimension = await Knex(ETableNames.dimension).where('dimension', dimension.dimension).andWhereNot('id', id).first()
-
-
-        if (existingDimension) {
-            return new Error('Essa dimensão já foi cadastrada!')
+        const existsDimension = await checkValidDimensionId(idDimension)
+        if (!existsDimension) {
+            return new Error('Id informado inválido!')
         }
 
-        const result = await Knex(ETableNames.dimension).update(dimension).where('id', '=', id)
+        const existsDimensionName = await checkValidDimensionName(dimension.dimension, idDimension)
+        if (existsDimensionName) {
+            return new Error('Já existe uma técnica com esse nome!')
+        }
 
-        if (result > 0) return
+        const result = await updateDimensionInDatabase(idDimension, dimension)
 
-        return new Error('Erro ao atualizar registro!')
+        return (result !== undefined && result > 0) ? void 0 : new Error('Erro ao atualizar registro!')
+
     } catch (error) {
         console.log(error)
         return new Error('Erro ao atualizar registro!')
