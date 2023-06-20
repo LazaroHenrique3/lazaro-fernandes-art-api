@@ -1,12 +1,10 @@
-import { ETableNames } from '../../ETablesNames'
-import { Knex } from '../../knex'
+//Funções auxiliares
+import { getTotalOfRegisters } from './util'
 
 export const count = async (filter = ''): Promise<number | Error> => {
 
     try {
-        const [{count}] = await Knex(ETableNames.technique)
-            .where('name', 'like', `%${filter}%`)
-            .count<[{count: number}]>('* as count')
+        const count = await getTotalOfRegisters(filter)
         
         if(Number.isInteger(Number(count))) return Number(count)
 

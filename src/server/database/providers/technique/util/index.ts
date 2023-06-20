@@ -21,6 +21,16 @@ export const insertNewTechniqueInDatabase = async (technique: Omit<ITechnique, '
 
 }
 
+//Faz a atualização da technique no banco de dados
+export const updateTechniqueInDatabase = async (idTechnique: number, technique: Omit<ITechnique, 'id'>): Promise<number | undefined> => {
+
+    const result = await Knex(ETableNames.technique)
+        .update(technique)
+        .where('id', '=', idTechnique)
+
+    return result
+}
+
 //--Faz a exclusão de Technique do banco de dados
 export const deleteTechniqueFromDatabase = async (idTechnique: number): Promise<number> => {
 
@@ -46,6 +56,15 @@ export const getTechniquesWithFilter = async (filter: string, page: number, limi
         .where('name', 'like', `%${filter}%`)
         .offset((page - 1) * limit)
         .limit(limit)
+}
+
+//--Traz o total de registros correspondentes par aquelas pesquisa
+export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
+    const [{ count }] = await Knex(ETableNames.dimension)
+        .where('dimension', 'like', `%${filter}%`)
+        .count<[{ count: number }]>('* as count')
+
+    return count
 }
 
 //------//------//
