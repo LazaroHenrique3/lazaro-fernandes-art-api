@@ -1,10 +1,11 @@
-import { ETableNames } from '../../ETablesNames'
 import { ITechnique } from '../../models'
-import { Knex } from '../../knex'
 
-export const getById = async (id: number): Promise<ITechnique | Error> => {
+//Funções auxiliares
+import { getTechniqueById } from './util'
+
+export const getById = async (idTechnique: number): Promise<ITechnique | Error> => {
     try {
-        const result = await Knex(ETableNames.technique).select('*').where('id', '=', id).first()
+        const result = await getTechniqueById(idTechnique)
         
         if(result) return result
 
@@ -14,3 +15,5 @@ export const getById = async (id: number): Promise<ITechnique | Error> => {
         return new Error('Registro não encontrado!')
     }
 }
+
+

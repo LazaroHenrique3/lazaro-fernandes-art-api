@@ -2,6 +2,9 @@ import { ETableNames } from '../../ETablesNames'
 import { ITechnique } from '../../models'
 import { Knex } from '../../knex'
 
+//Funções auxiliares
+import { checkValidTechniqueId, checkValidTechniqueName } from './util'
+
 export const updateById = async (idTechnique: number, technique: Omit<ITechnique, 'id'>): Promise<void | Error> => {
     try {
 
@@ -10,7 +13,7 @@ export const updateById = async (idTechnique: number, technique: Omit<ITechnique
             return new Error('Id informado inválido!')
         }
 
-        const existsTechniqueName = await checkValidTechniqueName(idTechnique, technique.name)
+        const existsTechniqueName = await checkValidTechniqueName(technique.name, idTechnique)
         if (existsTechniqueName) {
             return new Error('Já existe uma técnica com esse nome!')
         }
@@ -26,25 +29,3 @@ export const updateById = async (idTechnique: number, technique: Omit<ITechnique
     }
 }
 
-//Funções auxiliares
-//--Verifica se o id informado é válido
-const checkValidTechniqueId = async (idTechnique: number): Promise<boolean> => {
-
-    const techniqueResult = await Knex(ETableNames.technique)
-        .select('id')
-        .where('id', '=', idTechnique)
-        .first()
-
-    return techniqueResult !== undefined
-}
-
-//--Verifica se já existe alguma tecnica com esse nome
-const checkValidTechniqueName = async (idTechnique: number, nameTechnique: string): Promise<boolean> => {
-
-    const techniqueResult = await Knex(ETableNames.technique)
-        .where('name', nameTechnique)
-        .andWhereNot('id', idTechnique).first()
-
-
-    return techniqueResult !== undefined
-}
