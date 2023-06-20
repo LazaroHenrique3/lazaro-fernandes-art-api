@@ -5,6 +5,7 @@ import { getTechniqueById, getTechniquesWithFilter } from './util'
 
 //Recebe aquele id para caso um item não esteja na primeira pagina, ele possa retornar junto
 export const getAll = async (page: number, limit: number, filter: string, id = 0): Promise<ITechnique[] | Error> => {
+
     try {
         let resultSearchFilter = await getTechniquesWithFilter(filter, page, limit)
 
@@ -22,6 +23,7 @@ export const getAll = async (page: number, limit: number, filter: string, id = 0
         console.log(error)
         return new Error('Erro ao consultar registros!')
     }
+    
 }
 
 

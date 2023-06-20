@@ -4,6 +4,7 @@ import { ITechnique } from '../../models'
 import { checkValidTechniqueName, insertNewTechniqueInDatabase } from './util'
 
 export const create = async (technique: Omit<ITechnique, 'id'>): Promise<number | Error> => {
+
     try {
         const existsTechniqueName = await checkValidTechniqueName(technique.name)
         if (existsTechniqueName) {
@@ -17,6 +18,7 @@ export const create = async (technique: Omit<ITechnique, 'id'>): Promise<number 
         console.log(error)
         return new Error('Erro ao criar registro!')
     }
+    
 }
 
 

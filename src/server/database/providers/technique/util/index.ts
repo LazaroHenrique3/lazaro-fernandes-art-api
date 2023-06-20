@@ -5,6 +5,7 @@ import { Knex } from '../../../knex'
 //FUNÇÕES RELACIONADOS AO |CRUD|
 //--Faz a criação da nova tecnica no banco de dados
 export const insertNewTechniqueInDatabase = async (technique: Omit<ITechnique, 'id'>): Promise<number | undefined> => {
+
     const [result] = await Knex(ETableNames.technique)
         .insert(technique)
         .returning('id')
@@ -17,6 +18,7 @@ export const insertNewTechniqueInDatabase = async (technique: Omit<ITechnique, '
     }
 
     return undefined
+
 }
 
 //--Faz a exclusão de Technique do banco de dados
@@ -80,9 +82,13 @@ export const checkValidTechniqueName = async (nameTechnique: string, idTechnique
 
 //--Verifica se a tecnica está em uso antes da exclusão
 export const checkIfTechniqueIsInUse = async (idTechnique: number): Promise<boolean> => {
-    const techniqueResult = await Knex(ETableNames.product).select('id').where('technique_id', '=', idTechnique).first()
+
+    const techniqueResult = await Knex(ETableNames.product)
+        .select('id').where('technique_id', '=', idTechnique)
+        .first()
 
     return techniqueResult !== undefined
+
 }
 
 

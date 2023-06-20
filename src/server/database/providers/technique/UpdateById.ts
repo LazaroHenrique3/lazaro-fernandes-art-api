@@ -6,8 +6,8 @@ import { Knex } from '../../knex'
 import { checkValidTechniqueId, checkValidTechniqueName } from './util'
 
 export const updateById = async (idTechnique: number, technique: Omit<ITechnique, 'id'>): Promise<void | Error> => {
+    
     try {
-
         const existsTechnique = await checkValidTechniqueId(idTechnique)
         if (!existsTechnique) {
             return new Error('Id informado inválido!')
@@ -23,9 +23,11 @@ export const updateById = async (idTechnique: number, technique: Omit<ITechnique
         if (result > 0) return
 
         return new Error('Erro ao atualizar registro!')
+
     } catch (error) {
         console.log(error)
         return new Error('Erro ao atualizar registro!')
     }
+
 }
 

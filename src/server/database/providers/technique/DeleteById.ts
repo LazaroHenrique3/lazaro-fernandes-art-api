@@ -2,6 +2,7 @@
 import { checkValidTechniqueId, checkIfTechniqueIsInUse, deleteTechniqueFromDatabase } from './util'
 
 export const deleteById = async (idTechnique: number): Promise<void | Error> => {
+
     try {
         const existsTechnique = await checkValidTechniqueId(idTechnique)
         if (!existsTechnique) {
@@ -21,6 +22,7 @@ export const deleteById = async (idTechnique: number): Promise<void | Error> => 
         console.log(error)
         return new Error('Erro ao apagar registro!')
     }
+    
 }
 
 

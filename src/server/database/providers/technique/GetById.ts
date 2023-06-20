@@ -4,6 +4,7 @@ import { ITechnique } from '../../models'
 import { getTechniqueById } from './util'
 
 export const getById = async (idTechnique: number): Promise<ITechnique | Error> => {
+
     try {
         const result = await getTechniqueById(idTechnique)
         
@@ -14,6 +15,7 @@ export const getById = async (idTechnique: number): Promise<ITechnique | Error> 
         console.log(error)
         return new Error('Registro não encontrado!')
     }
+
 }
 
 
