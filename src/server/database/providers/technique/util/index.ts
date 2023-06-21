@@ -21,6 +21,16 @@ export const insertNewTechniqueInDatabase = async (technique: Omit<ITechnique, '
 
 }
 
+//Faz a atualização da technique no banco de dados
+export const updateTechniqueInDatabase = async (idTechnique: number, technique: Omit<ITechnique, 'id'>): Promise<number | undefined> => {
+
+    const result = await Knex(ETableNames.technique)
+        .update(technique)
+        .where('id', '=', idTechnique)
+
+    return result
+}
+
 //--Faz a exclusão de Technique do banco de dados
 export const deleteTechniqueFromDatabase = async (idTechnique: number): Promise<number> => {
 
