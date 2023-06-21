@@ -1,10 +1,12 @@
-import { ETableNames } from '../../ETablesNames'
 import { ICategory } from '../../models'
-import { Knex } from '../../knex'
 
-export const getById = async (id: number): Promise<ICategory | Error> => {
+//Funções auxiliares
+import { getCategoryById } from './util'
+
+export const getById = async (idCategory: number): Promise<ICategory | Error> => {
+
     try {
-        const result = await Knex(ETableNames.category).select('*').where('id', '=', id).first()
+        const result = await getCategoryById(idCategory)
         
         if(result) return result
 
@@ -13,4 +15,7 @@ export const getById = async (id: number): Promise<ICategory | Error> => {
         console.log(error)
         return new Error('Registro não encontrado!')
     }
+
 }
+
+

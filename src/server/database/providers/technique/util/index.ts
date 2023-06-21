@@ -48,6 +48,15 @@ export const getTechniquesWithFilter = async (filter: string, page: number, limi
         .limit(limit)
 }
 
+//--Traz o total de registros correspondentes par aquelas pesquisa
+export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
+    const [{ count }] = await Knex(ETableNames.technique)
+        .where('name', 'like', `%${filter}%`)
+        .count<[{ count: number }]>('* as count')
+
+    return count
+}
+
 //------//------//
 
 //FUNÇÕES DE VALIDAÇÃO

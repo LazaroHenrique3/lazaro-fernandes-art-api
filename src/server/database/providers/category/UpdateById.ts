@@ -2,22 +2,32 @@ import { ETableNames } from '../../ETablesNames'
 import { ICategory } from '../../models'
 import { Knex } from '../../knex'
 
-export const updateById = async (id: number, category: Omit<ICategory, 'id'>): Promise<void | Error> => {
-    try {
-        //Verificando se já existe category com esse name
-        const existingCategory = await Knex(ETableNames.category).where('name', category.name).andWhereNot('id', id).first()
+//Funções auxiliares
+import { checkValidCategoryId, checkValidCategoryName } from './util'
 
-        if (existingCategory) {
-            return new Error('Já existe uma categoria com esse nome!')
+export const updateById = async (idCategory: number, category: Omit<ICategory, 'id'>): Promise<void | Error> => {
+    
+    try {
+        const existsCategory = await checkValidCategoryId(idCategory)
+        if (!existsCategory) {
+            return new Error('Id informado inválido!')
         }
 
-        const result = await Knex(ETableNames.category).update(category).where('id', '=', id)
+        const existsCategoryName = await checkValidCategoryName(category.name, idCategory)
+        if (existsCategoryName) {
+            return new Error('Já existe uma técnica com esse nome!')
+        }
+
+        const result = await Knex(ETableNames.category).update(category).where('id', '=', idCategory)
 
         if (result > 0) return
 
         return new Error('Erro ao atualizar registro!')
+
     } catch (error) {
         console.log(error)
         return new Error('Erro ao atualizar registro!')
     }
+
 }
+

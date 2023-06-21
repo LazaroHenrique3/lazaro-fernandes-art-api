@@ -1,13 +1,10 @@
-import { ETableNames } from '../../ETablesNames'
-import { Knex } from '../../knex'
+//Funções auxiliares
+import { getTotalOfRegisters } from './util'
 
 export const count = async (filter = ''): Promise<number | Error> => {
-
     try {
-        const [{count}] = await Knex(ETableNames.technique)
-            .where('name', 'like', `%${filter}%`)
-            .count<[{count: number}]>('* as count')
-        
+        const count = await getTotalOfRegisters(filter)
+
         if(Number.isInteger(Number(count))) return Number(count)
 
         return new Error('Erro ao consultar a quantidade total de registros!')
@@ -15,5 +12,4 @@ export const count = async (filter = ''): Promise<number | Error> => {
         console.log(error)
         return new Error('Erro ao consultar a quantidade total de registros!')
     }
-    
 }

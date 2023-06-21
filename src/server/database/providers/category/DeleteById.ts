@@ -1,15 +1,28 @@
-import { ETableNames } from '../../ETablesNames'
-import { Knex } from '../../knex'
+//Funções auxiliares
+import { checkValidCategoryId, checkIfCategoryIsInUse, deleteCategoryFromDatabase } from './util'
 
-export const deleteById = async (id: number): Promise<void | Error> => {
+export const deleteById = async (idCategory: number): Promise<void | Error> => {
+
     try {
-        const result = await Knex(ETableNames.category).where('id', '=', id).del()
+        const existsCategory = await checkValidCategoryId(idCategory)
+        if (!existsCategory) {
+            return new Error('Id informado inválido!')
+        }
 
-        if(result > 0) return
+        const categoryIsInUse = await checkIfCategoryIsInUse(idCategory)
+        if (categoryIsInUse) {
+            return new Error('Registro associado á produtos!')
+        }
 
-        return new Error('Erro ao apagar registro!')
+        const result = await deleteCategoryFromDatabase(idCategory)
+
+        return (result > 0) ? void 0 : new Error('Erro ao apagar registro!')
+
     } catch (error) {
         console.log(error)
         return new Error('Erro ao apagar registro!')
     }
+    
 }
+
+
