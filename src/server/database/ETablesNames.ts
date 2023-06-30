@@ -9,5 +9,7 @@ export enum ETableNames {
     dimension = 'dimension',
     productDimensions = 'product_dimensions',
     productImages = 'product_images',
-    product = 'product'
+    product = 'product',
+    sale = 'sale',
+    salesItems = 'sales_items'
 }

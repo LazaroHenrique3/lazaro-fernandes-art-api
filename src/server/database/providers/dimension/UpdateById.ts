@@ -1,21 +1,21 @@
 import { IDimension } from '../../models'
 
 //Funções auxiliares
-import { checkValidDimensionId, checkValidDimensionName, updateDimensionInDatabase } from './util'
+import { DimensionUtil } from './util'
 
 export const updateById = async (idDimension: number, dimension: Omit<IDimension, 'id'>): Promise<void | Error> => {
     try {
-        const existsDimension = await checkValidDimensionId(idDimension)
+        const existsDimension = await DimensionUtil.checkValidDimensionId(idDimension)
         if (!existsDimension) {
             return new Error('Id informado inválido!')
         }
 
-        const existsDimensionName = await checkValidDimensionName(dimension.dimension, idDimension)
+        const existsDimensionName = await DimensionUtil.checkValidDimensionName(dimension.dimension, idDimension)
         if (existsDimensionName) {
             return new Error('Já existe uma técnica com esse nome!')
         }
 
-        const result = await updateDimensionInDatabase(idDimension, dimension)
+        const result = await DimensionUtil.updateDimensionInDatabase(idDimension, dimension)
 
         return (result !== undefined && result > 0) ? void 0 : new Error('Erro ao atualizar registro!')
 

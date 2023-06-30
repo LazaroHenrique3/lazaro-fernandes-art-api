@@ -1,22 +1,27 @@
-import { ETableNames } from '../../ETablesNames'
 import { Knex } from '../../knex'
 
-export const deleteById = async (id: number): Promise<void | Error> => {
-    try {
-        const result = await Knex.transaction(async (trx) => {
-            // Excluir as permissões associadas ao usuário na tabela de associação
-            await trx(ETableNames.administratorRoleAccess).where('administrator_id', '=', id).del()
+//Funções auxiliares
+import { AdministratorUtil } from './util'
 
-            await trx(ETableNames.administrator).where('id', '=', id).del()
+export const deleteById = async (idAdministrator: number): Promise<void | Error> => {
+
+    try {
+        const existsAdministrator = await AdministratorUtil.checkValidAdministratorId(idAdministrator)
+        if (!existsAdministrator) {
+            return new Error('Id informado inválido!')
+        }
+
+        const result = await Knex.transaction(async (trx) => {            
+            await AdministratorUtil.deleteRelationOfAdministratorPermissionsInDatabase(idAdministrator, trx)
+            await AdministratorUtil.deleteAdministratorFromDatabase(idAdministrator, trx)
 
             return true
         })
         
-        if(result) return
-        
-        return new Error('Erro ao apagar registro!')
+        return (result) ? void 0 : new Error('Erro ao apagar registro!')
     } catch (error) {
         console.log(error)
         return new Error('Erro ao apagar registro!')
     }
+
 }

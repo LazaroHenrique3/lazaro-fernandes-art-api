@@ -1,39 +1,53 @@
-import { ETableNames } from '../../ETablesNames'
-import { Knex } from '../../knex'
 import { IImageObject } from '../../models'
-
-import path from 'path'
+import { Knex } from '../../knex'
 
 import { UploadImages } from '../../../shared/services/UploadImagesServices'
 
-export const updateImageById = async (id: number, newImage: IImageObject): Promise<void | Error> => {
+//Funções auxiliares
+import { CustomerUtil } from './util'
+
+export const updateImageById = async (idCustomer: number, newImage: IImageObject): Promise<void | Error> => {
+
     try {
-        //Buscando o nome da imagem antiga
-        const oldImage = await Knex(ETableNames.customer).select('image').where('id', '=', id).first()
-
-        const newImageUpdated = {image: ''}
-
-        //Updando a nova imagem e excluindo a antiga
-        try {
-            newImageUpdated.image = await UploadImages.uploadImage(newImage, 'customers')
-
-            //Pode ser que o usuario não tenha cadastrado uma imagem previamente
-            if (oldImage?.image !== undefined) {
-                //Removendo a imagem antiga
-                const destinationPath = path.resolve(__dirname, `../../../images/customers/${oldImage?.image}`)
-                UploadImages.removeImage(oldImage?.image, destinationPath)
-            }
-        } catch (error) {
-            return new Error('Erro ao inserir imagem!')
+        //Verificando se o id informado é valido
+        const existsCustomer = await CustomerUtil.checkValidCustomerId(idCustomer)
+        if (!existsCustomer) {
+            return new Error('Id informado inválido!')
         }
 
-        const result = await Knex(ETableNames.customer).update(newImageUpdated).where('id', '=', id)
+        const result = await Knex.transaction(async (trx) => {
+            let thereWasAnError = false
 
-        if (result > 0) return 
-        
-        return new Error('Erro ao atualizar registro!')
+            //Buscando o nome da imagem antiga
+            const oldImage = await CustomerUtil.checkAndReturnNameOfCustomerImage(idCustomer, trx)
+
+            //Upload da nova imagem 
+            const newImageUpdated = await UploadImages.uploadImage(newImage, 'customers')
+
+            const isUpdated = await CustomerUtil.updateCustomerImageInDatabase(idCustomer, newImageUpdated, trx)
+
+            //Pode ser que o usuario não tenha cadastrado uma imagem previamente, deletando
+            if (oldImage !== undefined) {
+                const result = await CustomerUtil.deleteCustomerImageFromDirectory(oldImage)
+
+                thereWasAnError = (result instanceof Error) ? true : false
+            }
+
+            // Garantindo que tanto a ação no banco quanto a ação do diretório foram bem sucedidas
+            // Caso tenha acontecido algum erro será feito o rollback do banco
+            if (!thereWasAnError) {
+                return isUpdated
+            } else {
+                throw new Error('Erro ao apagar registro!')
+            }
+
+        })
+
+        return (result > 0) ? void 0 : new Error('Erro ao atualizar registro!')
+
     } catch (error) {
         console.log(error)
         return new Error('Erro ao atualizar registro!')
     }
 }
+

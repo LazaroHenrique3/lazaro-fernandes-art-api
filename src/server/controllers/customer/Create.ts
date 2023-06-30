@@ -9,7 +9,7 @@ import { CustomerProvider } from '../../database/providers/customer'
 import { cpf } from 'cpf-cnpj-validator'
 
 //Para tipar o body do request
-interface IBodyProps extends Omit<ICustomer, 'id'> { }
+interface IBodyProps extends Omit<ICustomer, 'id' | 'verification_token' | 'verification_token_expiration'> { }
 
 //tipando o file
 interface IFileProps {

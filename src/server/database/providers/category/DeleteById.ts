@@ -1,20 +1,20 @@
 //Funções auxiliares
-import { checkValidCategoryId, checkIfCategoryIsInUse, deleteCategoryFromDatabase } from './util'
+import { CategoryUtil } from './util'
 
 export const deleteById = async (idCategory: number): Promise<void | Error> => {
 
     try {
-        const existsCategory = await checkValidCategoryId(idCategory)
+        const existsCategory = await CategoryUtil.checkValidCategoryId(idCategory)
         if (!existsCategory) {
             return new Error('Id informado inválido!')
         }
 
-        const categoryIsInUse = await checkIfCategoryIsInUse(idCategory)
+        const categoryIsInUse = await CategoryUtil.checkIfCategoryIsInUse(idCategory)
         if (categoryIsInUse) {
             return new Error('Registro associado á produtos!')
         }
 
-        const result = await deleteCategoryFromDatabase(idCategory)
+        const result = await CategoryUtil.deleteCategoryFromDatabase(idCategory)
 
         return (result > 0) ? void 0 : new Error('Erro ao apagar registro!')
 

@@ -1,17 +1,17 @@
 import { ICategory } from '../../models'
 
 //Funções auxiliares
-import { checkValidCategoryName, insertNewCategoryInDatabase } from './util'
+import { CategoryUtil } from './util'
 
 export const create = async (category: Omit<ICategory, 'id'>): Promise<number | Error> => {
 
     try {
-        const existsCategoryName = await checkValidCategoryName(category.name)
+        const existsCategoryName = await CategoryUtil.checkValidCategoryName(category.name)
         if (existsCategoryName) {
             return new Error('Já existe uma categoria com esse nome!')
         }
 
-        const result = await insertNewCategoryInDatabase(category)
+        const result = await CategoryUtil.insertNewCategoryInDatabase(category)
 
         return (result) ? result : new Error('Erro ao criar registro!')
     } catch (error) {

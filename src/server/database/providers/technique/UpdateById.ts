@@ -1,29 +1,25 @@
-import { ETableNames } from '../../ETablesNames'
 import { ITechnique } from '../../models'
-import { Knex } from '../../knex'
 
 //Funções auxiliares
-import { checkValidTechniqueId, checkValidTechniqueName } from './util'
+import { TechniqueUtil } from './util'
 
 export const updateById = async (idTechnique: number, technique: Omit<ITechnique, 'id'>): Promise<void | Error> => {
     
     try {
-        const existsTechnique = await checkValidTechniqueId(idTechnique)
+        const existsTechnique = await TechniqueUtil.checkValidTechniqueId(idTechnique)
         if (!existsTechnique) {
             return new Error('Id informado inválido!')
         }
 
-        const existsTechniqueName = await checkValidTechniqueName(technique.name, idTechnique)
+        const existsTechniqueName = await TechniqueUtil.checkValidTechniqueName(technique.name, idTechnique)
         if (existsTechniqueName) {
             return new Error('Já existe uma técnica com esse nome!')
         }
-        //TODO
-        const result = await Knex(ETableNames.technique).update(technique).where('id', '=', idTechnique)
 
-        if (result > 0) return
+        const result = await  TechniqueUtil.updateTechniqueInDatabase(idTechnique, technique)
 
-        return new Error('Erro ao atualizar registro!')
-
+        return (result !== undefined && result > 0) ? void 0 : new Error('Erro ao atualizar registro!')
+        
     } catch (error) {
         console.log(error)
         return new Error('Erro ao atualizar registro!')

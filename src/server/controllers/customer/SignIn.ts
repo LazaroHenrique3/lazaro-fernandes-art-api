@@ -9,7 +9,7 @@ import { PasswordCrypto } from '../../shared/services'
 import { JWTServices } from '../../shared/services/JWTServices'
 
 //Para tipar o body do request
-interface IBodyProps extends Omit<ICustomer, 'id' | 'status' | 'image' | 'name' | 'cell_phone' | 'genre' | 'date_of_birth' | 'cpf' | 'confirmPassword'> { }
+interface IBodyProps extends Omit<ICustomer, 'id' | 'status' | 'image' | 'name' | 'cell_phone' | 'genre' | 'date_of_birth' | 'cpf' | 'confirmPassword' | 'verification_token' | 'verification_token_expiration'> { }
 
 //Midleware
 export const signInValidation = validation((getSchema) => ({

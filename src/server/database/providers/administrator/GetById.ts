@@ -1,29 +1,28 @@
-import { ETableNames } from '../../ETablesNames'
 import { IAdministrator } from '../../models'
-import { Knex } from '../../knex'
 
-export const getById = async (id: number): Promise<(Omit<IAdministrator, 'password'>) | Error> => {
+//Funções auxiliares
+import { AdministratorUtil } from './util'
+
+export const getById = async (idAdministrator: number): Promise<(Omit<IAdministrator, 'password'>) | Error> => {
+
     try {
-        const result = await Knex(ETableNames.administrator).select('id', 'status', 'name', 'email').where('id', '=', id).first()
 
-        if (result) {
-            //Buscando as permissões do usuário
-            const permissions = await Knex(ETableNames.administratorRoleAccess).select('role_access_id').where('administrator_id', id)
+        const existsAdministrator = await AdministratorUtil.checkValidAdministratorId(idAdministrator)
+        if (!existsAdministrator) {
+            return new Error('Id informado inválido!')
+        }
 
-            const formattedResult = {
-                id: result.id,
-                status: result.status,
-                name: result.name,
-                email: result.email,
-                permissions: permissions.map((permission) => permission.role_access_id)
-            }
+        const administrator = await AdministratorUtil.getAdministratorById(idAdministrator)
 
-            return formattedResult
+        if (administrator) {
+            return await AdministratorUtil.formatResultByIdForResponse(administrator as IAdministrator)
         }
 
         return new Error('Registro não encontrado!')
+
     } catch (error) {
         console.log(error)
         return new Error('Registro não encontrado!')
     }
+
 }

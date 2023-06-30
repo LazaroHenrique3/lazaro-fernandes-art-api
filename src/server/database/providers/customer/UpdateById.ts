@@ -1,53 +1,41 @@
-import { PasswordCrypto } from '../../../shared/services'
-import { ETableNames } from '../../ETablesNames'
 import { ICustomerUpdate } from '../../models'
-import { Knex } from '../../knex'
 
-export const updateById = async (id: number, customer: Omit<ICustomerUpdate, 'id'>): Promise<void | Error> => {
+//Funções auxiliares
+import { CustomerUtil } from './util'
+
+export const updateById = async (idCustomer: number, customer: Omit<ICustomerUpdate, 'id'>): Promise<void | Error> => {
     try {
-        //Verificando se já existe cliente com esse email
-        const existingCustomerEmail = await Knex(ETableNames.customer).where('email', customer.email).andWhereNot('id', id).first()
+        //Verificando se o id informado é valido
+        const existsCustomer = await CustomerUtil.checkValidCustomerId(idCustomer)
+        if (!existsCustomer) {
+            return new Error('Id informado inválido!')
+        }
 
-        if (existingCustomerEmail) {
+        const existsEmail = await CustomerUtil.checkValidEmail(customer.email, 'insert', idCustomer)
+        if (existsEmail) {
             return new Error('Este email já esta cadastrado!')
         }
 
-        //Verificando se já existe cliente com esse cpf
-        const existingCustomerCpf = await Knex(ETableNames.customer).where('cpf', customer.cpf).andWhereNot('id', id).first()
-
-        if (existingCustomerCpf) {
+        const existsCpf = await CustomerUtil.checkValidCpf(customer.cpf, 'insert', idCustomer)
+        if (existsCpf) {
             return new Error('Este CPF já esta cadastrado!')
         }
 
-        //Verificando se já existe cliente com esse telefone
-        const existingCustomerCellPhone = await Knex(ETableNames.customer).where('cell_phone', customer.cell_phone).andWhereNot('id', id).first()
-
-        if (existingCustomerCellPhone) {
+        const existsCellPhone = await CustomerUtil.checkValidCellphone(customer.cell_phone, 'insert', idCustomer)
+        if (existsCellPhone) {
             return new Error('Este telefone já esta cadastrado!')
         }
 
-        //Verificando se foi passado a senha para atualização também
-        if(customer.password && customer.confirmPassword){
-            //criptografando a senha
-            const hashedPassword = await PasswordCrypto.hashPassword(customer.password)
-            customer.password = hashedPassword
-            delete customer.confirmPassword
-        }
+        const formattedCustomer = await CustomerUtil.formatCustomerForUpdate(customer)
 
-        //formatando corretamente o objeto de customer
-        const formattedCpf = customer.cpf.replace(/[.-]/g, '')
-        const formattedCellPhone = customer.cell_phone.replace(/[()-]/g, '')
-        const formattedDateOfBirth = new Date(customer.date_of_birth).toISOString().split('T')[0]
+        const result = await CustomerUtil.updateCustomerInDatabase(formattedCustomer, idCustomer)
 
-        const formattedCustomer = { ...customer, cpf: formattedCpf, cell_phone: formattedCellPhone, date_of_birth: formattedDateOfBirth }
+        return (result > 0) ? void 0 : new Error('Erro ao atualizar registro!')
 
-        const result = await Knex(ETableNames.customer).update(formattedCustomer).where('id', '=', id)
-
-        if (result > 0) return 
-
-        return new Error('Erro ao atualizar registro!') 
     } catch (error) {
         console.log(error)
         return new Error('Erro ao atualizar registro!')
     }
 }
+
+

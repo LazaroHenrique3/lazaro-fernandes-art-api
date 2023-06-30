@@ -6,3 +6,12 @@ export interface IImageObject {
     buffer: Buffer;
     size: number;
 }
+
+interface ImageData {
+    name_image: string;
+}
+
+export interface IDeleteImageData {
+    main_image: string;
+    product_images: ImageData[];
+}

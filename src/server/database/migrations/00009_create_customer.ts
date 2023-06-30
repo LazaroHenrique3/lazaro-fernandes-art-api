@@ -14,6 +14,8 @@ export async function up(knex: Knex) {
         table.string('genre', 1).notNullable()
         table.date('date_of_birth').notNullable()
         table.string('cpf', 11).checkLength('=', 11).notNullable().unique().index()
+        table.string('verification_token').nullable()
+        table.string('verification_token_expiration').nullable()
 
         table.comment('Tabela usada para armazenar os clientes do sistema.')
     }).then(() => {

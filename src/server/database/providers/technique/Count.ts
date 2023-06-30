@@ -1,9 +1,9 @@
 //Funções auxiliares
-import { getTotalOfRegisters } from './util'
+import { TechniqueUtil } from './util'
 
 export const count = async (filter = ''): Promise<number | Error> => {
     try {
-        const count = await getTotalOfRegisters(filter)
+        const count = await TechniqueUtil.getTotalOfRegisters(filter)
         if (Number.isInteger(Number(count))) return Number(count)
 
         return new Error('Erro ao consultar a quantidade total de registros!')

@@ -8,7 +8,10 @@ import { IAddress,
     ITechnique, 
     IProduct,
     IProductDimensions,
-    IProductImages} from '../../models'
+    IProductImages,
+    ISale,
+    ISalesItems
+} from '../../models'
 
 //Tipando o knex
 declare module 'knex/types/tables' {
@@ -24,5 +27,7 @@ declare module 'knex/types/tables' {
         productDimensions: IProductDimensions
         productImages: IProductImages
         product: IProduct
+        sale: ISale
+        salesItems: ISalesItems
     }
 }

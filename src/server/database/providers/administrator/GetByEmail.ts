@@ -1,25 +1,15 @@
-import { ETableNames } from '../../ETablesNames'
 import { IAdministrator } from '../../models'
-import { Knex } from '../../knex'
+
+//Funções auxiliares
+import { AdministratorUtil } from './util'
 
 export const getByEmail = async (email: string): Promise<IAdministrator | Error> => {
+
     try {
-        const result = await Knex(ETableNames.administrator).select('*').where('email', '=', email).first()
+        const admnistrator = await AdministratorUtil.getAdministratorByEmail(email)
 
-        if (result) {
-            //Buscando as permissões do usuário
-            const permissions = await Knex(ETableNames.administratorRoleAccess).select('role_access_id').where('administrator_id', result.id)
-
-            const formattedResult = {
-                id: result.id,
-                status: result.status,
-                name: result.name,
-                email: result.email,
-                password: result.password,
-                permissions: permissions.map((permission) => permission.role_access_id)
-            }
-
-            return formattedResult
+        if (admnistrator) {
+            return await AdministratorUtil.formatResultByIdForResponse(admnistrator as IAdministrator)
         }
 
         return new Error('Registro não encontrado!')
@@ -27,4 +17,5 @@ export const getByEmail = async (email: string): Promise<IAdministrator | Error>
         console.log(error)
         return new Error('Registro não encontrado!')
     }
+
 }

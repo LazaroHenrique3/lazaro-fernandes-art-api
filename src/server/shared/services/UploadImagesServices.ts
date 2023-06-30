@@ -10,7 +10,7 @@ const handleFileImage = (multer({
         if (extImage) {
             return cb(null, true)
         }
-        
+
         return cb(null, false)
     }
 }))
@@ -33,13 +33,20 @@ const uploadImage = async (image: any, typeImageDir: 'customers' | 'products'): 
     }
 }
 
-const removeImage = (image: string | null, image_src: string | null) => {
+const removeImage = (image: string | null, image_src: string | null): Promise<void | Error> => {
     if (image !== null && image_src !== null) {
-        fs.unlink(image_src, (err) => {
-            if (err) {
-                console.error('Erro ao remover a imagem:', err)
-            }
+        return new Promise((resolve, reject) => {
+            fs.unlink(image_src, (err) => {
+                if (err) {
+                    console.error('Erro ao remover a imagem:', err)
+                    reject(new Error('Erro ao remover a imagem'))
+                } else {
+                    resolve()
+                }
+            })
         })
+    } else {
+        return Promise.resolve()
     }
 }
 

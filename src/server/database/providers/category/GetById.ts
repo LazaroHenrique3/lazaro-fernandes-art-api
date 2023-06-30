@@ -1,12 +1,12 @@
 import { ICategory } from '../../models'
 
 //Funções auxiliares
-import { getCategoryById } from './util'
+import { CategoryUtil } from './util'
 
 export const getById = async (idCategory: number): Promise<ICategory | Error> => {
 
     try {
-        const result = await getCategoryById(idCategory)
+        const result = await CategoryUtil.getCategoryById(idCategory)
         
         if(result) return result
 

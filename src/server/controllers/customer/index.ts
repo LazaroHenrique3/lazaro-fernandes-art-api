@@ -6,6 +6,8 @@ import * as updateById from './UpdateById'
 import * as updateImageById from './UpdateImageById'
 import * as deleteById from './DeleteById' 
 import * as deleteImageById from './DeleteImageById' 
+import * as forgotPassword from './ForgotPassword'
+import * as redefinePassword from './RedefinePassword'
 
 
 export const CustomerController = {
@@ -16,5 +18,7 @@ export const CustomerController = {
     ...updateById,
     ...updateImageById,
     ...deleteById,
-    ...deleteImageById
+    ...deleteImageById,
+    ...forgotPassword,
+    ...redefinePassword
 }

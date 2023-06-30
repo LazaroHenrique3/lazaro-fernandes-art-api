@@ -1,20 +1,20 @@
 //Funções auxiliares
-import { checkValidTechniqueId, checkIfTechniqueIsInUse, deleteTechniqueFromDatabase } from './util'
+import { TechniqueUtil } from './util'
 
 export const deleteById = async (idTechnique: number): Promise<void | Error> => {
 
     try {
-        const existsTechnique = await checkValidTechniqueId(idTechnique)
+        const existsTechnique = await TechniqueUtil.checkValidTechniqueId(idTechnique)
         if (!existsTechnique) {
             return new Error('Id informado inválido!')
         }
 
-        const techniqueIsInUse = await checkIfTechniqueIsInUse(idTechnique)
+        const techniqueIsInUse = await TechniqueUtil.checkIfTechniqueIsInUse(idTechnique)
         if (techniqueIsInUse) {
             return new Error('Registro associado á produtos!')
         }
 
-        const result = await deleteTechniqueFromDatabase(idTechnique)
+        const result = await TechniqueUtil.deleteTechniqueFromDatabase(idTechnique)
 
         return (result > 0) ? void 0 : new Error('Erro ao apagar registro!')
 

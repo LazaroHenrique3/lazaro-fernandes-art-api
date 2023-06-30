@@ -1,19 +1,19 @@
 //Funções auxiliares
-import { checkValidDimensionId, checkIfDimensionIsInUse, deleteDimensionFromDatabase } from './util'
+import { DimensionUtil } from './util'
 
 export const deleteById = async (idDimension: number): Promise<void | Error> => {
     try {
-        const existsDimension = await checkValidDimensionId(idDimension)
+        const existsDimension = await DimensionUtil.checkValidDimensionId(idDimension)
         if (!existsDimension) {
             return new Error('Id informado inválido!')
         }
 
-        const dimensionIsInUse = await checkIfDimensionIsInUse(idDimension)
+        const dimensionIsInUse = await DimensionUtil.checkIfDimensionIsInUse(idDimension)
         if (dimensionIsInUse) {
             return new Error('Registro associado á produtos!')
         }
 
-        const result = await deleteDimensionFromDatabase(idDimension)
+        const result = await DimensionUtil.deleteDimensionFromDatabase(idDimension)
 
         return (result > 0) ? void 0 : new Error('Erro ao apagar registro!')
 

@@ -1,57 +1,47 @@
 import { PasswordCrypto } from '../../../shared/services'
-import { ETableNames } from '../../ETablesNames'
 import { IAdministrator } from '../../models'
 import { Knex } from '../../knex'
 
-export const updateById = async (id: number, administrator: Omit<IAdministrator, 'id'>): Promise<void | Error> => {
-    try {
-        //Verificando se já existe admnistrator com esse email
-        const existingAdministrator = await Knex(ETableNames.administrator).where('email', administrator.email).andWhereNot('id', id).first()
+//Funções auxiliares
+import { AdministratorUtil } from './util'
 
-        if (existingAdministrator) {
+export const updateById = async (idAdministrator: number, administrator: Omit<IAdministrator, 'id'>): Promise<void | Error> => {
+
+    try {
+        const existsAdministrator = await AdministratorUtil.checkValidAdministratorId(idAdministrator)
+        if (!existsAdministrator) {
+            return new Error('Id informado inválido!')
+        }
+
+        const existsEmail = await AdministratorUtil.checkValidEmail(administrator.email, 'update', idAdministrator)
+        if (existsEmail) {
             return new Error('Este email já esta cadastrado!')
         }
-        
-        const { permissions, ...updateAdministratorData } = administrator
 
-        //verificando se foi passado senha 
-        if (updateAdministratorData.password) {
-            updateAdministratorData.password = await PasswordCrypto.hashPassword(updateAdministratorData.password)
-        }
-
-        //Verificando se as permissões passadas são válidas
-        const [{ count }] = await Knex(ETableNames.accessRoles).whereIn('id', permissions).count<[{ count: number }]>('* as count')
-
-        if (count !== permissions.length) {
+        const validPermissions = await AdministratorUtil.checkValidPermissions(administrator.permissions.map(Number))
+        if (!validPermissions) {
             return new Error('Permissões inválidas!')
         }
+        
+        //verificando se foi passado senha 
+        if (administrator.password) {
+            administrator.password = await PasswordCrypto.hashPassword(administrator.password)
+        }
 
-        //Transaction, para garantir que tanto a inserção das permissions, quanto do adm foram bem sucedidas.
+        //Fluxo de atualização
         const result = await Knex.transaction(async (trx) => {
+            const { permissions, ...updateAdministratorData } = administrator
 
-            //Atualizando a tabela de administrator
-            await trx(ETableNames.administrator).update(updateAdministratorData).where('id', '=', id)
+            await AdministratorUtil.updateAdministratorInDatabase(idAdministrator, updateAdministratorData, trx)
+            await AdministratorUtil.deleteRelationOfAdministratorPermissionsInDatabase(idAdministrator, trx)
 
-            // Deletando as permissões existentes do administrador
-            await trx(ETableNames.administratorRoleAccess)
-                .where('administrator_id', id)
-                .del()
-
-            //Preparando o objeto de permissões
-            const permissionsData = permissions.map((permissionId) => ({
-                administrator_id: id,
-                role_access_id: permissionId
-            }))
-
-            //armazenando a relação de permissões no banco
-            await trx(ETableNames.administratorRoleAccess).insert(permissionsData)
+            await AdministratorUtil.insertAdministratorPermissionsInDatabase(idAdministrator, permissions.map(Number), trx)
 
             return true
         })
 
-        if (result === true) return
+        return (result) ? void 0 : new Error('Erro ao atualizar registro!')
 
-        return new Error('Erro ao atualizar registro!')
     } catch (error) {
         console.log(error)
         return new Error('Erro ao atualizar registro!')

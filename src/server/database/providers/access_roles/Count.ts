@@ -1,12 +1,10 @@
-import { ETableNames } from '../../ETablesNames'
-import { Knex } from '../../knex'
+//Funções auxiliares
+import { AccessRolesUtil } from './util'
 
 export const count = async (filter = ''): Promise<number | Error> => {
     try {
-        const [{count}] = await Knex(ETableNames.accessRoles)
-            .where('name', 'like', `%${filter}%`)
-            .count<[{count: number}]>('* as count')
-        
+        const count = await AccessRolesUtil.getTotalOfRegisters(filter)
+
         if(Number.isInteger(Number(count))) return Number(count)
 
         return new Error('Erro ao consultar a quantidade total de registros!')

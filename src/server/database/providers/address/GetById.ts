@@ -1,10 +1,11 @@
-import { ETableNames } from '../../ETablesNames'
 import { IAddress } from '../../models'
-import { Knex } from '../../knex'
 
-export const getById = async (id: number, idCustomer: number): Promise<IAddress | Error> => {
+//Funções auxiliares
+import { AddressUtil } from './util'
+
+export const getById = async (idAdress: number, idCustomer: number): Promise<IAddress | Error> => {
     try {
-        const result = await Knex(ETableNames.address).select('*').where('id', '=', id).andWhere('customer_id', '=', idCustomer).first()
+        const result = await AddressUtil.getAddressById(idAdress, idCustomer)
 
         if(result) return result
 

@@ -1,14 +1,11 @@
-import { ETableNames } from '../../ETablesNames'
-import { Knex } from '../../knex'
+//Funções auxiliares
+import { AddressUtil } from './util'
 
-export const count = async (filter = '', id: number): Promise<number | Error> => {
+export const count = async (filter = '', idAdress: number): Promise<number | Error> => {
     try {
-        const [{ count }] = await Knex(ETableNames.address)
-            .where('id', id)
-            .orWhere('street', 'like', `%${filter}%`)
-            .count<[{ count: number }]>('* as count')
+        const count = await AddressUtil.getTotalOfRegisters(filter, idAdress)
 
-        if (Number.isInteger(Number(count))) return Number(count)
+        if(Number.isInteger(Number(count))) return Number(count)
 
         return new Error('Erro ao consultar a quantidade total de registros!')
     } catch (error) {

@@ -1,43 +1,45 @@
-import { ETableNames } from '../../ETablesNames'
 import { Knex } from '../../knex'
 
-import path from 'path'
+//Funções auxiliares
+import { CustomerUtil } from './util'
 
-import { UploadImages } from '../../../shared/services/UploadImagesServices'
-
-
-export const deleteImageById = async (id: number): Promise<void | Error> => {
+export const deleteImageById = async (idCustomer: number): Promise<void | Error> => {
     try {
+        //Verificando se o id informado é valido
+        const existsCustomer = await CustomerUtil.checkValidCustomerId(idCustomer)
+        if (!existsCustomer) {
+            return new Error('Id informado inválido!')
+        }
+
         const result = await Knex.transaction(async (trx) => {
-            // Verificando se existe imagem associada ao cliente, e se sim qual o nome dela para a exclusão
-            const customer = await trx(ETableNames.customer).select('image').where('id', '=', id).first()
+            let thereWasAnError = false
 
-            let image: any = null
+            //Garantindo que tem imagem a ser excluída, uma vez que ela é opcional
+            const customerImage = await CustomerUtil.checkAndReturnNameOfCustomerImage(idCustomer, trx)
 
-            if (customer && 'image' in customer) {
-                image = customer.image
+            const isUpdated = await CustomerUtil.changingUserImageToNull(idCustomer, trx)
+
+            //Exluindo a imagem, caso exista
+            if (customerImage !== null && customerImage !== undefined && isUpdated > 0) {
+                const result = await CustomerUtil.deleteCustomerImageFromDirectory(customerImage)
+
+                thereWasAnError = (result instanceof Error) ? true : false
             }
 
-            if (image !== null) {
-
-                //setando para null
-                const isUpdated = await trx(ETableNames.customer).update({ image: null }).where('id', '=', id)
-
-                if (isUpdated > 0) {
-                    //Exluindo a imagem nesse momento pois caso de erro será feito o rollback
-                    const destinationPath = path.resolve(__dirname, `../../../images/customers/${image}`)
-
-                    UploadImages.removeImage(image, destinationPath)
-                }
+            // Garantindo que tanto a ação no banco quanto a ação do diretório foram bem sucedidas
+            // Caso tenha acontecido algum erro será feito o rollback do banco
+            if (!thereWasAnError) {
+                return true
+            } else {
+                throw new Error('Erro ao apagar registro!')
             }
-            return true
+
         })
 
-        if (result) return
-
-        return new Error('Erro ao apagar Imagem!')
+        return (result) ? void 0 : new Error('Erro ao apagar Imagem!')
     } catch (error) {
         console.log(error)
         return new Error('Erro ao apagar Imagem!')
     }
 }
+

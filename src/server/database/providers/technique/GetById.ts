@@ -1,12 +1,12 @@
 import { ITechnique } from '../../models'
 
 //Funções auxiliares
-import { getTechniqueById } from './util'
+import { TechniqueUtil } from './util'
 
 export const getById = async (idTechnique: number): Promise<ITechnique | Error> => {
 
     try {
-        const result = await getTechniqueById(idTechnique)
+        const result = await TechniqueUtil.getTechniqueById(idTechnique)
         
         if(result) return result
 

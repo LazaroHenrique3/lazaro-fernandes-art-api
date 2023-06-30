@@ -1,39 +1,49 @@
-import { ETableNames } from '../../ETablesNames'
 import { Knex } from '../../knex'
 
-import path from 'path'
+//Funções auxiliares
+import { CustomerUtil } from './util'
 
-import { UploadImages } from '../../../shared/services/UploadImagesServices'
+export const deleteById = async (idCustomer: number): Promise<void | Error> => {
 
-export const deleteById = async (id: number): Promise<void | Error> => {
     try {
+        //Verificando se o id informado é valido
+        const existsCustomer = await CustomerUtil.checkValidCustomerId(idCustomer)
+        if (!existsCustomer) {
+            return new Error('Id informado inválido!')
+        }
+
         const result = await Knex.transaction(async (trx) => {
-            // Verificando se existe imagem associada ao cliente, e se sim qual o nome dela para a exclusão
-            const customer = await trx(ETableNames.customer).select('image').where('id', '=', id).first()
+            let thereWasAnError = false
 
-            let image: any = null 
+            const customerImage = await CustomerUtil.checkAndReturnNameOfCustomerImage(idCustomer, trx)
 
-            if (customer && 'image' in customer) {
-                image = customer.image
+            const isDeleted = await CustomerUtil.deleteCustomerInDatabase(idCustomer, trx)
+
+            // Excluindo a imagem, caso exista
+            if (customerImage !== null && customerImage !== undefined && isDeleted > 0) {
+                const result = await CustomerUtil.deleteCustomerImageFromDirectory(customerImage)
+
+                thereWasAnError = (result instanceof Error) ? true : false
             }
 
-            const isDeleted = await trx(ETableNames.customer).where('id', '=', id).del()
-
-            //Exluindo a imagem nesse momento pois caso de erro será feito o rollback
-            if (image !== null && isDeleted > 0) {
-                const destinationPath = path.resolve(__dirname, `../../../images/customers/${image}`)
-
-                UploadImages.removeImage(image, destinationPath)
+            // Garantindo que tanto a ação no banco quanto a ação do diretório foram bem sucedidas
+            // Caso tenha acontecido algum erro será feito o rollback do banco
+            if (!thereWasAnError) {
+                return true
+            } else {
+                throw new Error('Erro ao apagar registro!')
             }
-
-            return true
         })
 
-        if (result) return
-
-        return new Error('Erro ao apagar registro!')
+        return (result) ? void 0 : new Error('Erro ao apagar registro!')
     } catch (error) {
         console.log(error)
         return new Error('Erro ao apagar registro!')
     }
+
 }
+
+
+
+
+

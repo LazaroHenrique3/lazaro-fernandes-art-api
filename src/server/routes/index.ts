@@ -86,6 +86,9 @@ router.post('/adminsignin', AdministratorController.signInValidation, Administra
 //--Customer
 router.post('/customersignin', CustomerController.signInValidation, CustomerController.signIn)
 router.post('/customer', UploadImages.handleFileImage.single('image'), CustomerController.createValidation, CustomerController.create)
+router.post('/customer/forgotpassword', CustomerController.forgotPasswordValidation, CustomerController.forgotPassword)
+router.post('/customer/redefinepassword', CustomerController.redefinePasswordValidation, CustomerController.redefinePassword)
+
 
 
 export { router }

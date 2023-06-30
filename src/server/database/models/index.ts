@@ -10,4 +10,6 @@ export * from './Administrator'
 export * from './Customer'
 export * from './Address'
 export * from './Image'
+export * from './Sale'
+export * from './SalesItems'
 
