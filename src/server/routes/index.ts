@@ -89,6 +89,4 @@ router.post('/customer', UploadImages.handleFileImage.single('image'), CustomerC
 router.post('/customer/forgotpassword', CustomerController.forgotPasswordValidation, CustomerController.forgotPassword)
 router.post('/customer/redefinepassword', CustomerController.redefinePasswordValidation, CustomerController.redefinePassword)
 
-
-
 export { router }

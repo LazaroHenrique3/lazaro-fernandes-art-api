@@ -12,7 +12,7 @@ export const updateById = async (idDimension: number, dimension: Omit<IDimension
 
         const existsDimensionName = await DimensionUtil.checkValidDimensionName(dimension.dimension, idDimension)
         if (existsDimensionName) {
-            return new Error('Já existe uma técnica com esse nome!')
+            return new Error('Já existe uma dimensão com esse nome!')
         }
 
         const result = await DimensionUtil.updateDimensionInDatabase(idDimension, dimension)

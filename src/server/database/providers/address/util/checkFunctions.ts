@@ -10,3 +10,13 @@ export const checkValidAddressId = async (idAddress: number): Promise<boolean> =
 
     return categoryResult !== undefined
 }
+
+export const checkValidCustomerId = async (idCustomer: number): Promise<boolean> => {
+
+    const productResult = await Knex(ETableNames.customer)
+        .select('id')
+        .where('id', '=', idCustomer)
+        .first()
+
+    return productResult !== undefined
+}

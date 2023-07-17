@@ -11,17 +11,17 @@ export const updateById = async (idCustomer: number, customer: Omit<ICustomerUpd
             return new Error('Id informado inválido!')
         }
 
-        const existsEmail = await CustomerUtil.checkValidEmail(customer.email, 'insert', idCustomer)
+        const existsEmail = await CustomerUtil.checkValidEmail(customer.email, 'update', idCustomer)
         if (existsEmail) {
             return new Error('Este email já esta cadastrado!')
         }
 
-        const existsCpf = await CustomerUtil.checkValidCpf(customer.cpf, 'insert', idCustomer)
+        const existsCpf = await CustomerUtil.checkValidCpf(customer.cpf, 'update', idCustomer)
         if (existsCpf) {
             return new Error('Este CPF já esta cadastrado!')
         }
 
-        const existsCellPhone = await CustomerUtil.checkValidCellphone(customer.cell_phone, 'insert', idCustomer)
+        const existsCellPhone = await CustomerUtil.checkValidCellphone(customer.cell_phone, 'update', idCustomer)
         if (existsCellPhone) {
             return new Error('Este telefone já esta cadastrado!')
         }

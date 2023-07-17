@@ -42,7 +42,7 @@ export const checkValidCpf = async (cpf: string, type: 'insert' | 'update', idCu
             .where('cpf', cpf)
             .first()
     } else if (type === 'update') {
-        customerResult = Knex(ETableNames.customer)
+        customerResult = await Knex(ETableNames.customer)
             .where('cpf', cpf)
             .andWhereNot('id', idCustomer)
             .first()

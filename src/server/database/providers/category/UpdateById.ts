@@ -13,7 +13,7 @@ export const updateById = async (idCategory: number, category: Omit<ICategory, '
 
         const existsCategoryName = await CategoryUtil.checkValidCategoryName(category.name, idCategory)
         if (existsCategoryName) {
-            return new Error('Já existe uma técnica com esse nome!')
+            return new Error('Já existe uma categoria com esse nome!')
         }
 
         const result = await CategoryUtil.updateCategoryInDatabase(idCategory, category)

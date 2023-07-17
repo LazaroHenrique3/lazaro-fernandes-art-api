@@ -55,6 +55,8 @@ export const signIn = async (req: Request<{}, {}, IBodyProps>, res: Response) =>
 
         return res.status(StatusCodes.OK).json({ 
             name: administrator.name,
+            typeUser: 'admin',
+            permissions: administrator.permissions,
             accessToken: accessToken
         })
     }
