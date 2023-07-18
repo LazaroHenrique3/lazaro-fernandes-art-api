@@ -16,12 +16,12 @@ export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
         const columnsTitle: TableCell[] = [
             { text: 'ID', style: 'columnsTitle' },
             { text: 'Título', style: 'columnsTitle' },
-            { text: 'TipoProd.', style: 'columnsTitle' },
+            { text: 'StatusV.', style: 'columnsTitle' },
             { text: 'Status', style: 'columnsTitle' },
             { text: 'Tipo', style: 'columnsTitle' },
             { text: 'Categoria', style: 'columnsTitle' },
             { text: 'Técnica', style: 'columnsTitle' },
-            { text: 'Quant', style: 'columnsTitle' },
+            { text: 'Qtd.', style: 'columnsTitle' },
             { text: 'Preço', style: 'columnsTitle' }
         ]
 
@@ -39,7 +39,7 @@ export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
             rows.push(result.category_id)
             rows.push(result.technique_id)
             rows.push(result.quantity ?? '')
-            rows.push(formattedPrice(result.price ?? ''))
+            rows.push(ProductUtil.formattedPrice(result.price ?? ''))
 
             body.push(rows)
         }
@@ -55,14 +55,6 @@ export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
 
 }
 
-const formattedPrice = (value: number | string) => {
 
-    if(typeof value === 'string') return ''
-    
-    return value.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    })
-}
 
 

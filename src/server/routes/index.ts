@@ -62,7 +62,7 @@ router.put('/product/updateimage/:id/:idProduct', ensureAuthenticated, ensureAcc
 router.put('/product/updatemainimage/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2]), UploadImages.handleFileImage.single('image'), ProductController.updateMainImageByIdValidation, ProductController.updateMainImageById)
 router.delete('/product/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2]), ProductController.deleteByIdValidation, ProductController.deleteById)
 router.delete('/product/deleteimage/:id/:idProduct', ensureAuthenticated, ensureAccess(['admin'], [1, 2]), ProductController.deleteImageByIdValidation, ProductController.deleteImageById)
-router.get('/product/report/generate', ProductController.reportValidation,  ProductController.report)
+router.get('/product/report/generate', ensureAuthenticated, ensureAccess(['admin'], [1, 2]), ProductController.reportValidation,  ProductController.report)
 
 //--Address
 router.get('/address/:id', ensureAuthenticated, ensureAccess(['customer']), AddressController.getAllValidation, AddressController.getAll)
