@@ -1,0 +1,68 @@
+import { TableCell } from 'pdfmake/interfaces'
+import { generateReport } from '../../../shared/services'
+
+//Funções auxiliares
+import { ProductUtil } from './util'
+
+export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
+
+    try {
+        const resultSearchReport = await ProductUtil.getAllProductsForReport(filter)
+
+        const body = []
+
+        const columnsBody: TableCell[] = []
+
+        const columnsTitle: TableCell[] = [
+            { text: 'ID', style: 'columnsTitle' },
+            { text: 'Título', style: 'columnsTitle' },
+            { text: 'TipoProd.', style: 'columnsTitle' },
+            { text: 'Status', style: 'columnsTitle' },
+            { text: 'Tipo', style: 'columnsTitle' },
+            { text: 'Categoria', style: 'columnsTitle' },
+            { text: 'Técnica', style: 'columnsTitle' },
+            { text: 'Quant', style: 'columnsTitle' },
+            { text: 'Preço', style: 'columnsTitle' }
+        ]
+
+        columnsTitle.forEach(column => columnsBody.push(column))
+        body.push(columnsBody)
+
+        for await (const result of resultSearchReport) {
+            const rows = []
+
+            rows.push(result.id)
+            rows.push(result.title)
+            rows.push(result.status_of_sale)
+            rows.push(result.status)
+            rows.push(result.type)
+            rows.push(result.category_id)
+            rows.push(result.technique_id)
+            rows.push(result.quantity ?? '')
+            rows.push(formattedPrice(result.price ?? ''))
+
+            body.push(rows)
+        }
+
+        const widths = [20, 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto']
+
+        const generatePdf = await generateReport('Produtos', widths, body)
+        return generatePdf
+    } catch (error) {
+        console.log(error)
+        return new Error('Erro ao gerar relatório!')
+    }
+
+}
+
+const formattedPrice = (value: number | string) => {
+
+    if(typeof value === 'string') return ''
+    
+    return value.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    })
+}
+
+

@@ -20,6 +20,14 @@ export const getDimensionsWithFilter = async (filter: string, page: number, limi
 
 }
 
+export const getAllDimensionsForReport = async (filter: string): Promise<IDimension[]> => {
+
+    return Knex(ETableNames.dimension)
+        .select('*')
+        .where('dimension', 'like', `%${filter}%`)
+
+}
+
 export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.dimension)

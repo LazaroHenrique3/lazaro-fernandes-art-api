@@ -20,6 +20,14 @@ export const getCategoriesWithFilter = async (filter: string, page: number, limi
 
 }
 
+export const getAllCategoriesForReport = async (filter: string): Promise<ICategory[]> => {
+
+    return Knex(ETableNames.category)
+        .select('*')
+        .where('name', 'like', `%${filter}%`)
+
+}
+
 export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
     const [{ count }] = await Knex(ETableNames.category)
         .where('name', 'like', `%${filter}%`)

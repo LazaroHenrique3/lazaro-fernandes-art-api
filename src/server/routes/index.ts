@@ -36,6 +36,7 @@ router.get('/category/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 
 router.post('/category', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), CategoryController.createValidation, CategoryController.create)
 router.put('/category/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), CategoryController.updateByIdValidation, CategoryController.updateById)
 router.delete('/category/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), CategoryController.deleteByIdValidation, CategoryController.deleteById)
+router.get('/category/report/generate', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), CategoryController.reportValidation, CategoryController.report)
 
 //--technique
 router.get('/technique', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), TechniqueController.getAllValidation, TechniqueController.getAll)
@@ -43,6 +44,7 @@ router.get('/technique/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2,
 router.post('/technique', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), TechniqueController.createValidation, TechniqueController.create)
 router.put('/technique/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), TechniqueController.updateByIdValidation, TechniqueController.updateById)
 router.delete('/technique/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), TechniqueController.deleteByIdValidation, TechniqueController.deleteById)
+router.get('/technique/report/generate', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), TechniqueController.reportValidation, TechniqueController.report)
 
 //--dimension
 router.get('/dimension', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.getAllValidation, DimensionController.getAll)
@@ -50,6 +52,7 @@ router.get('/dimension/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2,
 router.post('/dimension', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.createValidation, DimensionController.create)
 router.put('/dimension/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.updateByIdValidation, DimensionController.updateById)
 router.delete('/dimension/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.deleteByIdValidation, DimensionController.deleteById)
+router.get('/dimension/report/generate', ensureAuthenticated, ensureAccess(['admin'], [1, 2, 3, 4, 5]), DimensionController.reportValidation,  DimensionController.report)
 
 //--product
 router.post('/product', UploadImages.handleFileImage.fields([{ name: 'main_image', maxCount: 1 }, { name: 'product_images', maxCount: 4 }]), ProductController.createValidation, ProductController.create)
@@ -59,6 +62,7 @@ router.put('/product/updateimage/:id/:idProduct', ensureAuthenticated, ensureAcc
 router.put('/product/updatemainimage/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2]), UploadImages.handleFileImage.single('image'), ProductController.updateMainImageByIdValidation, ProductController.updateMainImageById)
 router.delete('/product/:id', ensureAuthenticated, ensureAccess(['admin'], [1, 2]), ProductController.deleteByIdValidation, ProductController.deleteById)
 router.delete('/product/deleteimage/:id/:idProduct', ensureAuthenticated, ensureAccess(['admin'], [1, 2]), ProductController.deleteImageByIdValidation, ProductController.deleteImageById)
+router.get('/product/report/generate', ProductController.reportValidation,  ProductController.report)
 
 //--Address
 router.get('/address/:id', ensureAuthenticated, ensureAccess(['customer']), AddressController.getAllValidation, AddressController.getAll)

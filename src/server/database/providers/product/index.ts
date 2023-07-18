@@ -1,6 +1,7 @@
 import * as count from './Count'
 import * as create from './Create'
 import * as getAll from './GetAll'
+import * as generatePDF from './GeneratePDF'
 import * as getById from './GetById'
 import * as updateById from './UpdateById'
 import * as insertImage from './InsertImage'
@@ -13,6 +14,7 @@ export const ProductProvider = {
     ...count,
     ...create,
     ...getAll,
+    ...generatePDF,
     ...getById,
     ...updateById,
     ...insertImage,

@@ -7,6 +7,7 @@ import * as updateImageById from './UpdateImageById'
 import * as updateMainImageById from './UpdateMainImageById'
 import * as deleteById from './DeleteById' 
 import * as deleteImageById from './DeleteImageById' 
+import * as report from './Report'
 
 
 export const ProductController = {
@@ -18,5 +19,6 @@ export const ProductController = {
     ...updateImageById,
     ...updateMainImageById,
     ...deleteById,
-    ...deleteImageById
+    ...deleteImageById,
+    ...report
 }

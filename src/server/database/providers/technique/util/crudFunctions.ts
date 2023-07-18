@@ -20,6 +20,14 @@ export const getTechniquesWithFilter = async (filter: string, page: number, limi
 
 }
 
+export const getAllTechniquesForReport = async (filter: string): Promise<ITechnique[]> => {
+
+    return Knex(ETableNames.technique)
+        .select('*')
+        .where('name', 'like', `%${filter}%`)
+
+}
+
 export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.technique)
