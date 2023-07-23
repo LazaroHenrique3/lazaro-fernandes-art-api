@@ -7,7 +7,7 @@ import { DimensionProvider } from '../../database/providers/dimension'
 
 //Para tipar o body do request
 interface IQueryProps {
-    id?: number,
+    id?: string,
     page?: number,
     limit?: number,
     filter?: string
@@ -16,7 +16,7 @@ interface IQueryProps {
 //Midleware
 export const getAllValidation = validation((getSchema) => ({
     query: getSchema<IQueryProps>(yup.object().shape({
-        id: yup.number().integer().optional().default(0),
+        id: yup.string().optional(),
         page: yup.number().optional().moreThan(0),
         limit: yup.number().optional().moreThan(0),
         filter: yup.string().optional()
@@ -24,7 +24,9 @@ export const getAllValidation = validation((getSchema) => ({
 }))
 
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-    const result = await DimensionProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id))
+    const id = (req.query.id) ? formatIds(req.query.id)  : [0]
+
+    const result = await DimensionProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', id)
     const count = await DimensionProvider.count(req.query.filter)
 
     if (result instanceof Error) {
@@ -41,4 +43,15 @@ export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Respons
     res.setHeader('x-total-count', count)
 
     return res.status(StatusCodes.OK).json(result)
+}
+
+const formatIds = (ids: string): number[] => {
+    if (ids) {
+        const sanitizedInput = ids.replace(/\s/g, '')
+        const arrayOfNumbers = sanitizedInput.split(',').map((numStr) => parseInt(numStr, 10))
+        return arrayOfNumbers
+    } else {
+        return [1]
+    }
+
 }
