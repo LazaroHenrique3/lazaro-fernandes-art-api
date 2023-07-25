@@ -24,8 +24,11 @@ export const getTotalOfRegisters = async (filter: string): Promise<number | unde
 export const getProductsWithFilter = async (filter: string, page: number, limit: number): Promise<IProduct[]> => {
 
     return Knex(ETableNames.product)
-        .select('*')
-        .where('title', 'like', `%${filter}%`)
+        .select('product.*', 'category.id as category_id', 'category.name as category_name', 'technique.id as technique_id', 'technique.name as technique_name')
+        .from(ETableNames.product)
+        .leftJoin(ETableNames.category, 'product.category_id', 'category.id')
+        .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
+        .where('product.title', 'like', `%${filter}%`)
         .offset((page - 1) * limit)
         .limit(limit)
 
