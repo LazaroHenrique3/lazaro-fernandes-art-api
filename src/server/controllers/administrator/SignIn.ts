@@ -44,7 +44,7 @@ export const signIn = async (req: Request<{}, {}, IBodyProps>, res: Response) =>
             }
         })
     } else {
-        const accessToken = JWTServices.sign({uid: administrator.id, typeUser: 'admin'})
+        const accessToken = JWTServices.sign({uid: administrator.id, typeUser: 'admin', accessLevel: administrator.admin_access_level})
         if(accessToken === 'JWT_SECRET_NOT_FOUND') {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 errors: {
@@ -55,7 +55,9 @@ export const signIn = async (req: Request<{}, {}, IBodyProps>, res: Response) =>
 
         return res.status(StatusCodes.OK).json({ 
             name: administrator.name,
+            idUser: administrator.id,
             typeUser: 'admin',
+            accessLevel: administrator.admin_access_level,
             accessToken: accessToken
         })
     }

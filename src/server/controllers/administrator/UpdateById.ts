@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import * as yup from 'yup'
 
 import { validation } from '../../shared/middleware'
-import { IAdministrator } from '../../database/models'
+import { IAdministratorUpdate } from '../../database/models'
 import { AdministratorProvider } from '../../database/providers/administrator'
 
 
@@ -11,15 +11,26 @@ interface IParamProps {
     id?: number;
 }
 
-interface IBodyProps extends Omit<IAdministrator, 'id' | 'admin_access_level'> {}
+interface IBodyProps extends Omit<IAdministratorUpdate, 'id' | 'admin_access_level'> { }
 
 //Midleware
 export const updateByIdValidation = validation(getSchema => ({
     body: getSchema<IBodyProps>(yup.object().shape({
-        status: yup.string().required().max(20),
+        status: yup.string().oneOf(['Ativo', 'Inativo']).default('Ativo').required(),
         name: yup.string().required().min(3).max(100),
         email: yup.string().required().email().min(5).max(100),
-        password: yup.string().required().min(6).max(256).default('nopassword'),
+        password: yup.string().optional().min(6),
+        confirmPassword: yup.string().test({
+            name: 'password-match',
+            test: function (value) {
+                const { password } = this.parent
+                if (password) {
+                    return value === password
+                }
+                return true
+            },
+            message: 'As senhas devem ser iguais',
+        }).default('nopassword'),
     })),
     params: getSchema<IParamProps>(yup.object().shape({
         id: yup.number().integer().required().moreThan(0),
@@ -35,8 +46,8 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
         })
     }
 
-    const result = await AdministratorProvider.updateById(req.params.id, {...req.body, admin_access_level: 'Admin'})
-    if(result instanceof Error) {
+    const result = await AdministratorProvider.updateById(req.params.id, req.body)
+    if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {
                 default: result.message

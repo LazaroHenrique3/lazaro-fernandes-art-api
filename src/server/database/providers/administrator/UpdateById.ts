@@ -1,11 +1,11 @@
 import { PasswordCrypto } from '../../../shared/services'
-import { IAdministrator } from '../../models'
+import { IAdministratorUpdate } from '../../models'
 import { Knex } from '../../knex'
 
 //Funções auxiliares
 import { AdministratorUtil } from './util'
 
-export const updateById = async (idAdministrator: number, administrator: Omit<IAdministrator, 'id'>): Promise<void | Error> => {
+export const updateById = async (idAdministrator: number, administrator: Omit<IAdministratorUpdate, 'id' | 'admin_access_level'>): Promise<void | Error> => {
 
     try {
         const existsAdministrator = await AdministratorUtil.checkValidAdministratorId(idAdministrator)
@@ -17,10 +17,13 @@ export const updateById = async (idAdministrator: number, administrator: Omit<IA
         if (existsEmail) {
             return new Error('Este email já esta cadastrado!')
         }
-        
-        //verificando se foi passado senha 
-        if (administrator.password) {
-            administrator.password = await PasswordCrypto.hashPassword(administrator.password)
+
+        //Verificando se foi passado a senha para atualização também
+        if (administrator.password && administrator.confirmPassword) {
+            //criptografando a senha
+            const hashedPassword = await PasswordCrypto.hashPassword(administrator.password)
+            administrator.password = hashedPassword
+            delete administrator.confirmPassword
         }
 
         //Fluxo de atualização

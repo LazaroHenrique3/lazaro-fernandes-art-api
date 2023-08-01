@@ -3,7 +3,7 @@ import * as jwt from 'jsonwebtoken'
 interface IJwtData {
     uid: number
     typeUser: string
-    permissions?: number[]
+    accessLevel: string
 }
 
 const sign = (data: IJwtData): string | 'JWT_SECRET_NOT_FOUND' => {

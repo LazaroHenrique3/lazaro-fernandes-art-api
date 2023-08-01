@@ -1,3 +1,6 @@
+import crypto from 'crypto'
+import { SendEmail } from '../../../shared/services'
+
 import { PasswordCrypto } from '../../../shared/services'
 import { Knex } from '../../knex'
 import { IAdministrator } from '../../models'
@@ -5,7 +8,7 @@ import { IAdministrator } from '../../models'
 //Funções auxiliares
 import { AdministratorUtil } from './util'
 
-export const create = async (administrator: Omit<IAdministrator, 'id'>): Promise<number | Error> => {
+export const create = async (administrator: Omit<IAdministrator, 'id' | 'password'>): Promise<number | Error> => {
 
     try {
 
@@ -14,12 +17,21 @@ export const create = async (administrator: Omit<IAdministrator, 'id'>): Promise
             return new Error('Este email já esta cadastrado!')
         }
 
-        //Criptografando a senha
-        const hashedPassword = await PasswordCrypto.hashPassword(administrator.password)
+        //Gerando um token numérico para ele
+        const token = crypto.randomBytes(6).toString('hex')
+        const sixCharacterToken = token.slice(6)
+        const tokenHashed = await PasswordCrypto.hashPassword(sixCharacterToken)
+
+        //enviando o email
+        try {
+            await SendEmail.newAdministradorPasswordEmail(administrator.email, sixCharacterToken)
+        } catch (error) {
+            return new Error('Erro inesperado, tente novamente!')
+        }
 
         //Fluxo de inserção
         const result = await Knex.transaction(async (trx) => {
-            const idOfNewAdministrator = await AdministratorUtil.insertAdministratorInDatabase({ ...administrator, password: hashedPassword }, trx)
+            const idOfNewAdministrator = await AdministratorUtil.insertAdministratorInDatabase({ ...administrator, password: tokenHashed }, trx)
 
             return idOfNewAdministrator
         })

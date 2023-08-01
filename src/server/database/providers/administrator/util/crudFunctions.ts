@@ -1,5 +1,5 @@
 import { ETableNames } from '../../../ETablesNames'
-import { IAdministrator } from '../../../models'
+import { IAdministrator, IAdministratorUpdate } from '../../../models'
 import { Knex } from '../../../knex'
 import { Knex as knex } from 'knex'
 
@@ -34,6 +34,7 @@ export const getTotalOfRegisters = async (filter: string): Promise<number | unde
 
     const [{ count }] = await Knex(ETableNames.administrator)
         .where('name', 'like', `%${filter}%`)
+        .andWhere('admin_access_level', '<>', 'Root')
         .count<[{ count: number }]>('* as count')
 
     return count
@@ -47,7 +48,7 @@ export const insertAdministratorInDatabase = async (administrator: Omit<IAdminis
 
 }
 
-export const updateAdministratorInDatabase = async (idAdministrator: number, administratorData: Omit<IAdministrator, 'id'>, trx: knex.Transaction): Promise<void> => {
+export const updateAdministratorInDatabase = async (idAdministrator: number, administratorData: Omit<IAdministratorUpdate, 'id' | 'admin_access_level'>, trx: knex.Transaction): Promise<void> => {
 
     await trx(ETableNames.administrator).update(administratorData)
         .where('id', '=', idAdministrator)
