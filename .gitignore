@@ -3,5 +3,3 @@
 /coverage
 .env
 *.sqlite
-/src/server/images/customers/
-/src/server/images/products/
