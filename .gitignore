@@ -3,5 +3,5 @@
 /coverage
 .env
 *.sqlite
-/src/server/database/seeds/00001_insert_admin_test.ts
-/src/server/images
+/src/server/images/customers/*
+/src/server/images/products/*

@@ -5,7 +5,7 @@ import { Knex as knex } from 'knex'
 
 export const getAdministratorById = async (idAdministrator: number): Promise<Omit<IAdministrator, 'password'> | undefined> => {
 
-    return await Knex(ETableNames.administrator).select('id', 'status', 'name', 'email')
+    return await Knex(ETableNames.administrator).select('id', 'status', 'admin_access_level', 'name', 'email')
         .where('id', '=', idAdministrator)
         .first()
 
@@ -14,8 +14,9 @@ export const getAdministratorById = async (idAdministrator: number): Promise<Omi
 export const getAdministratorsWithFilter = async (filter: string, page: number, limit: number): Promise<Omit<IAdministrator, 'password'>[]> => {
 
     return Knex(ETableNames.administrator)
-        .select('id', 'status', 'name', 'email')
+        .select('id', 'status', 'admin_access_level', 'name', 'email')
         .where('name', 'like', `%${filter}%`)
+        .andWhere('admin_access_level', '<>', 'Root')
         .offset((page - 1) * limit)
         .limit(limit)
 

@@ -11,7 +11,7 @@ interface IParamProps {
     id?: number;
 }
 
-interface IBodyProps extends Omit<IAdministrator, 'id'> {}
+interface IBodyProps extends Omit<IAdministrator, 'id' | 'admin_access_level'> {}
 
 //Midleware
 export const updateByIdValidation = validation(getSchema => ({
@@ -35,7 +35,7 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
         })
     }
 
-    const result = await AdministratorProvider.updateById(req.params.id, req.body)
+    const result = await AdministratorProvider.updateById(req.params.id, {...req.body, admin_access_level: 'Admin'})
     if(result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

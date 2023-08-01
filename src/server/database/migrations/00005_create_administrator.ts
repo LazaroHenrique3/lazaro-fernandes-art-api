@@ -6,6 +6,7 @@ export async function up(knex: Knex) {
     return knex.schema.createTable(ETableNames.administrator, table => {
         table.bigIncrements('id').primary().index()
         table.string('status', 20).checkLength('<=', 20).notNullable().defaultTo('Ativo')
+        table.string('admin_access_level', 20).checkLength('<=', 20).notNullable().defaultTo('Admin')
         table.string('name', 100).checkLength('<=', 100).checkLength('>=', 3).index().notNullable()
         table.string('email', 100).checkLength('<=', 100).checkLength('>=', 5).notNullable().unique().index()
         table.string('password').checkLength('>=', 6).notNullable()

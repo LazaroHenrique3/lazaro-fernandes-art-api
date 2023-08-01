@@ -7,7 +7,7 @@ import { IAdministrator } from '../../database/models'
 import { AdministratorProvider } from '../../database/providers/administrator'
 
 //Para tipar o body do request
-interface IBodyProps extends Omit<IAdministrator, 'id'> { }
+interface IBodyProps extends Omit<IAdministrator, 'id' | 'admin_access_level'> { }
 
 //Midleware
 export const createValidation = validation((getSchema) => ({
@@ -20,7 +20,7 @@ export const createValidation = validation((getSchema) => ({
 }))
 
 export const create = async (req: Request<{}, {}, IBodyProps>, res: Response) => {
-    const result = await AdministratorProvider.create(req.body)
+    const result = await AdministratorProvider.create({...req.body, admin_access_level: 'Admin'})
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
