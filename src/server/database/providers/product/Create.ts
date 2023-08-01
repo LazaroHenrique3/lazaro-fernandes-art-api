@@ -6,12 +6,6 @@ import { ProductUtil } from './util'
 
 export const create = async (product: Omit<IProduct, 'id'>): Promise<number | Error> => {
     try {
-        //Verificando se as dimensões passadas são válidas
-        const validDimensions = await ProductUtil.checkValidDimensions(product.dimensions.map(Number))
-        if (!validDimensions) {
-            return new Error('Dimensões inválidas!')
-        }
-
         //Inserindo as imagens no diretório da aplicação, e pegando seus nome para inserir no banco
         let productFormatedAndWithNameOfImagesUploaded: Omit<IProduct, 'id'>
 
@@ -23,10 +17,9 @@ export const create = async (product: Omit<IProduct, 'id'>): Promise<number | Er
 
         //Fluxo de inserção
         const result = await Knex.transaction(async (trx) => {
-            const { dimensions, product_images, ...insertProductData } = productFormatedAndWithNameOfImagesUploaded
+            const { product_images, ...insertProductData } = productFormatedAndWithNameOfImagesUploaded
 
             const idOfNewProduct = await ProductUtil.insertProductInDatabase(insertProductData, trx)
-            await ProductUtil.insertProductDimensionsInDatabase(idOfNewProduct, dimensions.map(Number), trx)
             await ProductUtil.insertProductImagesRelationInDatabase(idOfNewProduct, product_images, trx)
 
             return idOfNewProduct

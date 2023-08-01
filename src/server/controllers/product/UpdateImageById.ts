@@ -79,5 +79,5 @@ export const updateImageById = async (req: Request<IParamProps>, res: Response) 
         })
     }
 
-    return res.status(StatusCodes.NO_CONTENT).send(result)
+    return res.status(StatusCodes.OK).send(result)
 }

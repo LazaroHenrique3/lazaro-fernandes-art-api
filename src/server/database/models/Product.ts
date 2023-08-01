@@ -1,18 +1,16 @@
 export interface IProduct {
     id: number
     status: 'Ativo' | 'Vendido' | 'Inativo'
-    status_of_sale: 'Venda' | 'Galeria'
     title: string
-    type: 'Original' | 'Print'
     orientation: 'Retrato' | 'Paisagem'
-    quantity?: number
+    quantity: number
     production_date: Date | string
     description?: string
-    weight?: number
-    price?: number
+    weight: number
+    price: number
     main_image: any
-    dimensions: string[] | number[]
     product_images: any[]
+    dimension_id: number
     technique_id: number
     category_id: number
 }
@@ -20,16 +18,19 @@ export interface IProduct {
 export interface IProductUpdate {
     id: number
     status: 'Ativo' | 'Vendido' | 'Inativo'
-    status_of_sale: 'Venda' | 'Galeria'
     title: string
-    type: 'Original' | 'Print'
     orientation: 'Retrato' | 'Paisagem'
-    quantity?: number
+    quantity: number
     production_date: Date | string
     description?: string
-    weight?: number
-    price?: number
-    dimensions: string[] | number[]
+    weight: number
+    price: number
+    dimension_id: number
     technique_id: number
     category_id: number
+}
+
+export interface IImageProductList {
+    id: number
+    name_image: string
 }

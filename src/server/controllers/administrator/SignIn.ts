@@ -9,7 +9,7 @@ import { PasswordCrypto } from '../../shared/services'
 import { JWTServices } from '../../shared/services/JWTServices'
 
 //Para tipar o body do request
-interface IBodyProps extends Omit<IAdministrator, 'id' | 'status' | 'name' | 'permissions'> { }
+interface IBodyProps extends Omit<IAdministrator, 'id' | 'status' | 'name'> { }
 
 //Midleware
 export const signInValidation = validation((getSchema) => ({
@@ -44,7 +44,7 @@ export const signIn = async (req: Request<{}, {}, IBodyProps>, res: Response) =>
             }
         })
     } else {
-        const accessToken = JWTServices.sign({uid: administrator.id, typeUser: 'admin', permissions: administrator.permissions})
+        const accessToken = JWTServices.sign({uid: administrator.id, typeUser: 'admin'})
         if(accessToken === 'JWT_SECRET_NOT_FOUND') {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 errors: {
@@ -56,7 +56,6 @@ export const signIn = async (req: Request<{}, {}, IBodyProps>, res: Response) =>
         return res.status(StatusCodes.OK).json({ 
             name: administrator.name,
             typeUser: 'admin',
-            permissions: administrator.permissions,
             accessToken: accessToken
         })
     }

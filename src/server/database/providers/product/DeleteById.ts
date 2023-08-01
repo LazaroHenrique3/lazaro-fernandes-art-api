@@ -15,7 +15,6 @@ export const deleteById = async (idProduct: number): Promise<void | Error> => {
         const result = await Knex.transaction(async (trx) => {
             const { main_image, product_images } = await ProductUtil.deleteAndGetAllProductImagesInDatabase(idProduct, trx)
 
-            await ProductUtil.deleteRelationOfProductDimensionsInDatabase(idProduct, trx)
             await ProductUtil.deleteRelationOfProductImagesInDatabase(idProduct, trx)
             const isDeleted = await ProductUtil.deleteProductFromDatabase(idProduct, trx)
 

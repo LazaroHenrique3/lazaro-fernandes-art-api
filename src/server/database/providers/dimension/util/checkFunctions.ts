@@ -32,7 +32,7 @@ export const checkValidDimensionName = async (nameDimension: string, idDimension
 
 export const checkIfDimensionIsInUse = async (idDimension: number): Promise<boolean> => {
 
-    const dimensionResult = await Knex(ETableNames.productDimensions)
+    const dimensionResult = await Knex(ETableNames.product)
         .select('dimension_id').where('dimension_id', '=', idDimension)
         .first()
 

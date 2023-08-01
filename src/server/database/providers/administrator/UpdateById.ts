@@ -17,11 +17,6 @@ export const updateById = async (idAdministrator: number, administrator: Omit<IA
         if (existsEmail) {
             return new Error('Este email já esta cadastrado!')
         }
-
-        const validPermissions = await AdministratorUtil.checkValidPermissions(administrator.permissions.map(Number))
-        if (!validPermissions) {
-            return new Error('Permissões inválidas!')
-        }
         
         //verificando se foi passado senha 
         if (administrator.password) {
@@ -30,12 +25,7 @@ export const updateById = async (idAdministrator: number, administrator: Omit<IA
 
         //Fluxo de atualização
         const result = await Knex.transaction(async (trx) => {
-            const { permissions, ...updateAdministratorData } = administrator
-
-            await AdministratorUtil.updateAdministratorInDatabase(idAdministrator, updateAdministratorData, trx)
-            await AdministratorUtil.deleteRelationOfAdministratorPermissionsInDatabase(idAdministrator, trx)
-
-            await AdministratorUtil.insertAdministratorPermissionsInDatabase(idAdministrator, permissions.map(Number), trx)
+            await AdministratorUtil.updateAdministratorInDatabase(idAdministrator, administrator, trx)
 
             return true
         })

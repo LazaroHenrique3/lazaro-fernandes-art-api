@@ -3,7 +3,7 @@ import { IAdministrator } from '../../../models'
 import { Knex } from '../../../knex'
 import { Knex as knex } from 'knex'
 
-export const getAdministratorById = async (idAdministrator: number): Promise<Omit<IAdministrator, 'password' | 'permissions'> | undefined> => {
+export const getAdministratorById = async (idAdministrator: number): Promise<Omit<IAdministrator, 'password'> | undefined> => {
 
     return await Knex(ETableNames.administrator).select('id', 'status', 'name', 'email')
         .where('id', '=', idAdministrator)
@@ -11,7 +11,7 @@ export const getAdministratorById = async (idAdministrator: number): Promise<Omi
 
 }
 
-export const getAdministratorsWithFilter = async (filter: string, page: number, limit: number): Promise<Omit<IAdministrator, 'password' | 'permissions'>[]> => {
+export const getAdministratorsWithFilter = async (filter: string, page: number, limit: number): Promise<Omit<IAdministrator, 'password'>[]> => {
 
     return Knex(ETableNames.administrator)
         .select('id', 'status', 'name', 'email')
@@ -21,7 +21,7 @@ export const getAdministratorsWithFilter = async (filter: string, page: number, 
 
 }
 
-export const getAdministratorByEmail = async (email: string): Promise<Omit<IAdministrator, 'permissions'> | undefined> => {
+export const getAdministratorByEmail = async (email: string): Promise<IAdministrator | undefined> => {
 
     return await Knex(ETableNames.administrator).select('*')
         .where('email', '=', email)
@@ -39,44 +39,17 @@ export const getTotalOfRegisters = async (filter: string): Promise<number | unde
 
 }
 
-export const getAdministratorPermissionsById = async (idAdministrator: number): Promise<number[]> => {
-
-    const permissions = await Knex(ETableNames.administratorRoleAccess).select('role_access_id')
-        .where('administrator_id', idAdministrator)
-
-    return permissions.map((permission) => permission.role_access_id)
-
-}
-
-export const insertAdministratorInDatabase = async (administrator: Omit<IAdministrator, 'id' | 'permissions'>, trx: knex.Transaction): Promise<number> => {
+export const insertAdministratorInDatabase = async (administrator: Omit<IAdministrator, 'id'>, trx: knex.Transaction): Promise<number> => {
 
     const [administratorId] = await trx(ETableNames.administrator).insert(administrator).returning('id')
     return typeof administratorId === 'number' ? administratorId : administratorId.id
 
 }
 
-export const insertAdministratorPermissionsInDatabase = async (idAdministrator: number, permissions: number[], trx: knex.Transaction): Promise<void> => {
-
-    const permissionsData = permissions.map((permissionId) => ({
-        administrator_id: idAdministrator,
-        role_access_id: permissionId
-    }))
-
-    await trx(ETableNames.administratorRoleAccess).insert(permissionsData)
-
-}
-
-export const updateAdministratorInDatabase = async (idAdministrator: number, administratorData: Omit<IAdministrator, 'id' | 'permissions'>, trx: knex.Transaction): Promise<void> => {
+export const updateAdministratorInDatabase = async (idAdministrator: number, administratorData: Omit<IAdministrator, 'id'>, trx: knex.Transaction): Promise<void> => {
 
     await trx(ETableNames.administrator).update(administratorData)
         .where('id', '=', idAdministrator)
-
-}
-
-export const deleteRelationOfAdministratorPermissionsInDatabase = async (idAdministrator: number, trx: knex.Transaction): Promise<void> => {
-
-    await trx(ETableNames.administratorRoleAccess).where('administrator_id', '=', idAdministrator)
-        .del()
 
 }
 

@@ -12,7 +12,6 @@ export const deleteById = async (idAdministrator: number): Promise<void | Error>
         }
 
         const result = await Knex.transaction(async (trx) => {            
-            await AdministratorUtil.deleteRelationOfAdministratorPermissionsInDatabase(idAdministrator, trx)
             await AdministratorUtil.deleteAdministratorFromDatabase(idAdministrator, trx)
 
             return true

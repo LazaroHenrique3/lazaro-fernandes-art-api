@@ -29,12 +29,3 @@ export const checkValidEmail = async (email: string, type: 'insert' | 'update', 
 
     return administratorResult !== undefined
 }
-
-export const checkValidPermissions = async (permissions: number[]): Promise<boolean> => {
-
-    const [{ count }] = await Knex(ETableNames.accessRoles)
-        .whereIn('id', permissions)
-        .count<[{ count: number }]>('* as count')
-    return count === permissions.length
-
-}

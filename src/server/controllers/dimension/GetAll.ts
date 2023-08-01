@@ -24,9 +24,7 @@ export const getAllValidation = validation((getSchema) => ({
 }))
 
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-    const id = (req.query.id) ? formatIds(req.query.id)  : [0]
-
-    const result = await DimensionProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', id)
+    const result = await DimensionProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id))
     const count = await DimensionProvider.count(req.query.filter)
 
     if (result instanceof Error) {
@@ -43,15 +41,4 @@ export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Respons
     res.setHeader('x-total-count', count)
 
     return res.status(StatusCodes.OK).json(result)
-}
-
-const formatIds = (ids: string): number[] => {
-    if (ids) {
-        const sanitizedInput = ids.replace(/\s/g, '')
-        const arrayOfNumbers = sanitizedInput.split(',').map((numStr) => parseInt(numStr, 10))
-        return arrayOfNumbers
-    } else {
-        return [1]
-    }
-
 }

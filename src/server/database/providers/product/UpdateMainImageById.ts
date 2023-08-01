@@ -3,7 +3,7 @@ import { IImageObject } from '../../models'
 //Funções auxiliares
 import { ProductUtil } from './util'
 
-export const updateMainImageById = async (idProduct: number, newImage: IImageObject): Promise<void | Error> => {
+export const updateMainImageById = async (idProduct: number, newImage: IImageObject): Promise<string | Error> => {
     try {
         //Verificando se o Id informados é válido
         const existsProduct = await ProductUtil.checkValidProductId(idProduct)
@@ -26,7 +26,10 @@ export const updateMainImageById = async (idProduct: number, newImage: IImageObj
         //Atualizando o produto no banco com a nova imagem principal
         const result = await ProductUtil.updateMainImageInDatabase(idProduct, newImageUpdated)
 
-        if (result > 0) return
+        //Gerando a url da nova imagem principal
+        const url_main_image = `${process.env.LOCAL_ADDRESS}/files/products/${newImageUpdated.main_image}`
+
+        if (result > 0) return url_main_image
 
         return new Error('Erro ao atualizar registro!')
     } catch (error) {

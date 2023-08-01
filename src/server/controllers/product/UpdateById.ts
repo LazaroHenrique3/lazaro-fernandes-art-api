@@ -16,11 +16,9 @@ interface IBodyProps extends Omit<IProductUpdate, 'id' | 'image'> { }
 export const updateByIdValidation = validation(getSchema => ({
     body: getSchema<IBodyProps>(yup.object().shape({
         status: yup.string().oneOf(['Ativo', 'Vendido', 'Inativo']).required(),
-        status_of_sale: yup.string().oneOf(['Venda', 'Galeria']).required(),
         title: yup.string().required().min(1).max(100),
-        type: yup.string().oneOf(['Original', 'Print']).required(),
         orientation: yup.string().oneOf(['Retrato', 'Paisagem']).required(),
-        quantity: yup.number().moreThan(0).optional(),
+        quantity: yup.number().moreThan(0).required(),
         production_date: yup.date()
             .transform((currentValue, originalValue) => {
                 if (originalValue && typeof originalValue === 'string') {
@@ -54,9 +52,9 @@ export const updateByIdValidation = validation(getSchema => ({
             })
             .required(),
         description: yup.string().optional(),
-        weight: yup.number().moreThan(0).optional(),
-        price: yup.number().moreThan(0).optional(),
-        dimensions: yup.array().of(yup.string().defined()).required(),
+        weight: yup.number().moreThan(0).required(),
+        price: yup.number().moreThan(0).required(),
+        dimension_id: yup.number().moreThan(0).required(),
         technique_id: yup.number().moreThan(0).required(),
         category_id: yup.number().moreThan(0).required(),
     })),

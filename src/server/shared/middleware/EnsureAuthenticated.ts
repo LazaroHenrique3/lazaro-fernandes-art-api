@@ -44,12 +44,6 @@ export const ensureAuthenticated: RequestHandler = async (req, res, next) => {
 
     req.headers.idUser = jwtData.uid.toString()
     req.headers.typeUser = jwtData.typeUser
-    //Convertendo para um array de strings, para permitir passar no header
-    if(jwtData.permissions) {
-        const permissionsForString: string[] = jwtData.permissions.map(String)
-        req.headers.permissionsUser = permissionsForString
-    }
-   
     
     return next()
 }

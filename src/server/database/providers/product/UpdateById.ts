@@ -12,22 +12,12 @@ export const updateById = async (idProduct: number, product: Omit<IProductUpdate
             return new Error('Id informado inválido!')
         }
         
-        //Verificando se as dimensões passadas são válidas
-        const validDimensions = await ProductUtil.checkValidDimensions(product.dimensions.map(Number))
-        if (!validDimensions) {
-            return new Error('Dimensões inválidas!')
-        }
-
         //Formatando o objeto que será usado na inserção
         const productWithAllProps = ProductUtil.formatProductForUpdate(product)
 
         //Fluxo de alteração dos dados
-        const {dimensions, ...productData} = productWithAllProps
-
         const result = await Knex.transaction(async (trx) => {
-            await ProductUtil.updateProductInDatabase(idProduct, productData, trx)
-            await ProductUtil.deleteRelationOfProductDimensionsInDatabase(idProduct, trx)
-            await ProductUtil.insertProductDimensionsInDatabase(idProduct, dimensions.map(Number), trx)
+            await ProductUtil.updateProductInDatabase(idProduct, productWithAllProps, trx)
         })
 
         if (result === undefined) {

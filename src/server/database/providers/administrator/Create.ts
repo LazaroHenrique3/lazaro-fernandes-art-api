@@ -14,20 +14,12 @@ export const create = async (administrator: Omit<IAdministrator, 'id'>): Promise
             return new Error('Este email já esta cadastrado!')
         }
 
-        const validPermissions = await AdministratorUtil.checkValidPermissions(administrator.permissions.map(Number))
-        if (!validPermissions) {
-            return new Error('Permissões inválidas!')
-        }
-
         //Criptografando a senha
         const hashedPassword = await PasswordCrypto.hashPassword(administrator.password)
 
         //Fluxo de inserção
         const result = await Knex.transaction(async (trx) => {
-            const { permissions, ...insertAdministratorData } = administrator
-
-            const idOfNewAdministrator = await AdministratorUtil.insertAdministratorInDatabase({ ...insertAdministratorData, password: hashedPassword }, trx)
-            await AdministratorUtil.insertAdministratorPermissionsInDatabase(idOfNewAdministrator, permissions.map(Number), trx)
+            const idOfNewAdministrator = await AdministratorUtil.insertAdministratorInDatabase({ ...administrator, password: hashedPassword }, trx)
 
             return idOfNewAdministrator
         })

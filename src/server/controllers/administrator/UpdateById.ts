@@ -20,7 +20,6 @@ export const updateByIdValidation = validation(getSchema => ({
         name: yup.string().required().min(3).max(100),
         email: yup.string().required().email().min(5).max(100),
         password: yup.string().required().min(6).max(256).default('nopassword'),
-        permissions: yup.array().of(yup.number().required()).required().min(1),
     })),
     params: getSchema<IParamProps>(yup.object().shape({
         id: yup.number().integer().required().moreThan(0),

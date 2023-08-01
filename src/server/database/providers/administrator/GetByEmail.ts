@@ -9,7 +9,7 @@ export const getByEmail = async (email: string): Promise<IAdministrator | Error>
         const admnistrator = await AdministratorUtil.getAdministratorByEmail(email)
 
         if (admnistrator) {
-            return await AdministratorUtil.formatResultByIdForResponse(admnistrator as IAdministrator)
+            return admnistrator
         }
 
         return new Error('Registro não encontrado!')

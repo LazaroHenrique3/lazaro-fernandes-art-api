@@ -2,9 +2,8 @@ import { IProduct, IProductUpdate } from '../../../models'
 
 import { UploadImages } from '../../../../shared/services/UploadImagesServices'
 
-import { 
-    getProductDimensionsById, 
-    getProductImagesById 
+import {
+    getProductImagesById
 } from './crudFunctions'
 
 export const formatAndInsertProductImagesInDirectory = async (product: Omit<IProduct, 'id'>): Promise<Omit<IProduct, 'id'>> => {
@@ -46,15 +45,21 @@ export const formatAllResultsForResponse = async (productList: IProduct[]): Prom
     return await Promise.all(
         productList.map(async (product) => {
 
-            //Buscando as dimensoes do produto
-            const dimensions = await getProductDimensionsById(product.id)
             //Buscando as imagens do produto
             const images = await getProductImagesById(product.id)
 
+            //Gerando a url das imagens
+            const urlImages = images.map((image) => {
+                return { id: image.id, url: `${process.env.LOCAL_ADDRESS}/files/products/${image.name_image}` }
+            })
+
+            //Gerando a url da imagem principal
+            const url_main_image = `${process.env.LOCAL_ADDRESS}/files/products/${product.main_image}`
+
             return {
                 ...product,
-                dimensions: dimensions,
-                product_images: images
+                main_image: url_main_image,
+                product_images: urlImages
             }
         })
     )
@@ -63,15 +68,21 @@ export const formatAllResultsForResponse = async (productList: IProduct[]): Prom
 
 export const formatResultByIdForResponse = async (product: IProduct, idProduct: number): Promise<IProduct> => {
 
-    //Buscando as dimensoes do produto
-    const dimensions = await getProductDimensionsById(idProduct)
     //Buscando as imagens do produto
     const images = await getProductImagesById(idProduct)
 
+    //Gerando a url das imagens
+    const urlImages = images.map((image) => {
+        return { id: image.id, url: `${process.env.LOCAL_ADDRESS}/files/products/${image.name_image}` }
+    })
+
+    //Gerando a url da imagem principal
+    const url_main_image = `${process.env.LOCAL_ADDRESS}/files/products/${product.main_image}`
+
     const formattedResult: IProduct = {
         ...product,
-        dimensions,
-        product_images: images,
+        main_image: url_main_image,
+        product_images: urlImages,
     }
 
     return formattedResult
@@ -87,7 +98,7 @@ export const formatProductionDate = (productionDate: Date | string): string => {
 
 export const formattedPrice = (value: number | string) => {
 
-    if(typeof value === 'string') return ''
+    if (typeof value === 'string') return ''
 
     return value.toLocaleString('pt-BR', {
         style: 'currency',

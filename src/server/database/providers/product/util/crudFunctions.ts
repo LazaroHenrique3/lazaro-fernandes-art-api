@@ -3,6 +3,7 @@ import { Knex } from '../../../knex'
 import { Knex as knex } from 'knex'
 import {
     IProduct,
+    IImageProductList,
     IDeleteImageData,
     IImageObject,
     IProductUpdate
@@ -24,10 +25,13 @@ export const getTotalOfRegisters = async (filter: string): Promise<number | unde
 export const getProductsWithFilter = async (filter: string, page: number, limit: number): Promise<IProduct[]> => {
 
     return Knex(ETableNames.product)
-        .select('product.*', 'category.id as category_id', 'category.name as category_name', 'technique.id as technique_id', 'technique.name as technique_name')
+        .select('product.*', 'category.id as category_id', 'category.name as category_name',
+            'technique.id as technique_id', 'technique.name as technique_name',
+            'dimension.id as dimension_id', 'dimension.dimension as dimension_name')
         .from(ETableNames.product)
         .leftJoin(ETableNames.category, 'product.category_id', 'category.id')
         .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
+        .leftJoin(ETableNames.dimension, 'product.dimension_id', 'dimension.id')
         .where('product.title', 'like', `%${filter}%`)
         .offset((page - 1) * limit)
         .limit(limit)
@@ -37,9 +41,10 @@ export const getProductsWithFilter = async (filter: string, page: number, limit:
 export const getAllProductsForReport = async (filter: string): Promise<IProduct[]> => {
 
     return Knex(ETableNames.product)
-        .select('product.*', 'category.name as category_id', 'technique.name as technique_id')
+        .select('product.*', 'category.name as category_id', 'technique.name as technique_id', 'dimension.dimension as dimension_id')
         .leftJoin(ETableNames.category, 'product.category_id', 'category.id')
         .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
+        .leftJoin(ETableNames.dimension, 'product.dimension_id', 'dimension.id')
         .where('product.title', 'like', `%${filter}%`)
 
 }
@@ -53,21 +58,13 @@ export const getProductById = async (id: number): Promise<IProduct | undefined> 
 
 }
 
-export const getProductDimensionsById = async (id: number): Promise<number[]> => {
-    const dimensions = await Knex(ETableNames.productDimensions)
-        .select('dimension_id')
-        .where('product_id', id)
-
-    return dimensions.map((dimension) => dimension.dimension_id)
-}
-
-export const getProductImagesById = async (id: number): Promise<string[]> => {
+export const getProductImagesById = async (id: number): Promise<IImageProductList[]> => {
 
     const images = await Knex(ETableNames.productImages)
-        .select('name_image')
+        .select('id', 'name_image')
         .where('product_id', id)
 
-    return images.map((image) => image.name_image)
+    return images
 }
 
 export const getImageById = async (idImage: number, idProduct: number): Promise<{ name_image: string } | undefined> => {
@@ -91,24 +88,13 @@ export const getMainImage = async (idProduct: number): Promise<string | undefine
 
 }
 
-export const insertProductInDatabase = async (product: Omit<IProduct, 'id' | 'dimensions' | 'product_images'>, trx: knex.Transaction): Promise<number> => {
+export const insertProductInDatabase = async (product: Omit<IProduct, 'id' | 'product_images'>, trx: knex.Transaction): Promise<number> => {
 
     const [productId] = await trx(ETableNames.product)
         .insert(product)
         .returning('id')
 
     return typeof productId === 'number' ? productId : productId.id
-
-}
-
-export const insertProductDimensionsInDatabase = async (productId: number, dimensions: number[], trx: knex.Transaction): Promise<void> => {
-
-    const dimensionsData = dimensions.map((dimensionId) => ({
-        product_id: productId,
-        dimension_id: dimensionId
-    }))
-
-    await trx(ETableNames.productDimensions).insert(dimensionsData)
 
 }
 
@@ -123,7 +109,7 @@ export const insertProductImagesRelationInDatabase = async (productId: number, i
 
 }
 
-export const updateProductInDatabase = async (id: number, productData: Omit<IProductUpdate, 'id' | 'dimensions'>, trx: knex.Transaction): Promise<void> => {
+export const updateProductInDatabase = async (id: number, productData: Omit<IProductUpdate, 'id'>, trx: knex.Transaction): Promise<void> => {
 
     await trx(ETableNames.product)
         .update(productData)
@@ -149,14 +135,17 @@ export const updateMainImageInDatabase = async (idProduct: number, newImage: { m
 
 }
 
-export const insertNewImageInDatabase = async (idProduct: number, newImageUpdated: { name_image: string }): Promise<void> => {
+export const insertNewImageInDatabase = async (idProduct: number, newImageUpdated: { name_image: string }): Promise<number> => {
 
     const imagesData = {
         product_id: idProduct,
         name_image: newImageUpdated.name_image
     }
 
-    await Knex(ETableNames.productImages).insert(imagesData)
+    const [insertedProductId] = await Knex(ETableNames.productImages).insert(imagesData).returning('id')
+
+    return insertedProductId.id
+
 }
 
 export const deleteAndGetAllProductImagesInDatabase = async (idProduct: number, trx: knex.Transaction): Promise<IDeleteImageData> => {
@@ -203,14 +192,6 @@ export const deleteImageFromDatabaseAndDirectory = async (idImage: number, idPro
     }
 
     return true
-}
-
-export const deleteRelationOfProductDimensionsInDatabase = async (idProduct: number, trx: knex.Transaction): Promise<void> => {
-
-    await trx(ETableNames.productDimensions)
-        .where('product_id', '=', idProduct)
-        .del()
-
 }
 
 export const deleteRelationOfProductImagesInDatabase = async (idProduct: number, trx: knex.Transaction): Promise<void> => {

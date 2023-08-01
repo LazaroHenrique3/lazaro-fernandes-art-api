@@ -15,7 +15,7 @@ export const getById = async (idAdministrator: number): Promise<(Omit<IAdministr
         const administrator = await AdministratorUtil.getAdministratorById(idAdministrator)
 
         if (administrator) {
-            return await AdministratorUtil.formatResultByIdForResponse(administrator as IAdministrator)
+            return administrator
         }
 
         return new Error('Registro não encontrado!')

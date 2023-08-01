@@ -20,7 +20,7 @@ export const getAll = async (page: number, limit: number, filter: string, id = 0
 
         //Formatando a resposta com o id das dimensões e imagens que cada produto possui
         if (resultSearchFilter) {
-            return await AdministratorUtil.formatAllResultsForResponse(resultSearchFilter)
+            return resultSearchFilter
         }
 
         return []

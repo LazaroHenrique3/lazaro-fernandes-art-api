@@ -11,13 +11,6 @@ export const checkValidProductId = async (idProduct: number): Promise<boolean> =
     return productResult !== undefined
 }
 
-export const checkValidDimensions = async (dimensions: number[]): Promise<boolean> => {
-    const [{ count }] = await Knex(ETableNames.dimension)
-        .whereIn('id', dimensions)
-        .count<[{ count: number }]>('* as count')
-    return count === dimensions.length
-}
-
 export const checkValidImageAndProductIds = async (idImage: number, idProduct: number): Promise<boolean> => {
 
     const productResult = await Knex(ETableNames.product)
