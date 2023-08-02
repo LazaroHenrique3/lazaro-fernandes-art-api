@@ -21,10 +21,11 @@ router.get('/', (_, res) => res.send('Hello, world!'))
 //Private routes
 //--administrator
 router.get('/administrator', ensureAuthenticated, ensureAccess(['admin']), AdministratorController.getAllValidation, AdministratorController.getAll)
-router.get('/administrator/:id', ensureAuthenticated, ensureAccess(['admin']), AdministratorController.getByIdValidation, AdministratorController.getById)
+router.get('/administrator/:id', ensureAuthenticated, ensureAccess(['admin'], true), AdministratorController.getByIdValidation, AdministratorController.getById)
 router.post('/administrator', ensureAuthenticated, ensureAccess(['admin']), AdministratorController.createValidation, AdministratorController.create)
-router.delete('/administrator/:id', ensureAuthenticated, ensureAccess(['admin']), AdministratorController.deleteByIdValidation, AdministratorController.deleteById)
-router.put('/administrator/:id', ensureAuthenticated, ensureAccess(['admin']), AdministratorController.updateByIdValidation, AdministratorController.updateById)
+router.delete('/administrator/:id', ensureAuthenticated, ensureAccess(['admin'], true), AdministratorController.deleteByIdValidation, AdministratorController.deleteById)
+router.put('/administrator/:id', ensureAuthenticated, ensureAccess(['admin'], true), AdministratorController.updateByIdValidation, AdministratorController.updateById)
+router.get('/administrator/report/generate', ensureAuthenticated, ensureAccess(['admin']), AdministratorController.reportValidation, AdministratorController.report)
 
 //--category
 router.get('/category', ensureAuthenticated, ensureAccess(['admin']), CategoryController.getAllValidation, CategoryController.getAll)

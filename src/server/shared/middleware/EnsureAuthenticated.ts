@@ -44,6 +44,7 @@ export const ensureAuthenticated: RequestHandler = async (req, res, next) => {
 
     req.headers.idUser = jwtData.uid.toString()
     req.headers.typeUser = jwtData.typeUser
+    req.headers.accessLevel = jwtData.accessLevel
     
     return next()
 }

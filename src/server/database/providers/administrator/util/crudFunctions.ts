@@ -26,6 +26,7 @@ export const getAdministratorByEmail = async (email: string): Promise<IAdministr
 
     return await Knex(ETableNames.administrator).select('*')
         .where('email', '=', email)
+        .andWhere('status', '<>', 'Inativo')
         .first()
 
 }
@@ -38,6 +39,15 @@ export const getTotalOfRegisters = async (filter: string): Promise<number | unde
         .count<[{ count: number }]>('* as count')
 
     return count
+
+}
+
+export const getAllAdminsitratorsForReport = async (filter: string): Promise<Omit<IAdministrator, 'admin_access_level' | 'password'>[]> => {
+
+    return Knex(ETableNames.administrator)
+        .select('id', 'status', 'name', 'email')
+        .andWhere('admin_access_level', '<>', 'Root')
+        .where('name', 'like', `%${filter}%`)
 
 }
 
@@ -57,7 +67,9 @@ export const updateAdministratorInDatabase = async (idAdministrator: number, adm
 
 export const deleteAdministratorFromDatabase = async (idAdministrator: number, trx: knex.Transaction): Promise<void> => {
 
-    await trx(ETableNames.administrator).where('id', '=', idAdministrator)
+    await trx(ETableNames.administrator)
+        .where('id', '=', idAdministrator)
+        .andWhere('admin_access_level', '<>', 'Root')
         .del()
 
 }
