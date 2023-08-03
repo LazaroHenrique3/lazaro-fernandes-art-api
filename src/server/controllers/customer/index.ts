@@ -8,7 +8,7 @@ import * as deleteById from './DeleteById'
 import * as deleteImageById from './DeleteImageById' 
 import * as forgotPassword from './ForgotPassword'
 import * as redefinePassword from './RedefinePassword'
-
+import * as report from './Report'
 
 export const CustomerController = {
     ...signIn,
@@ -20,5 +20,6 @@ export const CustomerController = {
     ...deleteById,
     ...deleteImageById,
     ...forgotPassword,
-    ...redefinePassword
+    ...redefinePassword,
+    ...report
 }

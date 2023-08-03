@@ -46,7 +46,7 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
         })
     }
 
-    const result = await AdministratorProvider.updateById(req.params.id, req.body)
+    const result = await AdministratorProvider.updateById(req.params.id, {...req.body, admin_access_level: 'Admin'})
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

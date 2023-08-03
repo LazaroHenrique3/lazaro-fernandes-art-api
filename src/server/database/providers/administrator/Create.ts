@@ -11,6 +11,9 @@ import { AdministratorUtil } from './util'
 export const create = async (administrator: Omit<IAdministrator, 'id' | 'password'>): Promise<number | Error> => {
 
     try {
+        if (administrator.admin_access_level !== 'Admin') {
+            return new Error('Ação não permitida.')
+        }
 
         const existsEmail = await AdministratorUtil.checkValidEmail(administrator.email, 'insert')
         if (existsEmail) {

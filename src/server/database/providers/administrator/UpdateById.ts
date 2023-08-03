@@ -5,9 +5,13 @@ import { Knex } from '../../knex'
 //Funções auxiliares
 import { AdministratorUtil } from './util'
 
-export const updateById = async (idAdministrator: number, administrator: Omit<IAdministratorUpdate, 'id' | 'admin_access_level'>): Promise<void | Error> => {
+export const updateById = async (idAdministrator: number, administrator: Omit<IAdministratorUpdate, 'id'>): Promise<void | Error> => {
 
     try {
+        if (administrator.admin_access_level !== 'Admin') {
+            return new Error('Ação não permitida.')
+        }
+        
         const existsAdministrator = await AdministratorUtil.checkValidAdministratorId(idAdministrator)
         if (!existsAdministrator) {
             return new Error('Id informado inválido!')

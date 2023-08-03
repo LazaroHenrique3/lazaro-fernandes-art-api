@@ -53,7 +53,10 @@ export const getAllAdminsitratorsForReport = async (filter: string): Promise<Omi
 
 export const insertAdministratorInDatabase = async (administrator: Omit<IAdministrator, 'id'>, trx: knex.Transaction): Promise<number> => {
 
-    const [administratorId] = await trx(ETableNames.administrator).insert(administrator).returning('id')
+    const [administratorId] = await trx(ETableNames.administrator)
+        .insert(administrator)
+        .returning('id')
+        
     return typeof administratorId === 'number' ? administratorId : administratorId.id
 
 }

@@ -12,6 +12,7 @@ export const getCustomerByEmail = async (email: string): Promise<ICustomer | und
 
     return await Knex(ETableNames.customer)
         .select('*').where('email', '=', email)
+        .andWhere('status', '<>', 'Inativo')
         .first()
 
 }
@@ -43,6 +44,14 @@ export const getTotalOfRegisters = async (filter: string): Promise<number | unde
         .count<[{ count: number }]>('* as count')
 
     return count
+
+}
+
+export const getAllAdminsitratorsForReport = async (filter: string): Promise<Omit<ICustomer, 'image' | 'password'>[]> => {
+
+    return Knex(ETableNames.customer)
+        .select('id', 'status', 'name', 'email', 'cell_phone', 'genre', 'date_of_birth', 'cpf')
+        .where('name', 'like', `%${filter}%`)
 
 }
 

@@ -5,7 +5,7 @@ import { CustomerUtil } from './util'
 
 //Recebe aquele id para caso um item não esteja na primeira pagina, ele possa retornar junto
 export const getAll = async (page: number, limit: number, filter: string, id = 0): Promise<(Omit<ICustomer, 'password'>)[] | Error> => {
-  
+
     try {
         let resultSearchFilter = await CustomerUtil.getCustomersWithFilter(filter, page, limit, id)
 
@@ -18,7 +18,21 @@ export const getAll = async (page: number, limit: number, filter: string, id = 0
             }
         }
 
-        return resultSearchFilter
+        const result = await Promise.all(resultSearchFilter.map(async (customer) => {
+
+            //Gerando a url da imagem 
+            let image = ''
+            if (customer?.image !== undefined && customer?.image !== null) {
+                image = `${process.env.LOCAL_ADDRESS}/files/customers/${customer?.image}`
+            }
+
+            return {
+                ...customer,
+                image
+            }
+        }))
+
+        return result 
 
     } catch (error) {
         console.log(error)
