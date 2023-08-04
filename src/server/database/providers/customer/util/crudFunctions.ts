@@ -1,5 +1,5 @@
 import { ETableNames } from '../../../ETablesNames'
-import { ICustomer, ICustomerUpdate, ICustomerRedefinePassword } from '../../../models'
+import { ICustomer, ICustomerUpdate, ICustomerRedefinePassword, IImageObject } from '../../../models'
 import { Knex } from '../../../knex'
 import { Knex as knex } from 'knex'
 
@@ -38,7 +38,7 @@ export const getCustomersWithFilter = async (filter: string, page: number, limit
 }
 
 export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
-    
+
     const [{ count }] = await Knex(ETableNames.customer)
         .where('name', 'like', `%${filter}%`)
         .count<[{ count: number }]>('* as count')
@@ -108,6 +108,17 @@ export const hashAndRedefinePasswordInDatabase = async (email: string, password:
 
 }
 
+export const insertNewImageInDatabase = async (idCustomer: number, newImageUpdated: string): Promise<number> => {
+
+    const [insertedProductId] = await Knex(ETableNames.customer)
+        .update({image: newImageUpdated})
+        .where('id', '=', idCustomer)
+        .returning('id')
+
+    return insertedProductId.id
+
+}
+
 export const updateCustomerImageInDatabase = async (idCustomer: number, newImageUpdated: string, trx: knex.Transaction): Promise<number> => {
 
     if (trx) {
@@ -132,6 +143,11 @@ export const deleteCustomerInDatabase = async (idCustomer: number, trx: knex.Tra
 
     return await trx(ETableNames.customer).where('id', '=', idCustomer)
         .del()
+
+}
+export const uploadNewImageOnCustomerDirectory = async (newImage: IImageObject): Promise<string> => {
+
+    return await UploadImages.uploadImage(newImage, 'customers')
 
 }
 

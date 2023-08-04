@@ -23,6 +23,10 @@ export const updateImageById = async (idCustomer: number, newImage: IImageObject
             //Buscando o nome da imagem antiga
             const oldImage = await CustomerUtil.checkAndReturnNameOfCustomerImage(idCustomer, trx)
 
+            if(!oldImage) {
+                throw new Error('Erro ao atualizar registro!')
+            }
+
             //Upload da nova imagem 
             newImageUpdated = await UploadImages.uploadImage(newImage, 'customers')
 

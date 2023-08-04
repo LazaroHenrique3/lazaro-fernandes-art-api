@@ -1,5 +1,6 @@
 import * as count from './Count'
 import * as create from './Create'
+import * as insertImage from './InsertImage'
 import * as getAll from './GetAll'
 import * as generatePDF from './GeneratePDF'
 import * as getById from './GetById'
@@ -14,6 +15,7 @@ import * as redefinePassword from './RedefinePassword'
 export const CustomerProvider = {
     ...count,
     ...create,
+    ...insertImage,
     ...getAll,
     ...generatePDF,
     ...getById,
