@@ -73,6 +73,7 @@ export const updateByIdValidation = validation(getSchema => ({
 }))
 
 export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res: Response) => {
+
     if (!req.params.id) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             errors: {
@@ -80,8 +81,9 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
             }
         })
     }
-
-    const result = await CustomerProvider.updateById(req.params.id, req.body)
+    const accessLevel = (req.headers.accessLevel) ? req.headers.accessLevel : ''
+    
+    const result = await CustomerProvider.updateById(req.params.id, req.body, accessLevel as string)
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

@@ -3,8 +3,14 @@ import { ICustomerUpdate } from '../../models'
 //Funções auxiliares
 import { CustomerUtil } from './util'
 
-export const updateById = async (idCustomer: number, customer: Omit<ICustomerUpdate, 'id'>): Promise<void | Error> => {
+export const updateById = async (idCustomer: number, customer: Omit<ICustomerUpdate, 'id'>, accessLevel: string): Promise<void | Error> => {
     try {
+
+        //Só quem pode alterar senha é o próprio customer ou o root
+        if (customer.password && accessLevel !== 'Root' && accessLevel !== 'customer') {
+            return new Error('Não tem permissão para esse tipo de alteração.')
+        }
+        
         //Verificando se o id informado é valido
         const existsCustomer = await CustomerUtil.checkValidCustomerId(idCustomer)
         if (!existsCustomer) {
