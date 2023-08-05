@@ -85,6 +85,8 @@ router.get('/product/:id', ProductController.getByIdValidation, ProductControlle
 
 //--Administator
 router.post('/adminsignin', AdministratorController.signInValidation, AdministratorController.signIn)
+router.post('/administrator/forgotpassword', AdministratorController.forgotPasswordValidation, AdministratorController.forgotPassword)
+router.post('/administrator/redefinepassword', AdministratorController.redefinePasswordValidation, AdministratorController.redefinePassword)
 
 //--Customer
 router.post('/customersignin', CustomerController.signInValidation, CustomerController.signIn)

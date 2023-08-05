@@ -81,8 +81,9 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
             }
         })
     }
-    const accessLevel = (req.headers.accessLevel) ? req.headers.accessLevel : ''
     
+    const accessLevel = (req.headers.accessLevel) ? req.headers.accessLevel : ''
+
     const result = await CustomerProvider.updateById(req.params.id, req.body, accessLevel as string)
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

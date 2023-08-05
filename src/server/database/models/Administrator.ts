@@ -5,6 +5,16 @@ export interface IAdministrator {
     name: string
     email: string
     password: string
+    verification_token?: string | null
+    verification_token_expiration?: Date | null
+}
+
+export interface IAdministratorRedefinePassword { 
+    email: string
+    password: string
+    confirmPassword: string
+    verification_token: string,
+    verification_token_expiration?: Date
 }
 
 export interface IAdministratorUpdate {

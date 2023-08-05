@@ -9,7 +9,7 @@ import { PasswordCrypto } from '../../shared/services'
 import { JWTServices } from '../../shared/services/JWTServices'
 
 //Para tipar o body do request
-interface IBodyProps extends Omit<IAdministrator, 'id' | 'status' | 'name' | 'admin_access_level'> { }
+interface IBodyProps extends Omit<IAdministrator, 'id' | 'status' | 'name' | 'verification_token_expiration' | 'verification_token' | 'admin_access_level'> { }
 
 //Midleware
 export const signInValidation = validation((getSchema) => ({

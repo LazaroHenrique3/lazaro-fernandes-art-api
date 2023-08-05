@@ -7,21 +7,21 @@ import { IAdministrator } from '../../database/models'
 import { AdministratorProvider } from '../../database/providers/administrator'
 
 //Para tipar o body do request
-interface IBodyProps extends Omit<IAdministrator, 'id' | 'admin_access_level' |  'verification_token_expiration' | 'verification_token' | 'password'> { }
+interface IBodyProps extends Omit<IAdministrator, 'id' | 'status' | 'admin_access_level' | 'name' | 'password' |  'verification_token' | 'verification_token_expiration'> { }
 
 //Midleware
-export const createValidation = validation((getSchema) => ({
+export const forgotPasswordValidation = validation((getSchema) => ({
     body: getSchema<IBodyProps>(yup.object().shape({
-        status: yup.string().oneOf(['Ativo', 'Inativo']).default('Ativo').required(),
-        name: yup.string().required().min(3).max(100),
         email: yup.string().required().email().min(5).max(100),
     }))
 }))
 
-export const create = async (req: Request<{}, {}, IBodyProps>, res: Response) => {
-    const result = await AdministratorProvider.create({...req.body, admin_access_level: 'Admin'})
+export const forgotPassword = async (req: Request<{}, {}, IBodyProps>, res: Response) => {
 
-    if (result instanceof Error) {
+    const { email } = req.body
+
+    const result = await AdministratorProvider.forgotPassword(email)
+    if(result instanceof Error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {
                 default: result.message
@@ -29,5 +29,7 @@ export const create = async (req: Request<{}, {}, IBodyProps>, res: Response) =>
         })
     }
 
-    return res.status(StatusCodes.CREATED).json(result)
+    return res.status(StatusCodes.OK).json({msg: 'Um token de verificação foi enviado ao seu email!'})
+
+   
 }

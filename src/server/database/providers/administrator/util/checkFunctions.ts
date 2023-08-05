@@ -1,5 +1,6 @@
 import { ETableNames } from '../../../ETablesNames'
 import { Knex } from '../../../knex'
+import { getTokenAndExpiration } from './crudFunctions'
 
 export const checkValidAdministratorId = async (idAdministrator: number): Promise<boolean> => {
 
@@ -28,4 +29,24 @@ export const checkValidEmail = async (email: string, type: 'insert' | 'update', 
 
 
     return administratorResult !== undefined
+}
+
+export const checkValidToken = async (email: string): Promise<string | Error> => {
+
+    //Buscando o token e o tempo de expiração
+    const token = await getTokenAndExpiration(email)
+
+    if (token.verification_token_expiration !== null && token.verification_token_expiration !== undefined) {
+        const now = new Date()
+
+        if (token.verification_token_expiration < now) {
+            return new Error('Token de verificação expirado!')
+        }
+
+        return token.verification_token
+
+    } else {
+        return new Error('Houve um erro inesperado, tente novamente!')
+    }
+
 }

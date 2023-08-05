@@ -1,7 +1,8 @@
 import { ETableNames } from '../../../ETablesNames'
-import { IAdministrator, IAdministratorUpdate } from '../../../models'
+import { IAdministrator, IAdministratorRedefinePassword, IAdministratorUpdate } from '../../../models'
 import { Knex } from '../../../knex'
 import { Knex as knex } from 'knex'
+import { PasswordCrypto } from '../../../../shared/services'
 
 export const getAdministratorById = async (idAdministrator: number): Promise<Omit<IAdministrator, 'password'> | undefined> => {
 
@@ -51,6 +52,16 @@ export const getAllAdminsitratorsForReport = async (filter: string): Promise<Omi
 
 }
 
+export const getTokenAndExpiration = async (email: string): Promise<Omit<IAdministratorRedefinePassword, 'email' | 'password' | 'confirmPassword'>> => {
+
+    const result = await Knex(ETableNames.administrator)
+        .select('verification_token', 'verification_token_expiration')
+        .where('email', '=', email)
+        .first()
+
+    return result as Omit<IAdministratorRedefinePassword, 'email' | 'password' | 'confirmPassword'>
+}
+
 export const insertAdministratorInDatabase = async (administrator: Omit<IAdministrator, 'id'>, trx: knex.Transaction): Promise<number> => {
 
     const [administratorId] = await trx(ETableNames.administrator)
@@ -58,6 +69,24 @@ export const insertAdministratorInDatabase = async (administrator: Omit<IAdminis
         .returning('id')
         
     return typeof administratorId === 'number' ? administratorId : administratorId.id
+
+}
+
+export const insertTokenInDatabase = async (email: string, verification_token: string, verification_token_expiration: Date): Promise<number> => {
+
+    return await Knex(ETableNames.administrator)
+        .update({ verification_token, verification_token_expiration })
+        .where('email', '=', email)
+
+}
+
+export const hashAndRedefinePasswordInDatabase = async (email: string, password: string): Promise<number> => {
+
+    const hashedPassword = await PasswordCrypto.hashPassword(password)
+
+    return await Knex(ETableNames.administrator)
+        .update({ password: hashedPassword, verification_token: null, verification_token_expiration: null })
+        .where('email', '=', email)
 
 }
 

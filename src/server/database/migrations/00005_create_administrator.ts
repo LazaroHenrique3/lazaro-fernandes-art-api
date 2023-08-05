@@ -10,6 +10,8 @@ export async function up(knex: Knex) {
         table.string('name', 100).checkLength('<=', 100).checkLength('>=', 3).index().notNullable()
         table.string('email', 100).checkLength('<=', 100).checkLength('>=', 5).notNullable().unique().index()
         table.string('password').checkLength('>=', 6).notNullable()
+        table.string('verification_token').nullable()
+        table.string('verification_token_expiration').nullable()
 
         table.comment('Tabela usada para armazenar os administradores do sistema.')
     }).then(() => {

@@ -6,6 +6,8 @@ import * as getById from './GetById'
 import * as getByEmail from './GetByEmail'
 import * as updateById from './UpdateById'
 import * as deleteById from './DeleteById' 
+import * as forgotPassword from './ForgotPassword'
+import * as redefinePassword from './RedefinePassword'
 
 export const AdministratorProvider = {
     ...count,
@@ -15,5 +17,7 @@ export const AdministratorProvider = {
     ...getById,
     ...getByEmail,
     ...updateById,
-    ...deleteById
+    ...deleteById,
+    ...forgotPassword,
+    ...redefinePassword
 }
