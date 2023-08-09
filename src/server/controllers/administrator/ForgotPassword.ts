@@ -29,7 +29,7 @@ export const forgotPassword = async (req: Request<{}, {}, IBodyProps>, res: Resp
         })
     }
 
-    return res.status(StatusCodes.OK).json({msg: 'Um token de verificação foi enviado ao seu email!'})
+    return res.status(StatusCodes.OK).send('Um token de verificação foi enviado ao seu email!')
 
    
 }
