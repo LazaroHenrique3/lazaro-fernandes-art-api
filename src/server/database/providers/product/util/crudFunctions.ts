@@ -12,17 +12,27 @@ import {
 import path from 'path'
 import { UploadImages } from '../../../../shared/services/UploadImagesServices'
 
-export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
+export const getTotalOfRegisters = async (filter: string, category: string, technique: string): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.product)
         .where('title', 'like', `%${filter}%`)
+        .leftJoin(ETableNames.category, 'product.category_id', 'category.id')
+        .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
+        .andWhere(function () {
+            if (category) {
+                this.where('category.name', '=', category)
+            }
+            if (technique) {
+                this.where('technique.name', '=', technique)
+            }
+        })
         .count<[{ count: number }]>('* as count')
 
     return count
 
 }
 
-export const getProductsWithFilter = async (filter: string, page: number, limit: number): Promise<IProduct[]> => {
+export const getProductsWithFilter = async (filter: string, category: string, technique: string, page: number, limit: number): Promise<IProduct[]> => {
 
     return Knex(ETableNames.product)
         .select('product.*', 'category.id as category_id', 'category.name as category_name',
@@ -33,6 +43,14 @@ export const getProductsWithFilter = async (filter: string, page: number, limit:
         .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
         .leftJoin(ETableNames.dimension, 'product.dimension_id', 'dimension.id')
         .where('product.title', 'like', `%${filter}%`)
+        .andWhere(function () {
+            if (category) {
+                this.where('category.name', '=', category)
+            }
+            if (technique) {
+                this.where('technique.name', '=', technique)
+            }
+        })
         .offset((page - 1) * limit)
         .limit(limit)
 

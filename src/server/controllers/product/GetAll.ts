@@ -10,7 +10,9 @@ interface IQueryProps {
     id?: number,
     page?: number,
     limit?: number,
-    filter?: string
+    filter?: string,
+    category?: string
+    technique?: string 
 }
 
 //Midleware
@@ -19,13 +21,15 @@ export const getAllValidation = validation((getSchema) => ({
         id: yup.number().integer().optional().default(0),
         page: yup.number().optional().moreThan(0),
         limit: yup.number().optional().moreThan(0),
-        filter: yup.string().optional()
+        filter: yup.string().optional(),
+        category: yup.string().optional(),
+        technique: yup.string().optional()
     }))
 }))
 
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-    const result = await ProductProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id))
-    const count = await ProductProvider.count(req.query.filter)
+    const result = await ProductProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', req.query.category || '', req.query.technique || '', Number(req.query.id))
+    const count = await ProductProvider.count(req.query.filter, req.query.category, req.query.technique)
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

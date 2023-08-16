@@ -1,9 +1,9 @@
 //Funções auxiliares
 import { ProductUtil } from './util'
 
-export const count = async (filter = ''): Promise<number | Error> => {
+export const count = async (filter = '', category = '', technique = ''): Promise<number | Error> => {
     try {
-        const count = await ProductUtil.getTotalOfRegisters(filter)
+        const count = await ProductUtil.getTotalOfRegisters(filter, category, technique)
 
         if(Number.isInteger(Number(count))) return Number(count)
 

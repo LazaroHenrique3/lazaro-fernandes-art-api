@@ -28,7 +28,6 @@ router.put('/administrator/:id', ensureAuthenticated, ensureAccess(['admin'], tr
 router.get('/administrator/report/generate', ensureAuthenticated, ensureAccess(['admin']), AdministratorController.reportValidation, AdministratorController.report)
 
 //--category
-router.get('/category', ensureAuthenticated, ensureAccess(['admin']), CategoryController.getAllValidation, CategoryController.getAll)
 router.get('/category/:id', ensureAuthenticated, ensureAccess(['admin']), CategoryController.getByIdValidation, CategoryController.getById)
 router.post('/category', ensureAuthenticated, ensureAccess(['admin']), CategoryController.createValidation, CategoryController.create)
 router.put('/category/:id', ensureAuthenticated, ensureAccess(['admin']), CategoryController.updateByIdValidation, CategoryController.updateById)
@@ -36,7 +35,6 @@ router.delete('/category/:id', ensureAuthenticated, ensureAccess(['admin']), Cat
 router.get('/category/report/generate', ensureAuthenticated, ensureAccess(['admin']), CategoryController.reportValidation, CategoryController.report)
 
 //--technique
-router.get('/technique', ensureAuthenticated, ensureAccess(['admin']), TechniqueController.getAllValidation, TechniqueController.getAll)
 router.get('/technique/:id', ensureAuthenticated, ensureAccess(['admin']), TechniqueController.getByIdValidation, TechniqueController.getById)
 router.post('/technique', ensureAuthenticated, ensureAccess(['admin']), TechniqueController.createValidation, TechniqueController.create)
 router.put('/technique/:id', ensureAuthenticated, ensureAccess(['admin']), TechniqueController.updateByIdValidation, TechniqueController.updateById)
@@ -82,6 +80,8 @@ router.get('/customer/report/generate', ensureAuthenticated, ensureAccess(['admi
 //--Products
 router.get('/product', ProductController.getAllValidation, ProductController.getAll)
 router.get('/product/:id', ProductController.getByIdValidation, ProductController.getById)
+router.get('/category', CategoryController.getAllValidation, CategoryController.getAll)
+router.get('/technique', TechniqueController.getAllValidation, TechniqueController.getAll)
 
 //--Administator
 router.post('/adminsignin', AdministratorController.signInValidation, AdministratorController.signIn)
