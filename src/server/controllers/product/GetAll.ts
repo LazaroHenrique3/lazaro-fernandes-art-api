@@ -13,6 +13,7 @@ interface IQueryProps {
     filter?: string,
     category?: string
     technique?: string 
+    order?: string
 }
 
 //Midleware
@@ -23,12 +24,13 @@ export const getAllValidation = validation((getSchema) => ({
         limit: yup.number().optional().moreThan(0),
         filter: yup.string().optional(),
         category: yup.string().optional(),
-        technique: yup.string().optional()
+        technique: yup.string().optional(),
+        order: yup.string().optional()
     }))
 }))
 
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-    const result = await ProductProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', req.query.category || '', req.query.technique || '', Number(req.query.id))
+    const result = await ProductProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', req.query.category || '', req.query.technique || '', req.query.order || '', Number(req.query.id))
     const count = await ProductProvider.count(req.query.filter, req.query.category, req.query.technique)
 
     if (result instanceof Error) {

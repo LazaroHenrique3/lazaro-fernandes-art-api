@@ -32,7 +32,7 @@ export const getTotalOfRegisters = async (filter: string, category: string, tech
 
 }
 
-export const getProductsWithFilter = async (filter: string, category: string, technique: string, page: number, limit: number): Promise<IProduct[]> => {
+export const getProductsWithFilter = async (filter: string, category: string, technique: string, order: string, page: number, limit: number): Promise<IProduct[]> => {
 
     return Knex(ETableNames.product)
         .select('product.*', 'category.id as category_id', 'category.name as category_name',
@@ -53,6 +53,7 @@ export const getProductsWithFilter = async (filter: string, category: string, te
         })
         .offset((page - 1) * limit)
         .limit(limit)
+        .orderBy('product.price', order)
 
 }
 
@@ -70,8 +71,11 @@ export const getAllProductsForReport = async (filter: string): Promise<IProduct[
 export const getProductById = async (id: number): Promise<IProduct | undefined> => {
 
     return Knex(ETableNames.product)
-        .select('*')
-        .where('id', '=', id)
+        .select('product.*', 'category.name as category_name', 'technique.name as technique_name', 'dimension.dimension as dimension_name')
+        .leftJoin(ETableNames.category, 'product.category_id', 'category.id')
+        .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
+        .leftJoin(ETableNames.dimension, 'product.dimension_id', 'dimension.id')
+        .where('product.id', '=', id)
         .first()
 
 }
