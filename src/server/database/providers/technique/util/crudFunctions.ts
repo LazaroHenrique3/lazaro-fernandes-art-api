@@ -12,12 +12,15 @@ export const getTechniqueById = async (idTechnique: number): Promise<ITechnique 
 
 export const getTechniquesWithFilter = async (filter: string, page: number, limit: number): Promise<ITechnique[]> => {
 
-    return Knex(ETableNames.technique)
-        .select('*')
-        .where('name', 'like', `%${filter}%`)
+    const techniques = await Knex(ETableNames.technique)
+        .select('technique.*', Knex.raw('COUNT(product.id) as product_count'))
+        .leftJoin(ETableNames.product, 'technique.id', 'product.technique_id')
+        .where('technique.name', 'like', `%${filter}%`)
+        .groupBy('technique.id')
         .offset((page - 1) * limit)
         .limit(limit)
 
+    return techniques
 }
 
 export const getAllTechniquesForReport = async (filter: string): Promise<ITechnique[]> => {
@@ -59,7 +62,7 @@ export const updateTechniqueInDatabase = async (idTechnique: number, technique: 
 
     const result = await Knex(ETableNames.technique)
         .update(technique)
-        .where('id', '=', idTechnique) 
+        .where('id', '=', idTechnique)
 
     return result
 }

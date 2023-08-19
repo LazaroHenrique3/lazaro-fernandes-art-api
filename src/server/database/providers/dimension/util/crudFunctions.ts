@@ -12,12 +12,15 @@ export const getDimensionById = async (idDimension: number): Promise<IDimension 
 
 export const getDimensionsWithFilter = async (filter: string, page: number, limit: number): Promise<IDimension[]> => {
 
-    return Knex(ETableNames.dimension)
-        .select('*')
-        .where('dimension', 'like', `%${filter}%`)
+    const dimensions = await Knex(ETableNames.dimension)
+        .select('dimension.*', Knex.raw('COUNT(product.id) as product_count'))
+        .leftJoin(ETableNames.product, 'dimension.id', 'product.dimension_id')
+        .where('dimension.dimension', 'like', `%${filter}%`)
+        .groupBy('dimension.id')
         .offset((page - 1) * limit)
         .limit(limit)
 
+    return dimensions
 }
 
 export const getAllDimensionsForReport = async (filter: string): Promise<IDimension[]> => {

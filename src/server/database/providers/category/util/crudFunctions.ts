@@ -12,12 +12,15 @@ export const getCategoryById = async (idCategory: number): Promise<ICategory | u
 
 export const getCategoriesWithFilter = async (filter: string, page: number, limit: number): Promise<ICategory[]> => {
 
-    return Knex(ETableNames.category)
-        .select('*')
-        .where('name', 'like', `%${filter}%`)
+    const categories = await Knex(ETableNames.category)
+        .select('category.*', Knex.raw('COUNT(product.id) as product_count'))
+        .leftJoin(ETableNames.product, 'category.id', 'product.category_id')
+        .where('category.name', 'like', `%${filter}%`)
+        .groupBy('category.id')
         .offset((page - 1) * limit)
         .limit(limit)
 
+    return categories
 }
 
 export const getAllCategoriesForReport = async (filter: string): Promise<ICategory[]> => {
