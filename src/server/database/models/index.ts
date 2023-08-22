@@ -9,4 +9,5 @@ export * from './Address'
 export * from './Image'
 export * from './Sale'
 export * from './SalesItems'
+export * from './Shipping'
 

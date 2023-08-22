@@ -13,7 +13,7 @@ interface IBodyProps extends Omit<IDimension, 'id'> { }
 export const createValidation = validation((getSchema) => ({
     body: getSchema<IBodyProps>(yup.object().shape({
         dimension: yup.string().required().min(3).max(20)
-            .matches(/^\d+ x \d+$/, 'Formato inválido. Use o formato: "20 x 30"')
+            .matches(/^\d+ x \d+ x \d+$/, 'Formato inválido. Use o formato: "20 x 30 x 3"')
     }))
 }))
 

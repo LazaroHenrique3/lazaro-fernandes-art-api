@@ -1,3 +1,5 @@
 export * from './PasswordCrypto'
 export * from './EmailServices'
 export * from './PDFServices'
+export * from './EmailServices'
+export * from './ShippingService'

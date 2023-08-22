@@ -8,6 +8,7 @@ import {
     AdministratorController,
     CustomerController,
     AddressController,
+    ShippingController
 } from './../controllers'
 
 import { UploadImages } from '../shared/services/UploadImagesServices'
@@ -93,5 +94,8 @@ router.post('/customersignin', CustomerController.signInValidation, CustomerCont
 router.post('/customer', UploadImages.handleFileImage.single('image'), CustomerController.createValidation, CustomerController.create)
 router.post('/customer/forgotpassword', CustomerController.forgotPasswordValidation, CustomerController.forgotPassword)
 router.post('/customer/redefinepassword', CustomerController.redefinePasswordValidation, CustomerController.redefinePassword)
+
+//--Shipping
+router.post('/shipping/calculateshipping', ShippingController.calculateValidation, ShippingController.calculate)
 
 export { router }
