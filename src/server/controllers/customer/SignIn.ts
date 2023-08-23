@@ -55,6 +55,10 @@ export const signIn = async (req: Request<{}, {}, IBodyProps>, res: Response) =>
 
         return res.status(StatusCodes.OK).json({ 
             name: customer.name,
+            imageUser: `${process.env.LOCAL_ADDRESS}/files/customers/${customer?.image}`,
+            idUser: customer.id,
+            typeUser: 'customer',
+            accessLevel: 'customer',
             accessToken: accessToken
         })
     }
