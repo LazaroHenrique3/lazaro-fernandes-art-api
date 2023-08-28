@@ -11,21 +11,27 @@ export const getAddressById = async (idAddress: number, idCustomer: number): Pro
 
 }
 
-export const getAddressWithFilter = async (filter: string, page: number, limit: number, id: number): Promise<IAddress[]> => {
+export const getAddressWithFilter = async (filter: string, page: number, limit: number, idAdress: number, idCustomer: number): Promise<IAddress[]> => {
 
     return await Knex(ETableNames.address)
         .select('*')
-        .where('id', id)
-        .orWhere('street', 'like', `%${filter}%`)
+        .where('customer_id', '=', idCustomer)
+        .andWhere(function () {
+            this.where('id', idAdress)
+                .orWhere('street', 'like', `%${filter}%`)
+        })
         .offset((page - 1) * limit)
         .limit(limit)
 
 }
 
-export const getTotalOfRegisters = async (filter: string, idAdress: number): Promise<number | undefined> => {
+export const getTotalOfRegisters = async (filter: string, idAdress: number, idCustomer: number): Promise<number | undefined> => {
     const [{ count }] = await Knex(ETableNames.address)
-        .where('id', idAdress)
-        .orWhere('street', 'like', `%${filter}%`)
+        .where('customer_id', '=', idCustomer)
+        .andWhere(function () {
+            this.where('id', idAdress)
+                .orWhere('street', 'like', `%${filter}%`)
+        })
         .count<[{ count: number }]>('* as count')
 
     return count

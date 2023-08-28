@@ -4,10 +4,10 @@ import { IAddress } from '../../models'
 import { AddressUtil } from './util'
 
 //Recebe aquele id para caso um item não esteja na primeira pagina, ele possa retornar junto
-export const getAll = async (page: number, limit: number, filter: string, id: number): Promise<IAddress[] | Error> => {
+export const getAll = async (page: number, limit: number, filter: string, idAddress: number, idCustomer: number): Promise<IAddress[] | Error> => {
 
     try {
-        const result = AddressUtil.getAddressWithFilter(filter, page, limit, id)
+        const result = AddressUtil.getAddressWithFilter(filter, page, limit, idAddress, idCustomer)
 
         return result
     } catch (error) {

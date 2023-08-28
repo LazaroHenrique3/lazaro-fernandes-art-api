@@ -1,9 +1,9 @@
 //Funções auxiliares
 import { AddressUtil } from './util'
 
-export const count = async (filter = '', idAdress: number): Promise<number | Error> => {
+export const count = async (filter = '', idAdress: number, idCustomer: number): Promise<number | Error> => {
     try {
-        const count = await AddressUtil.getTotalOfRegisters(filter, idAdress)
+        const count = await AddressUtil.getTotalOfRegisters(filter, idAdress, idCustomer)
 
         if(Number.isInteger(Number(count))) return Number(count)
 

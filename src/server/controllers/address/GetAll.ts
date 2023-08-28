@@ -40,8 +40,8 @@ export const getAll = async (req: Request<IParamProps, {}, {}, IQueryProps>, res
         })
     }
 
-    const result = await AddressProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id))
-    const count = await AddressProvider.count(req.query.filter, Number(req.params.id))
+    const result = await AddressProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id), Number(req.params.id))
+    const count = await AddressProvider.count(req.query.filter, Number(req.params.id), Number(req.params.id))
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -58,3 +58,4 @@ export const getAll = async (req: Request<IParamProps, {}, {}, IQueryProps>, res
 
     return res.status(StatusCodes.OK).json(result)
 }
+ 

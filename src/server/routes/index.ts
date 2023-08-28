@@ -61,20 +61,20 @@ router.delete('/product/deleteimage/:id/:idProduct', ensureAuthenticated, ensure
 router.get('/product/report/generate', ensureAuthenticated, ensureAccess(['admin']), ProductController.reportValidation,  ProductController.report)
 
 //--Address
-router.get('/address/:id', ensureAuthenticated, ensureAccess(['customer']), AddressController.getAllValidation, AddressController.getAll)
+router.get('/address/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), AddressController.getAllValidation, AddressController.getAll)
 router.get('/address/:id/:idAdr', ensureAuthenticated, ensureAccess(['customer', 'admin']), AddressController.getByIdValidation, AddressController.getById)
-router.post('/address/:id', ensureAuthenticated, ensureAccess(['customer']), AddressController.createValidation, AddressController.create)
+router.post('/address/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), AddressController.createValidation, AddressController.create)
 router.put('/address/:id/:idAdr', ensureAuthenticated, ensureAccess(['customer', 'admin']), AddressController.updateByIdValidation, AddressController.updateById)
-router.delete('/address/:id/:idAdr', ensureAuthenticated, ensureAccess(['customer']), AddressController.deleteByIdValidation, AddressController.deleteById)
+router.delete('/address/:id/:idAdr', ensureAuthenticated, ensureAccess(['customer', 'admin']), AddressController.deleteByIdValidation, AddressController.deleteById)
 
 //--Customer
 router.get('/customer', ensureAuthenticated, ensureAccess(['admin']), CustomerController.getAllValidation, CustomerController.getAll)
 router.get('/customer/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), CustomerController.getByIdValidation, CustomerController.getById)
-router.post('/customer/insertimage/:idCustomer', ensureAuthenticated, ensureAccess(['admin']), UploadImages.handleFileImage.single('image'), CustomerController.insertImageValidation, CustomerController.insertImage)
+router.post('/customer/insertimage/:idCustomer', ensureAuthenticated, ensureAccess(['customer', 'admin']), UploadImages.handleFileImage.single('image'), CustomerController.insertImageValidation, CustomerController.insertImage)
 router.put('/customer/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), CustomerController.updateByIdValidation, CustomerController.updateById)
 router.put('/customer/updateimage/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), UploadImages.handleFileImage.single('image'), CustomerController.updateImageByIdValidation, CustomerController.updateImageById)//TODO
 router.delete('/customer/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), CustomerController.deleteByIdValidation, CustomerController.deleteById)
-router.delete('/customer/deleteimage/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), CustomerController.deleteImageByIdValidation, CustomerController.deleteImageById)
+router.delete('/customer/deleteimage/:id', ensureAuthenticated, ensureAccess(['admin']), CustomerController.deleteImageByIdValidation, CustomerController.deleteImageById)
 router.get('/customer/report/generate', ensureAuthenticated, ensureAccess(['admin']), CustomerController.reportValidation, CustomerController.report)
 
 //Public routes
