@@ -74,7 +74,7 @@ router.post('/customer/insertimage/:idCustomer', ensureAuthenticated, ensureAcce
 router.put('/customer/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), CustomerController.updateByIdValidation, CustomerController.updateById)
 router.put('/customer/updateimage/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), UploadImages.handleFileImage.single('image'), CustomerController.updateImageByIdValidation, CustomerController.updateImageById)//TODO
 router.delete('/customer/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), CustomerController.deleteByIdValidation, CustomerController.deleteById)
-router.delete('/customer/deleteimage/:id', ensureAuthenticated, ensureAccess(['admin']), CustomerController.deleteImageByIdValidation, CustomerController.deleteImageById)
+router.delete('/customer/deleteimage/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), CustomerController.deleteImageByIdValidation, CustomerController.deleteImageById)
 router.get('/customer/report/generate', ensureAuthenticated, ensureAccess(['admin']), CustomerController.reportValidation, CustomerController.report)
 
 //Public routes
