@@ -8,6 +8,7 @@ import {
     AdministratorController,
     CustomerController,
     AddressController,
+    SaleController,
     ShippingController
 } from './../controllers'
 
@@ -76,6 +77,10 @@ router.put('/customer/updateimage/:id', ensureAuthenticated, ensureAccess(['cust
 router.delete('/customer/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), CustomerController.deleteByIdValidation, CustomerController.deleteById)
 router.delete('/customer/deleteimage/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), CustomerController.deleteImageByIdValidation, CustomerController.deleteImageById)
 router.get('/customer/report/generate', ensureAuthenticated, ensureAccess(['admin']), CustomerController.reportValidation, CustomerController.report)
+
+//--Sale
+router.post('/sale/:id/:idAddress', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.createValidation, SaleController.create)
+router.get('/sale/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.getAllValidation, SaleController.getAll)
 
 //Public routes
 //--Products

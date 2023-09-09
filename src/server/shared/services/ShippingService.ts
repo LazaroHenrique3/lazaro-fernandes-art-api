@@ -3,7 +3,7 @@ import {
     calcularPrecoPrazo,
 } from 'correios-brasil'
 
-const checkPriceAndDeliveryTime = async (cep: string, weight: number, width: number, length: number, height: number): Promise<PrecoPrazoResponse | Error> => {
+const checkPriceAndDeliveryTime = async (cep: string, weight: number, width: number, length: number, height: number): Promise<PrecoPrazoResponse[] | Error> => {
 
     try {
         const args = {
@@ -14,12 +14,12 @@ const checkPriceAndDeliveryTime = async (cep: string, weight: number, width: num
             nVlComprimento: String(length),
             nVlAltura: String(height),
             nVlLargura: String(width),
-            nCdServico: ['04510'],
+            nCdServico: ['04510', '04014'],
             nVlDiametro: '0',
         }
 
         const result = calcularPrecoPrazo(args).then(response => {
-            return response[0]
+            return response
         })
 
         return result
