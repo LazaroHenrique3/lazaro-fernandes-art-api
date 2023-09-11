@@ -18,6 +18,7 @@ interface IParamProps {
 const saleItemSchema = yup.object().shape({
     idProduct: yup.number().integer().required(),
     quantity: yup.number().integer().min(1).required(),
+    discount: yup.number().integer().default(0)
 })
   
 //Midleware
@@ -70,7 +71,7 @@ export const createValidation = validation((getSchema) => ({
         payment_method: yup.string().oneOf(['PIX', 'BOLETO', 'C. CREDITO', 'C. DEBITO']).required(),
         shipping_method: yup.string().oneOf(['PAC', 'SEDEX']).required(),
         shipping_cost: yup.number().moreThan(0).required(),
-        sales_items: yup.array().of(saleItemSchema).required()
+        sale_items: yup.array().of(saleItemSchema).required()
     })),
     params: getSchema<IParamProps>(yup.object().shape({
         id: yup.number().integer().required().moreThan(0),

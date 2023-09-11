@@ -79,8 +79,10 @@ router.delete('/customer/deleteimage/:id', ensureAuthenticated, ensureAccess(['c
 router.get('/customer/report/generate', ensureAuthenticated, ensureAccess(['admin']), CustomerController.reportValidation, CustomerController.report)
 
 //--Sale
-router.post('/sale/:id/:idAddress', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.createValidation, SaleController.create)
+router.post('/sale/:id/:idAddress', ensureAuthenticated, ensureAccess(['customer']), SaleController.createValidation, SaleController.create)
 router.get('/sale/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.getAllValidation, SaleController.getAll)
+router.get('/sale/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.getByIdValidation, SaleController.getById)
+
 
 //Public routes
 //--Products

@@ -1,5 +1,5 @@
 import { ETableNames } from '../../../ETablesNames'
-import { ISale } from '../../../models'
+import { ISale, ISaleItemsList } from '../../../models'
 import { Knex } from '../../../knex'
 import { Knex as knex } from 'knex'
 
@@ -11,6 +11,8 @@ interface ISalesItems {
     price: number
 }
 
+
+
 type ProductStatus = 'Ativo' | 'Vendido' | 'Inativo'
 
 export const getSaleById = async (idSale: number, idCustomer: number): Promise<ISale | undefined> => {
@@ -19,6 +21,14 @@ export const getSaleById = async (idSale: number, idCustomer: number): Promise<I
         .where('id', '=', idSale)
         .andWhere('customer_id', '=', idCustomer)
         .first()
+
+}
+
+export const getSaleItemsById = async (idSale: number): Promise<ISaleItemsList[] | undefined> => {
+
+    return await Knex(ETableNames.salesItems).select('sales_items.*', 'product.title as product_title')
+        .leftJoin(ETableNames.product, 'sales_items.product_id', 'product.id')
+        .where('sale_id', '=', idSale)
 
 }
 
@@ -59,7 +69,7 @@ export const getTotalOfRegisters = async (filter: string, idSale: number, idCust
 
 }
 
-export const insertSaleInDatabase = async (sale: Omit<ISale, 'id' | 'payment_received_date' | 'delivery_date' | 'sales_items'>, trx: knex.Transaction): Promise<number> => {
+export const insertSaleInDatabase = async (sale: Omit<ISale, 'id' | 'payment_received_date' | 'delivery_date' | 'sale_items'>, trx: knex.Transaction): Promise<number> => {
 
     const [productId] = await trx(ETableNames.sale)
         .insert(sale)

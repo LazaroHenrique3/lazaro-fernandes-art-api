@@ -1,10 +1,18 @@
 import { ETableNames } from '../../../ETablesNames'
 import { Knex as knex } from 'knex'
 
-interface ISalesItems {
-    idProduct: number
-    quantity: number
-}
+import {
+    ISale, ISaleList, ISaleItems
+} from '../../../models'
+
+import {
+    getSaleItemsById
+} from './crudFunctions'
+
+import {
+    AddressProvider
+} from '../.././address'
+
 
 interface ISalesItemsDetails {
     idProduct: number
@@ -14,7 +22,7 @@ interface ISalesItemsDetails {
     price: number
 }
 
-export const checkAndFormatProductsSale = async (salesItems: ISalesItems[], idSale: number, trx: knex.Transaction): Promise<ISalesItemsDetails[]> => {
+export const checkAndFormatProductsSale = async (salesItems: ISaleItems[], idSale: number, trx: knex.Transaction): Promise<ISalesItemsDetails[]> => {
 
     //Preparando o Array de promisses
     const productPromises = salesItems.map(async (item) => {
@@ -54,4 +62,27 @@ export const checkAndFormatProductsSale = async (salesItems: ISalesItems[], idSa
         console.log(error)
         throw error
     }
+}
+
+export const formatResultByIdForResponse = async (sale: ISale, idSale: number, idSaleAddress: number, idCustomer: number): Promise<ISaleList | Error> => {
+    
+    //Buscando os produtos da venda
+    const salesItems = await getSaleItemsById(idSale)
+
+    //Buscando as informações do endereço cadastrado na venda
+    const saleAddress = await AddressProvider.getById(idSaleAddress, idCustomer)
+
+    if (!(saleAddress instanceof Error) && salesItems) {
+
+        const formattedResult: ISaleList = {
+            ...sale,
+            sale_items: salesItems,
+            sale_address: saleAddress,
+        }
+
+        return formattedResult
+    }
+
+    return new Error('Erro inesperado ao consultar venda!')
+
 }

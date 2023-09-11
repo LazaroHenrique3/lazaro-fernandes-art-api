@@ -10,7 +10,7 @@ const DEFAULT_CREATE_STATUS: SaleStatus = 'Ag. Pagamento'
 export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 'payment_received_date' | 'delivery_date'>): Promise<number | Error> => {
 
     try {
-        const { sales_items, ...sales } = sale
+        const { sale_items, ...sales } = sale
 
         const existsCustomer = await SaleUtil.checkValidCustomerId(sale.customer_id)
         if (!existsCustomer) {
@@ -32,7 +32,7 @@ export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 
             const idOfNewSale = await SaleUtil.insertSaleInDatabase(formattedSale, trx)
 
             //Preparando o objeto com os produtos da venda e já verificando a disponibilidade
-            const salesItems = await SaleUtil.checkAndFormatProductsSale(sales_items, idOfNewSale, trx)
+            const salesItems = await SaleUtil.checkAndFormatProductsSale(sale_items, idOfNewSale, trx)
 
             //Atualizando as informações do produto no banco de dados
             await SaleUtil.updateProductsSaleInDatabase(salesItems, trx)
