@@ -83,8 +83,9 @@ router.post('/sale/:id/:idAddress', ensureAuthenticated, ensureAccess(['customer
 router.get('/sale/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.getAllValidation, SaleController.getAll)
 router.get('/sale/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.getByIdValidation, SaleController.getById)
 router.put('/sale/cancel/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.cancelSaleValidation, SaleController.cancelSale)
-router.put('/sale/pay/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.paySaleValidation, SaleController.paySale)
-router.put('/sale/send/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.sendSaleValidation , SaleController.sendSale)
+router.put('/sale/pay/:id/:idSale', ensureAuthenticated, ensureAccess(['customer']), SaleController.paySaleValidation, SaleController.paySale)
+router.put('/sale/send/:id/:idSale', ensureAuthenticated, ensureAccess(['admin']), SaleController.sendSaleValidation, SaleController.sendSale)
+router.put('/sale/concluded/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.concludeSaleValidation, SaleController.concludeSale)
 
 //Public routes
 //--Products

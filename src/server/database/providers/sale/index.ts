@@ -5,6 +5,7 @@ import * as getById from './GetById'
 import * as cancelSale from './CancelSale'
 import * as paySale from './PaySale'
 import * as sendSale from './SendSale'
+import * as concludeSale from './ConcludeSale'
 
 export const SaleProvider = {
     ...count,
@@ -13,5 +14,6 @@ export const SaleProvider = {
     ...getById,
     ...cancelSale,
     ...paySale,
-    ...sendSale
+    ...sendSale,
+    ...concludeSale
 }
