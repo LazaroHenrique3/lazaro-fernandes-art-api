@@ -26,7 +26,7 @@ export const cancelSale = async (idCustomer: number, idSale: number): Promise<vo
         //Fluxo de cancelamento
         const result = await Knex.transaction(async (trx) => {
             //Setando o status da tabela de venda para cancelado
-            await SaleUtil.updateSaleToCanceled(idSale, trx)
+            await SaleUtil.updateSaleToCanceled(idSale, idCustomer, trx)
 
             //Atualizando as informações do produto no banco de dados, devolvendo as quantidades
             return await SaleUtil.updateProductsSaleCanceledInDatabase(salesItems, trx)

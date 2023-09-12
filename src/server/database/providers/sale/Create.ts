@@ -23,7 +23,7 @@ export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 
         }
 
         //Formatando o objeto de criação da venda  
-        const formattedSale = { ...sales, status: DEFAULT_CREATE_STATUS, order_date: getCurrentDate() }
+        const formattedSale = { ...sales, status: DEFAULT_CREATE_STATUS, order_date: SaleUtil.formatAndGetCurrentDate() }
 
         //Fluxo de inserção
         const result = await Knex.transaction(async (trx) => {
@@ -51,11 +51,3 @@ export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 
 
 }
 
-function getCurrentDate(): string {
-    const today = new Date()
-    const year = today.getFullYear()
-    const month = String(today.getMonth() + 1).padStart(2, '0')
-    const day = String(today.getDate()).padStart(2, '0')
-
-    return `${year}-${month}-${day}`
-}

@@ -65,7 +65,7 @@ export const checkAndFormatProductsSale = async (salesItems: ISaleItems[], idSal
 }
 
 export const formatResultByIdForResponse = async (sale: ISale, idSale: number, idSaleAddress: number, idCustomer: number): Promise<ISaleList | Error> => {
-    
+
     //Buscando os produtos da venda
     const salesItems = await getSaleItemsById(idSale)
 
@@ -85,4 +85,20 @@ export const formatResultByIdForResponse = async (sale: ISale, idSale: number, i
 
     return new Error('Erro inesperado ao consultar venda!')
 
+}
+
+export const formatAndGetCurrentDate = (): string => {
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+
+    return `${year}-${month}-${day}`
+}
+
+export const formatStringDateForDate = (date: string): Date => {
+    const formattedDate = new Date(date).toISOString()
+
+    const [year, month, day] = formattedDate.split('-')
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
 }
