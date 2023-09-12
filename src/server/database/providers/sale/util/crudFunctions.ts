@@ -104,21 +104,38 @@ export const updateSaleToCanceled = async (idSale: number, idCustomer: number, t
 
 }
 
-export const updateSaleToInPreparation = async (idSale: number, idCustomer: number, paymentReceivedDate: string, trx?: knex.Transaction): Promise<void> => {
+export const updateSaleToInPreparation = async (idSale: number, idCustomer: number, paymentReceivedDate: string): Promise<void> => {
 
     const newStatus: SaleStatus = 'Em preparação'
 
-    if (trx) {
-        await trx(ETableNames.sale)
-            .update({status: newStatus, payment_received_date: paymentReceivedDate})
-            .where('id', '=', idSale)
-            .andWhere('customer_id', '=', idCustomer)
-
-        return
-    }
-
     await Knex(ETableNames.sale)
         .update({status: newStatus, payment_received_date: paymentReceivedDate})
+        .where('id', '=', idSale)
+        .andWhere('customer_id', '=', idCustomer)
+
+    return
+
+}
+
+export const updateSaleToSent = async (idSale: number, idCustomer: number): Promise<void> => {
+
+    const newStatus: SaleStatus = 'Enviado'
+
+    await Knex(ETableNames.sale)
+        .update({status: newStatus})
+        .where('id', '=', idSale)
+        .andWhere('customer_id', '=', idCustomer)
+
+    return
+
+}
+
+export const updateSaleToConcluded = async (idSale: number, idCustomer: number): Promise<void> => {
+
+    const newStatus: SaleStatus = 'Concluída'
+
+    await Knex(ETableNames.sale)
+        .update({status: newStatus})
         .where('id', '=', idSale)
         .andWhere('customer_id', '=', idCustomer)
 
