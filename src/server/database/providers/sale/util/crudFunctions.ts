@@ -12,8 +12,8 @@ interface ISalesItems {
 }
 
 
-
 type ProductStatus = 'Ativo' | 'Vendido' | 'Inativo'
+type SaleStatus = 'Ag. Pagamento' | 'Em preparação' | 'Enviado' | 'Cancelada' | 'Concluída'
 
 export const getSaleById = async (idSale: number, idCustomer: number): Promise<ISale | undefined> => {
 
@@ -93,6 +93,15 @@ export const insertSalesItemsInDatabase = async (salesItems: ISalesItems[], trx:
 
 }
 
+export const updateSaleToCanceled = async (idSale: number, trx: knex.Transaction): Promise<void> => {
+
+    const newStatus: SaleStatus = 'Cancelada'
+
+    await trx(ETableNames.sale)
+        .update({ status: newStatus })
+        .where('id', '=', idSale)
+}
+
 export const updateProductsSaleInDatabase = async (salesItems: ISalesItems[], trx: knex.Transaction): Promise<void> => {
 
     //Preparando o Array de promisses
@@ -110,6 +119,48 @@ export const updateProductsSaleInDatabase = async (salesItems: ISalesItems[], tr
         await trx(ETableNames.product)
             .update(productInformationForUpdate)
             .where('id', '=', idProduct)
+    })
+
+    //Executando as promisses
+    try {
+        await Promise.all(productPromises)
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+
+}
+
+export const updateProductsSaleCanceledInDatabase = async (salesItems: ISaleItemsList[], trx: knex.Transaction): Promise<void> => {
+
+    //Preparando o Array de promisses
+    const productPromises = salesItems.map(async (item) => {
+        const { product_id, quantity } = item
+
+        // Consulta para buscar o produto pelo ID e trazer seu preço
+        const product = await trx(ETableNames.product)
+            .select('quantity')
+            .where('id', '=', product_id)
+            .first()
+
+        if (product) {
+
+            const status: ProductStatus = 'Ativo'
+
+            const productInformationForUpdate = {
+                status: status,
+                quantity: product.quantity + quantity
+            }
+
+            // Atualizando o status e a quantidade dos produtos
+            await trx(ETableNames.product)
+                .update(productInformationForUpdate)
+                .where('id', '=', product_id)
+
+            return
+        }
+
+        throw new Error(`Produto com ID ${product_id} não encontrado.`)
     })
 
     //Executando as promisses

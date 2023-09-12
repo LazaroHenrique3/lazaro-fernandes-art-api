@@ -1,13 +1,19 @@
 import { ETableNames } from '../../../ETablesNames'
 import { Knex } from '../../../knex'
 
-export const checkValidSaleId = async (idSale: number, idCustomer: number): Promise<boolean> => {
+type SaleStatus = 'Ag. Pagamento' | 'Em preparação' | 'Enviado' | 'Cancelada' | 'Concluída'
+
+export const checkValidSaleId = async (idSale: number, idCustomer: number, isStatus?: SaleStatus[]): Promise<boolean> => {
 
     const addressResult = await Knex(ETableNames.sale)
-        .select('id')
+        .select('id', 'status')
         .where('id', '=', idSale)
         .andWhere('customer_id', '=', idCustomer)
         .first()
+
+    if (isStatus && addressResult) {
+        return (isStatus.includes(addressResult.status))
+    }
 
     return addressResult !== undefined
 }

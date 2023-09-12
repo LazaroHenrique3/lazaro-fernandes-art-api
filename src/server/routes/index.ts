@@ -82,6 +82,7 @@ router.get('/customer/report/generate', ensureAuthenticated, ensureAccess(['admi
 router.post('/sale/:id/:idAddress', ensureAuthenticated, ensureAccess(['customer']), SaleController.createValidation, SaleController.create)
 router.get('/sale/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.getAllValidation, SaleController.getAll)
 router.get('/sale/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.getByIdValidation, SaleController.getById)
+router.put('/sale/cancel/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.cancelSaleValidation, SaleController.cancelSale)
 
 
 //Public routes
