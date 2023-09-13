@@ -213,3 +213,20 @@ export const updateProductsSaleCanceledInDatabase = async (salesItems: ISaleItem
     }
 
 }
+
+export const deleteSalesItemsInDatabase = async (idSale: number, trx: knex.Transaction): Promise<void> => {
+
+    await trx(ETableNames.salesItems)
+        .where('sale_id', '=', idSale)
+        .del()
+
+}
+
+export const deleteSaleInDatabase = async (idSale: number, trx: knex.Transaction): Promise<void> => {
+
+    await trx(ETableNames.sale)
+        .where('id', '=', idSale)
+        .del()
+
+}
+

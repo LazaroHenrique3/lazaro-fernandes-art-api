@@ -47,6 +47,7 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
     }
 
     let accessLevel = 'Admin'
+    //Siginifica que é o próprioa mdin root que está solicitando
     if(req.headers.accessLevel === 'Root' && Number(req.headers.idUser) === Number(req.params.id)){
         accessLevel = 'Root'
     }

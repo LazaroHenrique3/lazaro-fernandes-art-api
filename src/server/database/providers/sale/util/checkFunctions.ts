@@ -21,6 +21,28 @@ export const checkValidSaleId = async (idSale: number, idCustomer: number, isSta
     return saleResult !== undefined
 }
 
+export const checkValidSaleIdAndReturnStatus = async (idSale: number, idCustomer: number): Promise<{isValid: boolean,  status: SaleStatus}> => {
+
+    const saleResult = await Knex(ETableNames.sale)
+        .select('id', 'status')
+        .where('id', '=', idSale)
+        .andWhere('customer_id', '=', idCustomer)
+        .first()
+
+    if(saleResult){
+        return {
+            isValid: saleResult !== undefined,
+            status: saleResult.status
+        }
+    }
+
+    //Apenas para ter algum retorno caso ele não exista
+    return {
+        isValid: false,
+        status: 'Ag. Pagamento'
+    }
+}
+
 export const checkValidAddressId = async (idAddress: number, idCustomer: number): Promise<boolean> => {
 
     const addressResult = await Knex(ETableNames.address)
