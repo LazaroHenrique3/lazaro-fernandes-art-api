@@ -1,5 +1,10 @@
 import { ETableNames } from '../../../ETablesNames'
-import { ISale, ISaleItemsList } from '../../../models'
+import {
+    ISale,
+    ISaleItemsList,
+    ISaleListAll,
+    ISaleListById
+} from '../../../models'
 import { Knex } from '../../../knex'
 import { Knex as knex } from 'knex'
 
@@ -15,10 +20,18 @@ interface ISalesItems {
 type ProductStatus = 'Ativo' | 'Vendido' | 'Inativo'
 type SaleStatus = 'Ag. Pagamento' | 'Em preparação' | 'Enviado' | 'Cancelada' | 'Concluída'
 
-export const getSaleById = async (idSale: number, idCustomer: number): Promise<ISale | undefined> => {
+export const getSaleById = async (idSale: number, idCustomer: number): Promise<ISaleListById | undefined> => {
 
-    return await Knex(ETableNames.sale).select('*')
-        .where('id', '=', idSale)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return await Knex(ETableNames.sale)
+        .select(
+            'sale.*',
+            'customer.name as customer_name',
+            Knex.raw('(SELECT SUM(quantity * price) FROM sales_items WHERE sales_items.sale_id = sale.id) as total')
+        )
+        .leftJoin(ETableNames.customer, 'sale.customer_id', 'customer.id')
+        .where('sale.id', '=', idSale)
         .andWhere('customer_id', '=', idCustomer)
         .first()
 
@@ -32,14 +45,21 @@ export const getSaleItemsById = async (idSale: number): Promise<ISaleItemsList[]
 
 }
 
-export const getSaleWithFilter = async (filter: string, page: number, limit: number, idSale: number, idCustomer: number): Promise<ISale[]> => {
+export const getSaleWithFilter = async (filter: string, page: number, limit: number, idSale: number, idCustomer: number): Promise<ISaleListAll[]> => {
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return await Knex(ETableNames.sale)
-        .select('*')
+        .select(
+            'sale.*',
+            'customer.name as customer_name',
+            Knex.raw('(SELECT SUM(quantity * price) FROM sales_items WHERE sales_items.sale_id = sale.id) as total')
+        )
+        .leftJoin(ETableNames.customer, 'sale.customer_id', 'customer.id')
         .where(function () {
             this.where('customer_id', '=', idCustomer)
                 .andWhere(function () {
-                    this.where('id', '=', idSale)
+                    this.where('sale.id', '=', idSale)
                         .orWhereIn('customer_id', function () {
                             this.select('id')
                                 .from(ETableNames.customer)
@@ -47,6 +67,17 @@ export const getSaleWithFilter = async (filter: string, page: number, limit: num
                         })
                 })
         })
+        .orderByRaw(`
+            CASE 
+                WHEN sale.status = 'Ag. Pagamento' THEN 1
+                WHEN sale.status = 'Em preparação' THEN 2
+                WHEN sale.status = 'Enviado' THEN 3
+                WHEN sale.status = 'Concluída' THEN 4
+                WHEN sale.status = 'Cancelada' THEN 5
+                ELSE 6 -- Ordem padrão para outros status
+            END
+            ASC`
+        )
         .offset((page - 1) * limit)
         .limit(limit)
 
@@ -109,7 +140,7 @@ export const updateSaleToInPreparation = async (idSale: number, idCustomer: numb
     const newStatus: SaleStatus = 'Em preparação'
 
     await Knex(ETableNames.sale)
-        .update({status: newStatus, payment_received_date: paymentReceivedDate})
+        .update({ status: newStatus, payment_received_date: paymentReceivedDate })
         .where('id', '=', idSale)
         .andWhere('customer_id', '=', idCustomer)
 
@@ -122,7 +153,7 @@ export const updateSaleToSent = async (idSale: number, idCustomer: number): Prom
     const newStatus: SaleStatus = 'Enviado'
 
     await Knex(ETableNames.sale)
-        .update({status: newStatus})
+        .update({ status: newStatus })
         .where('id', '=', idSale)
         .andWhere('customer_id', '=', idCustomer)
 
@@ -135,7 +166,7 @@ export const updateSaleToConcluded = async (idSale: number, idCustomer: number, 
     const newStatus: SaleStatus = 'Concluída'
 
     await Knex(ETableNames.sale)
-        .update({status: newStatus, delivery_date: deliveryDate})
+        .update({ status: newStatus, delivery_date: deliveryDate })
         .where('id', '=', idSale)
         .andWhere('customer_id', '=', idCustomer)
 

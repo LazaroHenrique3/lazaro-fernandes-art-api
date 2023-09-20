@@ -76,13 +76,14 @@ export const checkValidDateToPayment = async (idSale: number, idCustomer: number
 
         const paymentReceivedDate = formatStringDateForDate(paymentReceivedDateString)
         const paymentDueDate = formatStringDateForDate(saleResult.payment_due_date as string)
-
-        const isPaymentDateValid = paymentReceivedDate > paymentDueDate
+       
+        const isPaymentDateValid = paymentReceivedDate <= paymentDueDate
 
         if(!isPaymentDateValid){
             //Significa que já venceu a data de pagamento, logo, posso cancelar automaticamente a compra
             try {
                 await cancelSale(idCustomer, idSale)
+                return false
             } catch (error) {
                 console.log(error)
                 return false

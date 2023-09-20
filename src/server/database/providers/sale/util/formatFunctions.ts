@@ -2,7 +2,8 @@ import { ETableNames } from '../../../ETablesNames'
 import { Knex as knex } from 'knex'
 
 import {
-    ISale, ISaleList, ISaleItems
+    ISaleItems, 
+    ISaleListById
 } from '../../../models'
 
 import {
@@ -64,7 +65,7 @@ export const checkAndFormatProductsSale = async (salesItems: ISaleItems[], idSal
     }
 }
 
-export const formatResultByIdForResponse = async (sale: ISale, idSale: number, idSaleAddress: number, idCustomer: number): Promise<ISaleList | Error> => {
+export const formatResultByIdForResponse = async (sale: ISaleListById, idSale: number, idSaleAddress: number, idCustomer: number): Promise<ISaleListById | Error> => {
 
     //Buscando os produtos da venda
     const salesItems = await getSaleItemsById(idSale)
@@ -74,7 +75,7 @@ export const formatResultByIdForResponse = async (sale: ISale, idSale: number, i
 
     if (!(saleAddress instanceof Error) && salesItems) {
 
-        const formattedResult: ISaleList = {
+        const formattedResult: ISaleListById = {
             ...sale,
             sale_items: salesItems,
             sale_address: saleAddress,
@@ -89,6 +90,19 @@ export const formatResultByIdForResponse = async (sale: ISale, idSale: number, i
 
 export const formatAndGetCurrentDate = (): string => {
     const today = new Date()
+    
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+
+    return `${year}-${month}-${day}`
+}
+
+export const formatAndGetPaymentDueDate = (): string => {
+    const today = new Date()
+
+    today.setDate(today.getDate() + 1)
+
     const year = today.getFullYear()
     const month = String(today.getMonth() + 1).padStart(2, '0')
     const day = String(today.getDate()).padStart(2, '0')

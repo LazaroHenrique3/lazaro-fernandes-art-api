@@ -7,7 +7,7 @@ import { ISale } from '../../database/models'
 import { SaleProvider } from '../../database/providers/sale'
 
 //Para tipar o body do request
-interface IBodyProps extends Omit<ISale, 'id' | 'status' | 'order_date' | 'payment_received_date' | 'delivery_date' | 'customer_id' | 'address_id'> { }
+interface IBodyProps extends Omit<ISale, 'id' | 'status' | 'order_date' | 'payment_due_date' | 'payment_received_date' | 'delivery_date' | 'customer_id' | 'address_id'> { }
 
 //Para tipar o param do request
 interface IParamProps {
@@ -25,28 +25,6 @@ const saleItemSchema = yup.object().shape({
 export const createValidation = validation((getSchema) => ({
     body: getSchema<IBodyProps>(yup.object().shape({
         estimated_delivery_date: yup.date()
-            .transform((currentValue, originalValue) => {
-                if (originalValue && typeof originalValue === 'string') {
-                    const date = new Date(originalValue).toISOString()
-
-                    const [year, month, day] = date.split('-')
-                    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
-                }
-                return currentValue
-            })
-            .test('before-today', 'A data não pode ser menor que hoje!', value => {
-                const currentDate = new Date()
-
-                if (value) {
-                    const productDate = new Date(value)
-
-                    return productDate >= currentDate
-                }
-
-                return false
-            })
-            .required(),
-        payment_due_date: yup.date()
             .transform((currentValue, originalValue) => {
                 if (originalValue && typeof originalValue === 'string') {
                     const date = new Date(originalValue).toISOString()

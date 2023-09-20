@@ -36,7 +36,7 @@ export const getById = async (req: Request<IParamProps>, res: Response) => {
         })
     } 
 
-    const result = await SaleProvider.getById(req.params.idSale, req.params.id)
+    const result = await SaleProvider.getById(req.params.id, req.params.idSale)
     if(result instanceof Error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

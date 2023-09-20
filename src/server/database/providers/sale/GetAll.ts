@@ -1,10 +1,10 @@
-import { ISale } from '../../models'
+import { ISaleListAll } from '../../models'
 
 //Funções auxiliares
 import { SaleUtil } from './util'
 
 //Recebe aquele id para caso um item não esteja na primeira pagina, ele possa retornar junto
-export const getAll = async (page: number, limit: number, filter: string, idSale: number, idCustomer: number): Promise<ISale[] | Error> => {
+export const getAll = async (page: number, limit: number, filter: string, idSale: number, idCustomer: number): Promise<ISaleListAll[] | Error> => {
 
     try {
         const result = SaleUtil.getSaleWithFilter(filter, page, limit, idSale, idCustomer)

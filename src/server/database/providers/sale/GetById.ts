@@ -1,9 +1,9 @@
-import { ISaleList } from '../../models'
+import { ISaleListById } from '../../models'
 
 //Funções auxiliares
 import { SaleUtil } from './util'
 
-export const getById = async (idCustomer: number, idSale: number): Promise<ISaleList | Error> => {
+export const getById = async (idCustomer: number, idSale: number): Promise<ISaleListById | Error> => {
 
     try {
         //Verificando se o id informado é valido

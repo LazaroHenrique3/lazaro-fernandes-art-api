@@ -7,7 +7,7 @@ import { SaleUtil } from './util'
 type SaleStatus = 'Ag. Pagamento' | 'Em preparação' | 'Enviado' | 'Cancelada' | 'Concluída'
 const DEFAULT_CREATE_STATUS: SaleStatus = 'Ag. Pagamento'
 
-export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 'payment_received_date' | 'delivery_date'>): Promise<number | Error> => {
+export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 'payment_due_date' | 'payment_received_date' | 'delivery_date'>): Promise<number | Error> => {
 
     try {
         const { sale_items, ...sales } = sale
@@ -23,7 +23,12 @@ export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 
         }
 
         //Formatando o objeto de criação da venda  
-        const formattedSale = { ...sales, status: DEFAULT_CREATE_STATUS, order_date: SaleUtil.formatAndGetCurrentDate() }
+        const formattedSale = { 
+            ...sales, 
+            status: DEFAULT_CREATE_STATUS,  
+            payment_due_date: SaleUtil.formatAndGetPaymentDueDate(),
+            order_date: SaleUtil.formatAndGetCurrentDate() 
+        } 
 
         //Fluxo de inserção
         const result = await Knex.transaction(async (trx) => {

@@ -32,7 +32,7 @@ export const calculate = async (req: Request<{}, {}, ICalculateShipping>, res: R
                 default: result.message
             }
         })
-    }
+    } 
 
     return res.status(StatusCodes.OK).json(result)
 }
