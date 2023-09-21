@@ -6,6 +6,11 @@ import { validation } from '../../shared/middleware'
 import { SaleProvider } from '../../database/providers/sale'
 
 //Para tipar o body do request
+interface IBodyProps {
+    tracking_code: string
+}
+
+//Para tipar o body do request
 interface IParamProps {
     id?: number,
     idSale?: number,
@@ -13,13 +18,16 @@ interface IParamProps {
 
 //Midleware
 export const sendSaleValidation = validation(getSchema => ({
+    body: getSchema<IBodyProps>(yup.object().shape({
+        tracking_code: yup.string().length(13).matches(/^[A-Z]{2}\d{9}[A-Z]{2}$/).required()
+    })),
     params: getSchema<IParamProps>(yup.object().shape({
         id: yup.number().integer().required().moreThan(0),
         idSale: yup.number().integer().required().moreThan(0),
     })),
 }))
 
-export const sendSale = async (req: Request<IParamProps>, res: Response) => {
+export const sendSale = async (req: Request<IParamProps, {}, IBodyProps>, res: Response) => {
     if (!req.params.id) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             errors: {
@@ -36,7 +44,7 @@ export const sendSale = async (req: Request<IParamProps>, res: Response) => {
         })
     } 
 
-    const result = await SaleProvider.sendSale(req.params.id, req.params.idSale)
+    const result = await SaleProvider.sendSale(req.params.id, req.params.idSale, req.body.tracking_code)
     if(result instanceof Error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

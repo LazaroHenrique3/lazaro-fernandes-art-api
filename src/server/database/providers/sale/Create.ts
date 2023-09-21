@@ -7,7 +7,7 @@ import { SaleUtil } from './util'
 type SaleStatus = 'Ag. Pagamento' | 'Em preparação' | 'Enviado' | 'Cancelada' | 'Concluída'
 const DEFAULT_CREATE_STATUS: SaleStatus = 'Ag. Pagamento'
 
-export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 'payment_due_date' | 'payment_received_date' | 'delivery_date'>): Promise<number | Error> => {
+export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 'tracking_code' | 'payment_due_date' | 'payment_received_date' | 'delivery_date'>): Promise<number | Error> => {
 
     try {
         const { sale_items, ...sales } = sale

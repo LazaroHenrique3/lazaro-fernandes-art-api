@@ -17,6 +17,7 @@ export interface ISale {
     payment_received_date?: Date | string
     delivery_date?: Date | string
     shipping_cost: number
+    tracking_code?: string
     customer_id: number
     address_id: number
     sale_items: ISaleItems[]
@@ -42,6 +43,7 @@ export interface ISaleListById {
     payment_received_date?: Date | string
     delivery_date?: Date | string
     shipping_cost: number
+    tracking_code?: string
     customer_id: number
     address_id: number
     customer_name: string
@@ -61,6 +63,7 @@ export interface ISaleListAll {
     payment_received_date?: Date | string
     delivery_date?: Date | string
     shipping_cost: number
+    tracking_code?: string
     customer_id: number
     address_id: number
     customer_name: string

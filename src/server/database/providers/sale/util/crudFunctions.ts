@@ -148,12 +148,12 @@ export const updateSaleToInPreparation = async (idSale: number, idCustomer: numb
 
 }
 
-export const updateSaleToSent = async (idSale: number, idCustomer: number): Promise<void> => {
+export const updateSaleToSent = async (idSale: number, idCustomer: number, trackingCode: string): Promise<void> => {
 
     const newStatus: SaleStatus = 'Enviado'
 
     await Knex(ETableNames.sale)
-        .update({ status: newStatus })
+        .update({ status: newStatus, tracking_code: trackingCode })
         .where('id', '=', idSale)
         .andWhere('customer_id', '=', idCustomer)
 

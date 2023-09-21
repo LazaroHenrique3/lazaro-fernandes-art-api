@@ -1,7 +1,7 @@
 //Funções auxiliares
 import { SaleUtil } from './util'
 
-export const sendSale = async (idCustomer: number, idSale: number): Promise<void | Error> => {
+export const sendSale = async (idCustomer: number, idSale: number, trackingCode: string): Promise<void | Error> => {
 
     try {
 
@@ -17,7 +17,7 @@ export const sendSale = async (idCustomer: number, idSale: number): Promise<void
             return new Error('Id informado inválido!')
         }
 
-        await SaleUtil.updateSaleToSent(idSale, idCustomer)
+        await SaleUtil.updateSaleToSent(idSale, idCustomer, trackingCode)
         return void 0
 
     } catch (error) {

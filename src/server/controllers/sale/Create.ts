@@ -7,7 +7,7 @@ import { ISale } from '../../database/models'
 import { SaleProvider } from '../../database/providers/sale'
 
 //Para tipar o body do request
-interface IBodyProps extends Omit<ISale, 'id' | 'status' | 'order_date' | 'payment_due_date' | 'payment_received_date' | 'delivery_date' | 'customer_id' | 'address_id'> { }
+interface IBodyProps extends Omit<ISale, 'id' | 'status' | 'order_date' | 'payment_due_date' | 'tracking_code' | 'payment_received_date' | 'delivery_date' | 'customer_id' | 'address_id'> { }
 
 //Para tipar o param do request
 interface IParamProps {

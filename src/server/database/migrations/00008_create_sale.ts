@@ -16,6 +16,7 @@ export async function up(knex: Knex) {
         table.date('payment_received_date').nullable().defaultTo(null)
         table.date('delivery_date').nullable().defaultTo(null)
         table.decimal('shipping_cost', 10, 2).unsigned().nullable().defaultTo(null)
+        table.date('tracking_code').nullable().defaultTo(null)
 
         table.comment('Tabela usada para armazenar as vendas do sistema.')
     }).then(() => {
