@@ -115,6 +115,34 @@ export const getSaleWithFilter = async (filter: string, page: number, limit: num
 
 }
 
+export const getAllSalesForReport = async (filter: string): Promise<ISaleListAll[]> => {
+
+    return await Knex(ETableNames.sale)
+        .select(
+            'sale.*',
+            'customer.name as customer_name',
+            Knex.raw('(SELECT SUM(quantity * price) FROM sales_items WHERE sales_items.sale_id = sale.id) as total')
+        )
+        .leftJoin(ETableNames.customer, 'sale.customer_id', 'customer.id')
+        .whereIn('sale.customer_id', function () {
+            this.select('id')
+                .from(ETableNames.customer)
+                .where('name', 'like', `%${filter}%`)
+        })
+        .orderByRaw(`
+        CASE 
+            WHEN sale.status = 'Ag. Pagamento' THEN 1
+            WHEN sale.status = 'Em preparação' THEN 2
+            WHEN sale.status = 'Enviado' THEN 3
+            WHEN sale.status = 'Concluída' THEN 4
+            WHEN sale.status = 'Cancelada' THEN 5
+            ELSE 6 -- Ordem padrão para outros status
+        END
+        ASC`
+        )
+
+}
+
 export const getTotalOfRegisters = async (filter: string, idSale: number, idCustomer: number): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.sale)

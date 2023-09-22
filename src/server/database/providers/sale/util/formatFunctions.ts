@@ -116,3 +116,13 @@ export const formatStringDateForDate = (date: string): Date => {
     const [year, month, day] = formattedDate.split('-')
     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
 }
+
+export const formattedPrice = (value: number | string) => {
+
+    if (typeof value === 'string') return ''
+
+    return value.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    })
+}

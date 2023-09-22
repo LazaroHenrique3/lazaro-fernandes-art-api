@@ -7,6 +7,7 @@ import * as paySale from './PaySale'
 import * as sendSale from './SendSale'
 import * as concludeSale from './ConcludeSale'
 import * as deleteById from './DeleteById'
+import * as report from './Report'
 
 export const SaleController = {
     ...create,
@@ -17,5 +18,6 @@ export const SaleController = {
     ...paySale,
     ...sendSale,
     ...concludeSale,
-    ...deleteById
+    ...deleteById,
+    ...report
 }
