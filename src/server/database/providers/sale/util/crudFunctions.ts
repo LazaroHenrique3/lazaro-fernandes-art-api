@@ -45,6 +45,38 @@ export const getSaleItemsById = async (idSale: number): Promise<ISaleItemsList[]
 
 }
 
+export const getSaleWithFilterAdmin = async (filter: string, page: number, limit: number): Promise<ISaleListAll[]> => {
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return await Knex(ETableNames.sale)
+        .select(
+            'sale.*',
+            'customer.name as customer_name',
+            Knex.raw('(SELECT SUM(quantity * price) FROM sales_items WHERE sales_items.sale_id = sale.id) as total')
+        )
+        .leftJoin(ETableNames.customer, 'sale.customer_id', 'customer.id')
+        .whereIn('sale.customer_id', function () {
+            this.select('id')
+                .from(ETableNames.customer)
+                .where('name', 'like', `%${filter}%`)
+        })
+        .orderByRaw(`
+        CASE 
+            WHEN sale.status = 'Ag. Pagamento' THEN 1
+            WHEN sale.status = 'Em preparação' THEN 2
+            WHEN sale.status = 'Enviado' THEN 3
+            WHEN sale.status = 'Concluída' THEN 4
+            WHEN sale.status = 'Cancelada' THEN 5
+            ELSE 6 -- Ordem padrão para outros status
+        END
+        ASC`
+        )
+        .offset((page - 1) * limit)
+        .limit(limit)
+
+}
+
 export const getSaleWithFilter = async (filter: string, page: number, limit: number, idSale: number, idCustomer: number): Promise<ISaleListAll[]> => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -94,6 +126,17 @@ export const getTotalOfRegisters = async (filter: string, idSale: number, idCust
                         .orWhere(`${ETableNames.customer}.name`, 'like', `%${filter}%`)
                 })
         })
+        .count<[{ count: number }]>('* as count')
+
+    return count
+
+}
+
+export const getTotalOfRegistersAdmin = async (filter: string): Promise<number | undefined> => {
+
+    const [{ count }] = await Knex(ETableNames.sale)
+        .join(ETableNames.customer, `${ETableNames.sale}.customer_id`, '=', `${ETableNames.customer}.id`)
+        .where(`${ETableNames.customer}.name`, 'like', `%${filter}%`)
         .count<[{ count: number }]>('* as count')
 
     return count
