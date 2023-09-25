@@ -86,6 +86,7 @@ router.get('/sale/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', '
 router.put('/sale/cancel/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.cancelSaleValidation, SaleController.cancelSale)
 router.put('/sale/pay/:id/:idSale', ensureAuthenticated, ensureAccess(['customer']), SaleController.paySaleValidation, SaleController.paySale)
 router.put('/sale/send/:id/:idSale', ensureAuthenticated, ensureAccess(['admin']), SaleController.sendSaleValidation, SaleController.sendSale)
+router.put('/sale/update/tracking-code/:id/:idSale', ensureAuthenticated, ensureAccess(['admin']), SaleController.updateTrackingCodeByIdValidation, SaleController.updateTrackingCodeById)
 router.put('/sale/concluded/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.concludeSaleValidation, SaleController.concludeSale)
 router.delete('/sale/:id/:idSale', ensureAuthenticated, ensureAccess(['admin'], true), SaleController.deleteByIdValidation, SaleController.deleteById)
 router.get('/sales/report/generate', ensureAuthenticated, ensureAccess(['admin']), SaleController.reportValidation, SaleController.report)

@@ -245,6 +245,17 @@ export const updateSaleToConcluded = async (idSale: number, idCustomer: number, 
 
 }
 
+export const updateTrackingCode = async (idSale: number, idCustomer: number, trackingCode: string): Promise<void> => {
+
+    await Knex(ETableNames.sale)
+        .update({ tracking_code: trackingCode })
+        .where('id', '=', idSale)
+        .andWhere('customer_id', '=', idCustomer)
+
+    return
+
+}
+
 export const updateProductsSaleInDatabase = async (salesItems: ISalesItems[], trx: knex.Transaction): Promise<void> => {
 
     //Preparando o Array de promisses

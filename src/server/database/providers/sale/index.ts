@@ -8,6 +8,7 @@ import * as getById from './GetById'
 import * as deleteById from './DeleteById'
 import * as cancelSale from './CancelSale'
 import * as paySale from './PaySale'
+import * as UpdateTrackingCodeById from './UpdateTrackingCodeById'
 import * as sendSale from './SendSale'
 import * as concludeSale from './ConcludeSale'
 
@@ -22,6 +23,7 @@ export const SaleProvider = {
     ...deleteById,
     ...cancelSale,
     ...paySale,
+    ...UpdateTrackingCodeById,
     ...sendSale,
     ...concludeSale
 }
