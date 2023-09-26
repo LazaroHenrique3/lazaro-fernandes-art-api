@@ -11,6 +11,7 @@ import * as paySale from './PaySale'
 import * as UpdateTrackingCodeById from './UpdateTrackingCodeById'
 import * as sendSale from './SendSale'
 import * as concludeSale from './ConcludeSale'
+import * as getFinancialInformation from './GetFinancialInformation'
 
 export const SaleProvider = {
     ...count,
@@ -25,5 +26,6 @@ export const SaleProvider = {
     ...paySale,
     ...UpdateTrackingCodeById,
     ...sendSale,
-    ...concludeSale
+    ...concludeSale,
+    ...getFinancialInformation
 }

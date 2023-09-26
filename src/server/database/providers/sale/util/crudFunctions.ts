@@ -16,6 +16,17 @@ interface ISalesItems {
     price: number
 }
 
+type TTopCategories = {
+    name: string
+    total_sales: number
+}
+
+export interface IFinancialInformations {
+    topCategories: TTopCategories[]
+    totalRevenue: number
+    currentMonthBilling: number
+    lastMonthBilling: number
+}
 
 type ProductStatus = 'Ativo' | 'Vendido' | 'Inativo'
 type SaleStatus = 'Ag. Pagamento' | 'Em preparação' | 'Enviado' | 'Cancelada' | 'Concluída'
@@ -169,6 +180,30 @@ export const getTotalOfRegistersAdmin = async (filter: string): Promise<number |
 
     return count
 
+}
+
+export const getFinancialInformation = async (): Promise<IFinancialInformations | Error> => {
+    try {
+        const today = new Date()
+        const currentMonth = String(today.getMonth() + 1).padStart(2, '0')
+        const lastMonth = String(today.getMonth()).padStart(2, '0')
+
+        const totalRevenue = await getTotalRevenue()
+        const totalCurrentMonth = await getTotalMonth(currentMonth)
+        const totalLastMonth = await getTotalMonth(lastMonth)
+        const topCategories = await getTopCategories()
+
+        const financialInfo: IFinancialInformations = {
+            topCategories,
+            totalRevenue,
+            currentMonthBilling: totalCurrentMonth,
+            lastMonthBilling: totalLastMonth,
+        }
+
+        return financialInfo
+    } catch (error) {
+        return new Error
+    }
 }
 
 export const insertSaleInDatabase = async (sale: Omit<ISale, 'id' | 'payment_received_date' | 'delivery_date' | 'sale_items'>, trx: knex.Transaction): Promise<number> => {
@@ -342,4 +377,62 @@ export const deleteSaleInDatabase = async (idSale: number, trx: knex.Transaction
         .del()
 
 }
+
+//Funções auxiliares
+const getTotalRevenue = async () => {
+    const [{ total_revenue }] = await Knex.raw(`
+      SELECT 
+        SUM(sales_total.total_sales + s.shipping_cost) as total_revenue
+      FROM sale s
+      JOIN (
+        SELECT sale_id, SUM(quantity * price) as total_sales
+        FROM sales_items
+        GROUP BY sale_id
+      ) as sales_total ON s.id = sales_total.sale_id
+      WHERE s.status NOT IN ('Ag. Pagamento', 'Cancelada')
+    `)
+
+    return total_revenue === null ? 0 : total_revenue
+}
+
+const getTotalMonth = async (month: string) => {
+    const [{ total_month }] = await Knex.raw(`
+      SELECT 
+        SUM(sales_total.total_sales + s.shipping_cost) as total_month
+      FROM sale s
+      JOIN (
+        SELECT sale_id, SUM(quantity * price) as total_sales
+        FROM sales_items
+        GROUP BY sale_id
+      ) as sales_total ON s.id = sales_total.sale_id
+      WHERE strftime("%m", s.order_date) = ?
+        AND s.status NOT IN ('Ag. Pagamento', 'Cancelada')
+    `, [month])
+
+    return total_month === null ? 0 : total_month
+}
+
+const getTopCategories = async () => {
+    const topCategories = await Knex.raw(`
+      SELECT 
+        c.name,
+        COUNT(si.sale_id) as total_sales
+      FROM sales_items si
+      JOIN product p ON si.product_id = p.id
+      JOIN category c ON p.category_id = c.id
+      JOIN sale s ON si.sale_id = s.id
+      WHERE s.status NOT IN ('Ag. Pagamento', 'Cancelada')
+      GROUP BY c.name
+      ORDER BY total_sales DESC
+      LIMIT 3
+    `)
+
+    return topCategories
+}
+
+
+
+
+
+
 

@@ -89,6 +89,7 @@ router.put('/sale/send/:id/:idSale', ensureAuthenticated, ensureAccess(['admin']
 router.put('/sale/update/tracking-code/:id/:idSale', ensureAuthenticated, ensureAccess(['admin']), SaleController.updateTrackingCodeByIdValidation, SaleController.updateTrackingCodeById)
 router.put('/sale/concluded/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.concludeSaleValidation, SaleController.concludeSale)
 router.delete('/sale/:id/:idSale', ensureAuthenticated, ensureAccess(['admin'], true), SaleController.deleteByIdValidation, SaleController.deleteById)
+router.get('/sales/financial-information', ensureAuthenticated, ensureAccess(['admin']), SaleController.getFinancialInformation)
 router.get('/sales/report/generate', ensureAuthenticated, ensureAccess(['admin']), SaleController.reportValidation, SaleController.report)
 
 //Public routes
