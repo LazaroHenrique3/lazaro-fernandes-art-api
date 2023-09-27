@@ -5,9 +5,15 @@ import { ISale } from '../../models'
 import { SaleUtil } from './util'
 
 type SaleStatus = 'Ag. Pagamento' | 'Em preparação' | 'Enviado' | 'Cancelada' | 'Concluída'
-const DEFAULT_CREATE_STATUS: SaleStatus = 'Ag. Pagamento'
+
+type ISaleWithPaymentReceivedDate = Omit<ISale, 'id' | 'sale_items' | 'tracking_code' | 'delivery_date'> & {
+    payment_received_date?: string;
+}
 
 export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 'tracking_code' | 'payment_due_date' | 'payment_received_date' | 'delivery_date'>): Promise<number | Error> => {
+
+    //Se foi pago com Cartões significa que já deve te ro status Em preparação
+    const DEFAULT_CREATE_STATUS: SaleStatus = (sale.payment_method === 'C. CREDITO' || sale.payment_method === 'C. DEBITO') ? 'Em preparação' : 'Ag. Pagamento'
 
     try {
         const { sale_items, ...sales } = sale
@@ -23,16 +29,21 @@ export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 
         }
 
         //Formatando o objeto de criação da venda  
-        const formattedSale = { 
-            ...sales, 
-            status: DEFAULT_CREATE_STATUS,  
+        const formattedSale: ISaleWithPaymentReceivedDate = {
+            ...sales,
+            status: DEFAULT_CREATE_STATUS,
             payment_due_date: SaleUtil.formatAndGetPaymentDueDate(),
-            order_date: SaleUtil.formatAndGetCurrentDate() 
-        } 
+            order_date: SaleUtil.formatAndGetCurrentDate(),
+        }
+
+        // Se foi pago com Cartões significa que já deve ter o status Em preparação, logo já tem data de recebimento
+        if (sale.payment_method === 'C. CREDITO' || sale.payment_method === 'C. DEBITO') {
+            formattedSale.payment_received_date = SaleUtil.formatAndGetCurrentDate()
+        }
 
         //Fluxo de inserção
         const result = await Knex.transaction(async (trx) => {
-            
+
             //Armazenando as informações na venda no banco de dados
             const idOfNewSale = await SaleUtil.insertSaleInDatabase(formattedSale, trx)
 

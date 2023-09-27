@@ -53,7 +53,14 @@ export const getProductsWithFilter = async (filter: string, category: string, te
         })
         .offset((page - 1) * limit)
         .limit(limit)
-        .orderBy('product.price', order)
+        .orderByRaw(`
+        CASE 
+            WHEN product.status = 'Ativo' THEN 1
+            WHEN product.status = 'Vendido' THEN 2
+        END
+        ASC,
+        product.price ${order}
+        `)
 
 }
 
