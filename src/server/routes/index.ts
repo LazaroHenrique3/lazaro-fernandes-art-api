@@ -52,6 +52,7 @@ router.delete('/dimension/:id', ensureAuthenticated, ensureAccess(['admin']), Di
 router.get('/dimension/report/generate', ensureAuthenticated, ensureAccess(['admin']), DimensionController.reportValidation,  DimensionController.report)
 
 //--product
+router.get('/admin/product', ensureAuthenticated, ensureAccess(['admin']), ProductController.getAllAdminValidation, ProductController.getAllAdmin)
 router.post('/product', UploadImages.handleFileImage.fields([{ name: 'main_image', maxCount: 1 }, { name: 'product_images', maxCount: 4 }]), ProductController.createValidation, ProductController.create)
 router.put('/product/:id', ensureAuthenticated, ensureAccess(['admin']), ProductController.updateByIdValidation, ProductController.updateById)
 router.post('/product/insertimage/:idProduct', ensureAuthenticated, ensureAccess(['admin']), UploadImages.handleFileImage.single('image'), ProductController.insertImageValidation, ProductController.insertImage)

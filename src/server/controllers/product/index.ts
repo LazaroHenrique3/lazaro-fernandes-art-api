@@ -1,5 +1,6 @@
 import * as create from './Create'
 import * as getAll from './GetAll'
+import * as getAllAdmin from './GetAllAdmin'
 import * as getById from './GetById'
 import * as updateById from './UpdateById'
 import * as inserImage from './InsertImage'
@@ -13,6 +14,7 @@ import * as report from './Report'
 export const ProductController = {
     ...create,
     ...getAll,
+    ...getAllAdmin,
     ...getById,
     ...updateById,
     ...inserImage,

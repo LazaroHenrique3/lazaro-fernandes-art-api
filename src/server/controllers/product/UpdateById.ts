@@ -18,7 +18,27 @@ export const updateByIdValidation = validation(getSchema => ({
         status: yup.string().oneOf(['Ativo', 'Vendido', 'Inativo']).required(),
         title: yup.string().required().min(1).max(100),
         orientation: yup.string().oneOf(['Retrato', 'Paisagem']).required(),
-        quantity: yup.number().moreThan(0).required(),
+        quantity: yup.number().test('quantity-conditional-validation', 'A quantidade deve ser maior que zero!', function (value) {
+            const status = this.resolve(yup.ref('status'))
+            if (status === 'Ativo') {
+                if (typeof value === 'number' && value > 0) {
+                    return true
+                } else {
+                    return this.createError({
+                        path: this.path,
+                        message: 'A quantidade deve ser maior que zero!',
+                    })
+                }
+            } else if (status === 'Vendido') {
+                if (typeof value === 'number' && value > 0) {
+                    return this.createError({
+                        path: this.path,
+                        message: 'Produtos vendidos precisam ter 0 und!',
+                    })
+                }
+            }
+            return true
+        }).required(),
         production_date: yup.date()
             .transform((currentValue, originalValue) => {
                 if (originalValue && typeof originalValue === 'string') {

@@ -26,6 +26,19 @@ export const getTotalOfRegisters = async (filter: string, category: string, tech
                 this.where('technique.name', '=', technique)
             }
         })
+        .andWhereNot('product.status', '=', 'Inativo')
+        .count<[{ count: number }]>('* as count')
+
+    return count
+
+}
+
+export const getAdminTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
+
+    const [{ count }] = await Knex(ETableNames.product)
+        .where('title', 'like', `%${filter}%`)
+        .leftJoin(ETableNames.category, 'product.category_id', 'category.id')
+        .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
         .count<[{ count: number }]>('* as count')
 
     return count
@@ -51,12 +64,38 @@ export const getProductsWithFilter = async (filter: string, category: string, te
                 this.where('technique.name', '=', technique)
             }
         })
+        .andWhereNot('product.status', '=', 'Inativo')
         .offset((page - 1) * limit)
         .limit(limit)
         .orderByRaw(`
         CASE 
             WHEN product.status = 'Ativo' THEN 1
             WHEN product.status = 'Vendido' THEN 2
+        END
+        ASC,
+        product.price ${order}
+        `)
+
+}
+
+export const getAdminProductsWithFilter = async (filter: string, order: string, page: number, limit: number): Promise<IProduct[]> => {
+
+    return Knex(ETableNames.product)
+        .select('product.*', 'category.id as category_id', 'category.name as category_name',
+            'technique.id as technique_id', 'technique.name as technique_name',
+            'dimension.id as dimension_id', 'dimension.dimension as dimension_name')
+        .from(ETableNames.product)
+        .leftJoin(ETableNames.category, 'product.category_id', 'category.id')
+        .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
+        .leftJoin(ETableNames.dimension, 'product.dimension_id', 'dimension.id')
+        .where('product.title', 'like', `%${filter}%`)
+        .offset((page - 1) * limit)
+        .limit(limit)
+        .orderByRaw(`
+        CASE 
+            WHEN product.status = 'Ativo' THEN 1
+            WHEN product.status = 'Vendido' THEN 2
+            WHEN product.status = 'Inativo' THEN 3
         END
         ASC,
         product.price ${order}
