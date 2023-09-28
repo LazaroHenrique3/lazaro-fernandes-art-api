@@ -47,4 +47,12 @@ para garantir que todos os dados permaneçam o mais coesos e consistentes possí
 
 ## 🖼 Screenshots do projeto
 
+### Ecommerce
+
+### Admin
+
+## ✒️ Autor
+
+* **Lázaro Henrique**  
+
 
