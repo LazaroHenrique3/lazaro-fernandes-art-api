@@ -5,6 +5,8 @@
   <h1 align="center">Lázaro Fernandes Art</h1>
 </p>
 
+## Status: 🚧 Em Andamento 🚧
+
 Esta é uma API server desenvolvida como parte do meu projeto de TCC no curso de Análise e Desenvolvimento de Sistemas. A API oferece suporte a um e-commerce especializado na comercialização de obras de arte, 
 focando principalmente em pinturas em telas. Utilizei tecnologias como TypeScript e Node.js para construir essa API a partir do zero, desde a concepção dos requisitos funcionais e não funcionais até o deploy.
 Alguns dos recursos que considero relevantes para mencionar incluem: Serviço de autenticação JWT e upload de imagens. Priorizei a segurança e a integridade das informações, implementando middlewares 
