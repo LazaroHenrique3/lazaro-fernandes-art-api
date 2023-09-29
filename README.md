@@ -11,8 +11,8 @@ Alguns dos recursos que considero relevantes para mencionar incluem: Serviço de
 para garantir que todos os dados permaneçam o mais coesos e consistentes possível. 
 
 ### 👀 Aplicações que estão consumindo esta API 
-* **Front End Ecommerce: <a href="">Lázaro Fernandes Art Store</a>**
-* **Front End Admin: <a href="">Lázaro Fernandes Art Admin</a>**
+* **Front End Ecommerce: <a href="https://github.com/LazaroHenrique3/lazaro-fernandes-art-ecommerce">Lázaro Fernandes Art Store</a>**
+* **Front End Admin: <a href="https://github.com/LazaroHenrique3/lazaro-fernandes-art-admin">Lázaro Fernandes Art Admin</a>**
 
 ## 💡 Principais Features
 
@@ -31,10 +31,10 @@ para garantir que todos os dados permaneçam o mais coesos e consistentes possí
 * **Gerenciamento de Técnicas**
 * **Gerenciamento de Dimensões**
 
-## 🚀 Futuras Features
+## 🚀 Próximas Features
 
 * **Adicionar Gateway de Pagamento**
-* **Finalizar o Testes de Integração**
+* **Finalizar os Testes de Integração**
 * **Refatorar o Código**
   
 ## 🛠️ Construído com
@@ -45,11 +45,24 @@ para garantir que todos os dados permaneçam o mais coesos e consistentes possí
 * **Knex.js**
 * **PostgreSQL/SQLite**
 
-## 🖼 Screenshots do projeto
+## 📚 Bibliotecas Utilizadas
 
-### Ecommerce
-
-### Admin
+* **bcrypt.js**
+* **correios-brasil**
+* **cors**
+* **cpf-cnpj-validator**
+* **dayjs**
+* **dotenv**
+* **express**
+* **http-status-codes**
+* **jsonwebtoken**
+* **knex**
+* **multer**
+* **nodemailer**
+* **pdfmake**
+* **supertest**
+* **ts-jest**
+* **yup**
 
 ## ✒️ Autor
 
