@@ -25,7 +25,7 @@ export const createValidation = validation((getSchema) => ({
         status: yup.string().oneOf(['Ativo', 'Vendido', 'Inativo']).required(),
         title: yup.string().required().min(1).max(100),
         orientation: yup.string().oneOf(['Retrato', 'Paisagem']).required(),
-        quantity: yup.number().moreThan(0).required(),
+        quantity: yup.number().moreThan(0).max(1000).required(),
         production_date: yup.date()
             .transform((currentValue, originalValue) => {
                 if (originalValue && typeof originalValue === 'string') {
@@ -59,8 +59,8 @@ export const createValidation = validation((getSchema) => ({
             })
             .required(),
         description: yup.string().optional(),
-        weight: yup.number().moreThan(0).required(),
-        price: yup.number().moreThan(0).required(),
+        price: yup.number().moreThan(0).max(1000000, 'Valor max: 1.000.000').required(),
+        weight: yup.number().moreThan(0).min(5, 'Peso min: 5(g) = 0,005(kg)').max(5000, 'Peso max: 5000(g) = 5(kg)').required(),
         dimension_id: yup.number().moreThan(0).required(),
         technique_id: yup.number().moreThan(0).required(),
         category_id: yup.number().moreThan(0).required(),
