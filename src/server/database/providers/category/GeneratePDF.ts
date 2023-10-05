@@ -15,6 +15,7 @@ export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
 
         const columnsTitle: TableCell[] = [
             { text: 'ID', style: 'columnsTitle' },
+            { text: 'Status', style: 'columnsTitle' },
             { text: 'Nome', style: 'columnsTitle' }
         ]
 
@@ -25,12 +26,13 @@ export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
             const rows = []
 
             rows.push(result.id)
+            rows.push(result.status)
             rows.push(result.name)
 
             body.push(rows)
         }
 
-        const widths = [20, '100%']
+        const widths = [20, 80, '100%']
 
         const generatePdf = await generateReport('Categorias', widths, body)
         return generatePdf

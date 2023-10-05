@@ -12,6 +12,7 @@ interface IBodyProps extends Omit<ICategory, 'id'> {}
 //Midleware
 export const createValidation = validation((getSchema) => ({
     body: getSchema<IBodyProps>(yup.object().shape({
+        status: yup.string().oneOf(['Ativo', 'Inativo']).required(),
         name: yup.string().required().min(3).max(100)
     }))
 }))

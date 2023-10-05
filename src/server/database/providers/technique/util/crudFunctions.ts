@@ -10,15 +10,23 @@ export const getTechniqueById = async (idTechnique: number): Promise<ITechnique 
 
 }
 
-export const getTechniquesWithFilter = async (filter: string, page: number, limit: number): Promise<ITechnique[]> => {
+export const getTechniquesWithFilter = async (filter: string, page: number, limit: number, showInative: boolean): Promise<ITechnique[]> => {
 
     const techniques = await Knex(ETableNames.technique)
         .select('technique.*', Knex.raw('COUNT(product.id) as product_count'))
         .leftJoin(ETableNames.product, 'technique.id', 'product.technique_id')
         .where('technique.name', 'like', `%${filter}%`)
         .groupBy('technique.id')
+        .andWhereNot('technique.status', '=', `${(showInative) ? '' : 'Inativo'}`)
         .offset((page - 1) * limit)
         .limit(limit)
+        .orderByRaw(`
+        CASE 
+            WHEN technique.status = 'Ativo' THEN 1
+            WHEN technique.status = 'Inativo' THEN 2
+        END
+        ASC
+        `)
 
     return techniques
 }
@@ -31,10 +39,11 @@ export const getAllTechniquesForReport = async (filter: string): Promise<ITechni
 
 }
 
-export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
+export const getTotalOfRegisters = async (filter: string, showInative: boolean): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.technique)
         .where('name', 'like', `%${filter}%`)
+        .andWhereNot('technique.status', '=', `${(showInative) ? '' : 'Inativo'}`)
         .count<[{ count: number }]>('* as count')
 
     return count

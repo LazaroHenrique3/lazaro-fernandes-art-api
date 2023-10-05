@@ -16,6 +16,7 @@ interface IBodyProps extends Omit<ITechnique, 'id'> {}
 //Midleware
 export const updateByIdValidation = validation(getSchema => ({
     body: getSchema<IBodyProps>(yup.object().shape({
+        status: yup.string().oneOf(['Ativo', 'Inativo']).required(),
         name: yup.string().required().min(3).max(100),
     })),
     params: getSchema<IParamProps>(yup.object().shape({
