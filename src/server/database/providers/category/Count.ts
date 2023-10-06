@@ -1,7 +1,7 @@
 //Funções auxiliares
 import { CategoryUtil } from './util'
 
-export const count = async (filter = '', showInative = true): Promise<number | Error> => {
+export const count = async (filter = '', showInative = false): Promise<number | Error> => {
     try {
         const count = await CategoryUtil.getTotalOfRegisters(filter, showInative)
 
