@@ -6,12 +6,18 @@ import { ProductUtil } from './util'
 
 export const updateById = async (idProduct: number, product: Omit<IProductUpdate, 'id'>): Promise<void | Error> => {
     try {
+        //Verificando se a Categoria, Technica e Dimensão enviada esta ativa
+        const isValid = await ProductUtil.checkValidCategoryTechniqueAndDimension(product.category_id, product.technique_id, product.dimension_id)
+        if (isValid instanceof Error) {
+            return new Error(isValid.message)
+        }
+
         //Verificando se o id informado é valido
         const existsProduct = await ProductUtil.checkValidProductId(idProduct)
         if (!existsProduct) {
             return new Error('Id informado inválido!')
         }
-        
+
         //Formatando o objeto que será usado na inserção
         const productWithAllProps = ProductUtil.formatProductForUpdate(product)
 
@@ -22,7 +28,7 @@ export const updateById = async (idProduct: number, product: Omit<IProductUpdate
 
         if (result === undefined) {
             return
-        } 
+        }
 
         return new Error('Erro ao atualizar registro!')
     } catch (error) {
