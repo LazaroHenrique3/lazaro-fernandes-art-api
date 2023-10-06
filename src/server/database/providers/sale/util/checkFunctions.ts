@@ -49,6 +49,7 @@ export const checkValidAddressId = async (idAddress: number, idCustomer: number)
         .select('id')
         .where('id', '=', idAddress)
         .andWhere('customer_id', '=', idCustomer)
+        .andWhereNot('status', '=', 'Inativo')
         .first()
 
     return addressResult !== undefined
