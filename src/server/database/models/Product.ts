@@ -1,6 +1,7 @@
 export interface IProductFile {
     id: number
     status: 'Ativo' | 'Vendido' | 'Inativo'
+    type: 'Original' | 'Print' 
     title: string
     orientation: 'Retrato' | 'Paisagem'
     quantity: number
@@ -18,6 +19,7 @@ export interface IProductFile {
 export interface IProduct {
     id: number
     status: 'Ativo' | 'Vendido' | 'Inativo'
+    type: 'Original' | 'Print' 
     title: string
     orientation: 'Retrato' | 'Paisagem'
     quantity: number
@@ -35,6 +37,7 @@ export interface IProduct {
 export interface IProductUpdate {
     id: number
     status: 'Ativo' | 'Vendido' | 'Inativo'
+    type: 'Original' | 'Print' 
     title: string
     orientation: 'Retrato' | 'Paisagem'
     quantity: number

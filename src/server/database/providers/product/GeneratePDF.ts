@@ -17,6 +17,7 @@ export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
             { text: 'ID', style: 'columnsTitle' },
             { text: 'Título', style: 'columnsTitle' },
             { text: 'Status', style: 'columnsTitle' },
+            { text: 'Típo', style: 'columnsTitle' },
             { text: 'Categoria', style: 'columnsTitle' },
             { text: 'Técnica', style: 'columnsTitle' },
             { text: 'Dimensão', style: 'columnsTitle' },
@@ -33,6 +34,7 @@ export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
             rows.push(result.id)
             rows.push(result.title)
             rows.push(result.status)
+            rows.push(result.type)
             rows.push(result.category_id)
             rows.push(result.technique_id)
             rows.push(result.dimension_id)
@@ -42,7 +44,7 @@ export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
             body.push(rows)
         }
 
-        const widths = [20, 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto']
+        const widths = [20, 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto']
 
         const generatePdf = await generateReport('Produtos', widths, body)
         return generatePdf

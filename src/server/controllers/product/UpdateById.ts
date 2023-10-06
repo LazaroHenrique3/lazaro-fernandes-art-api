@@ -16,9 +16,11 @@ interface IBodyProps extends Omit<IProductUpdate, 'id' | 'image'> { }
 export const updateByIdValidation = validation(getSchema => ({
     body: getSchema<IBodyProps>(yup.object().shape({
         status: yup.string().oneOf(['Ativo', 'Vendido', 'Inativo']).required(),
+        type: yup.string().oneOf(['Original', 'Print']).required(),
         title: yup.string().required().min(1).max(100),
         orientation: yup.string().oneOf(['Retrato', 'Paisagem']).required(),
         quantity: yup.number().test('quantity-conditional-validation', 'A quantidade deve ser maior que zero!', function (value) {
+
             if (typeof value === 'number' && value > 1000) {
                 return this.createError({
                     path: this.path,
@@ -27,8 +29,19 @@ export const updateByIdValidation = validation(getSchema => ({
             }
     
             const status = this.resolve(yup.ref('status'))
+            const type = this.resolve(yup.ref('type'))
+    
             if (status === 'Ativo') {
                 if (typeof value === 'number' && value > 0) {
+    
+                    //Se for do tipo Original só pode ter uma unidade
+                    if (type === 'Original' && value > 1) {
+                        return this.createError({
+                            path: this.path,
+                            message: 'Originais podem ter apenas 1 und!',
+                        })
+                    }
+    
                     return true
                 } else {
                     return this.createError({

@@ -9,6 +9,7 @@ export async function up(knex: Knex) {
         table.bigInteger('category_id').notNullable().index().references('id').inTable(ETableNames.category).onUpdate('CASCADE').onDelete('RESTRICT')
         table.bigInteger('dimension_id').notNullable().index().references('id').inTable(ETableNames.dimension).onUpdate('CASCADE').onDelete('RESTRICT')
         table.string('status', 20).checkLength('<=', 20).notNullable().defaultTo('Ativo')
+        table.string('type', 20).checkLength('<=', 20).notNullable()
         table.string('orientation', 20).checkLength('<=', 20).notNullable()
         table.string('title', 100).checkLength('<=', 100).index().notNullable()
         table.string('main_image').notNullable()
