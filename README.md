@@ -66,6 +66,18 @@ para garantir que todos os dados permaneçam o mais coesos e consistentes possí
 * **ts-jest**
 * **yup**
 
+## 🖼 Estrutura do Projeto
+
+### #1 - Arquitetura da API
+<p align="center">
+  <img align="center" src="https://github.com/LazaroHenrique3/lazaro-fernandes-art-api/assets/78514404/78a13821-2b99-4220-9bb5-6cfc28485e08" alt="api-arch" width="800"/>
+</p>
+
+### #2 - Diagrama Entidade Relacionamento (DER)
+<p align="center">
+  <img align="center" src="https://github.com/LazaroHenrique3/lazaro-fernandes-art-api/assets/78514404/923f532d-57a8-4a74-95ac-340cad416965" alt="der" width="800"/>
+</p>
+
 ## ✒️ Autor
 
 * **Lázaro Henrique**  
