@@ -13,7 +13,7 @@ export const getCategoryById = async (idCategory: number): Promise<ICategory | u
 export const getCategoriesWithFilter = async (filter: string, page: number, limit: number, showInative: boolean): Promise<ICategory[]> => {
 
     const categories = await Knex(ETableNames.category)
-        .select('category.*', Knex.raw('COUNT(product.id) as product_count'))
+        .select('category.*', Knex.raw('COUNT(CASE WHEN product.status <> "Inativo" THEN product.id END) as product_count'))
         .leftJoin(ETableNames.product, 'category.id', 'product.category_id')
         .where('category.name', 'like', `%${filter}%`)
         .groupBy('category.id')

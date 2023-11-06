@@ -4,10 +4,10 @@ import { IProduct } from '../../models'
 import { ProductUtil } from './util'
 
 //Recebe aquele id para caso um item não esteja na primeira pagina, ele possa retornar junto
-export const getAll = async (page: number, limit: number, filter: string, category: string, technique: string, order: string, id = 0): Promise<IProduct[] | Error> => {
+export const getAll = async (page: number, limit: number, filter: string, category: string, technique: string, order: string, type: string, id = 0): Promise<IProduct[] | Error> => {
 
     try {
-        let resultSearchFilter = await ProductUtil.getProductsWithFilter(filter, category, technique, order, page, limit)
+        let resultSearchFilter = await ProductUtil.getProductsWithFilter(filter, category, technique, order, type, page, limit)
 
         //Caso passe um id, e ele não esteja na pagina em questão, porém eu desejo retornar ele junto
         if (id > 0 && resultSearchFilter.every(item => item.id !== id)) {

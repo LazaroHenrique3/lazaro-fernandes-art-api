@@ -13,6 +13,7 @@ interface IQueryProps {
     filter?: string,
     category?: string
     technique?: string 
+    type?: string
     order?: string
 }
 
@@ -25,13 +26,14 @@ export const getAllValidation = validation((getSchema) => ({
         filter: yup.string().optional(),
         category: yup.string().optional(),
         technique: yup.string().optional(),
+        type: yup.string().optional(),
         order: yup.string().optional()
     }))
 }))
 
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-    const result = await ProductProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', req.query.category || '', req.query.technique || '', req.query.order || '', Number(req.query.id))
-    const count = await ProductProvider.count(req.query.filter, req.query.category, req.query.technique)
+    const result = await ProductProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', req.query.category || '', req.query.technique || '', req.query.order || '', req.query.type || '', Number(req.query.id))
+    const count = await ProductProvider.count(req.query.filter, req.query.category, req.query.technique, req.query.type || '',)
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

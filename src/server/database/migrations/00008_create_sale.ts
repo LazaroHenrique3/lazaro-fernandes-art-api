@@ -11,12 +11,12 @@ export async function up(knex: Knex) {
         table.date('order_date').notNullable()
         table.date('estimated_delivery_date').notNullable()
         table.date('payment_due_date').notNullable()
-        table.string('payment_method').notNullable()
-        table.string('shipping_method').notNullable()
+        table.string('payment_method', 45).notNullable()
+        table.string('shipping_method', 45).notNullable()
         table.date('payment_received_date').nullable().defaultTo(null)
         table.date('delivery_date').nullable().defaultTo(null)
         table.decimal('shipping_cost', 10, 2).unsigned().nullable().defaultTo(null)
-        table.date('tracking_code').nullable().defaultTo(null)
+        table.string('tracking_code', 45).nullable().defaultTo(null)
 
         table.comment('Tabela usada para armazenar as vendas do sistema.')
     }).then(() => {
