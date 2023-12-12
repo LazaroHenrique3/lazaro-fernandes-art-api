@@ -43,7 +43,7 @@ export const updateTrackingCodeById = async (req: Request<IParamProps, {}, IBody
             }
         })
     } 
-
+ 
     const result = await SaleProvider.updateTrackingCodeById(req.params.id, req.params.idSale, req.body.tracking_code)
     if(result instanceof Error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

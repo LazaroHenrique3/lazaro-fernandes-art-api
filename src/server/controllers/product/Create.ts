@@ -5,6 +5,7 @@ import * as yup from 'yup'
 import { validation } from '../../shared/middleware'
 import { IProductFile } from '../../database/models'
 import { ProductProvider } from '../../database/providers/product'
+import { existsImage, existsImagesAndIsSmallerThanMax, isValidMainImageDimensions, isValidProductImagesDimensions, isValidSize, isValidType } from '../utils/validationUtils'
 
 //Para tipar o body do request
 interface IBodyProps extends Omit<IProductFile, 'id'> { }
@@ -16,8 +17,6 @@ interface IFilesValidateProps {
     main_image: Express.Multer.File[]
     product_images: Express.Multer.File[]
 }
-
-const MAX_PRODUCT_IMAGES = 4
 
 //Midleware
 export const createValidation = validation((getSchema) => ({
@@ -34,13 +33,13 @@ export const createValidation = validation((getSchema) => ({
                     message: 'Quantiddade max: 1000!',
                 })
             }
-    
+
             const status = this.resolve(yup.ref('status'))
             const type = this.resolve(yup.ref('type'))
-    
+
             if (status === 'Ativo') {
                 if (typeof value === 'number' && value > 0) {
-    
+
                     //Se for do tipo Original só pode ter uma unidade
                     if (type === 'Original' && value > 1) {
                         return this.createError({
@@ -48,7 +47,7 @@ export const createValidation = validation((getSchema) => ({
                             message: 'Originais podem ter apenas 1 und!',
                         })
                     }
-    
+
                     return true
                 } else {
                     return this.createError({
@@ -110,23 +109,17 @@ export const createValidation = validation((getSchema) => ({
             .test('isImage', (value) => {
                 const mainImage: Express.Multer.File[] = value as Express.Multer.File[]
 
-
                 //Verificando se foi passado imagem
-                if (mainImage.length === 0) {
-                    throw new yup.ValidationError('A imagem é obrigatória!', value, 'main_image')
-                }
+                existsImage(mainImage.length, value)
 
                 //Verificando o formato das imagens
-                const supportedFormats = ['image/jpeg', 'image/png', 'image/jpg']
-                if (!supportedFormats.includes(mainImage[0].mimetype)) {
-                    throw new yup.ValidationError('Formato de imagem inválido!', value, 'main_image')
-                }
+                isValidType(mainImage, value)
 
                 // Verifica se o tamanho da imagem é maior que 2MB (em bytes)
-                const maxSize = 2 * 1024 * 1024 // 2MB
-                if (Number(mainImage[0].size) > maxSize) {
-                    throw new yup.ValidationError('Tamanho de imagem excede 2MB!', value, 'main_image')
-                }
+                isValidSize(mainImage, value)
+
+                //Verificando as dimensões recomendadas
+                isValidMainImageDimensions(mainImage, value)
 
                 return true
             })
@@ -136,29 +129,16 @@ export const createValidation = validation((getSchema) => ({
                 const product_images: Express.Multer.File[] = value as Express.Multer.File[]
 
                 //Verificando se foi passado imagem e se é mais que  o permitido
-                if (product_images.length === 0) {
-                    throw new yup.ValidationError('As imagens são obrigatórias!', value, 'product_images')
-                } else if (product_images.length > MAX_PRODUCT_IMAGES) {
-                    throw new yup.ValidationError(`É permitido o upload de até ${MAX_PRODUCT_IMAGES} imagens!`, value, 'product_images')
-                }
+                existsImagesAndIsSmallerThanMax(product_images.length, value)
 
                 //Verificando o formato das imagens
-                const supportedFormats = ['image/jpeg', 'image/png', 'image/jpg']
-                for (let i = 0; i < product_images.length; i++) {
-                    const image = product_images[i]
-                    if (!supportedFormats.includes(image.mimetype)) {
-                        throw new yup.ValidationError('Formato de imagem inválido!', value, 'product_images')
-                    }
-                }
+                isValidType(product_images, value)
 
                 // Verifica se o tamanho da imagem é maior que 2MB (em bytes)
-                const maxSize = 2 * 1024 * 1024 // 2MB
-                for (let i = 0; i < product_images.length; i++) {
-                    const image = product_images[i]
-                    if (Number(image.size) > maxSize) {
-                        throw new yup.ValidationError('Tamanho de imagem excede 2MB!', value, 'product_images')
-                    }
-                }
+                isValidSize(product_images, value)
+
+                //Validando as dimensões das imagens
+                isValidProductImagesDimensions(product_images, value)
 
                 return true
             })
