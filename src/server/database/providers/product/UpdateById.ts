@@ -4,8 +4,14 @@ import { Knex } from '../../knex'
 //Funções auxiliares
 import { ProductUtil } from './util'
 
-export const updateById = async (idProduct: number, product: Omit<IProductUpdate, 'id'>): Promise<void | Error> => {
+export const updateById = async (idProduct: number, product: Omit<IProductUpdate, 'id'>, accessLevel: string): Promise<void | Error> => {
     try {
+        //Só quem pode atualizar o status e tipo do produto é o 'Admin'
+        const wasChanged = await ProductUtil.checkIfThereHasBeenChangeInStatusAndType(idProduct, product.status, product.type)
+        if(wasChanged && accessLevel === 'Root'){
+            return new Error('Não tem permissão para este tipo de alteração!')
+        }
+
         //Verificando se a Categoria, Technica e Dimensão enviada esta ativa
         const isValid = await ProductUtil.checkValidCategoryTechniqueAndDimension(product.category_id, product.technique_id, product.dimension_id)
         if (isValid instanceof Error) {
