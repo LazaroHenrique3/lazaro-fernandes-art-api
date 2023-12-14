@@ -12,6 +12,12 @@ export const deleteById = async (idCustomer: number): Promise<void | Error> => {
             return new Error('Id informado inválido!')
         }
 
+        //Verificando se o cliente esta vinculado a vendas
+        const customerIsInUse = await CustomerUtil.checkIfCustomerIsInUse(idCustomer)
+        if (customerIsInUse) {
+            return new Error('Registro associado á vendas!')
+        }
+
         const result = await Knex.transaction(async (trx) => {
             let thereWasAnError = false
 
