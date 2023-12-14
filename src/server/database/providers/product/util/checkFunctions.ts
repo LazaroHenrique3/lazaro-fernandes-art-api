@@ -105,3 +105,15 @@ export const checkIfThereHasBeenChangeInStatusAndType = async (idProduct: number
     //Significa que não houve alteração nesses campos
     return false
 }
+
+
+export const checkIfProductIsInUse = async (idProduct: number): Promise<boolean> => {
+
+    const customerResult = await Knex(ETableNames.salesItems)
+        .select('sale_id')
+        .where('product_id', '=', idProduct)
+        .first()
+
+    return customerResult !== undefined
+
+}
