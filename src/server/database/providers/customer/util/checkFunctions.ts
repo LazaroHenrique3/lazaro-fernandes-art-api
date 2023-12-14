@@ -107,3 +107,14 @@ export const checkValidToken = async (email: string): Promise<string | Error> =>
     }
 
 }
+
+export const checkIfCustomerIsInUse = async (idCustomer: number): Promise<boolean> => {
+
+    const customerResult = await Knex(ETableNames.sale)
+        .select('id')
+        .where('customer_id', '=', idCustomer)
+        .first()
+
+    return customerResult !== undefined
+
+}
