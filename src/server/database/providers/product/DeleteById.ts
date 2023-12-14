@@ -11,6 +11,12 @@ export const deleteById = async (idProduct: number): Promise<void | Error> => {
             return new Error('Id informado inválido!')
         }
 
+        //Verificando se o produto esta vinculado a vendas
+        const productIsInUse = await ProductUtil.checkIfProductIsInUse(idProduct)
+        if (productIsInUse) {
+            return new Error('Registro associado á vendas!')
+        }
+
         //Fluxo de exclusão
         const result = await Knex.transaction(async (trx) => {
             const { main_image, product_images } = await ProductUtil.deleteAndGetAllProductImagesInDatabase(idProduct, trx)
