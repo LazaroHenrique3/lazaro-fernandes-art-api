@@ -26,6 +26,11 @@ export const updateByIdValidation = validation(getSchema => ({
                     path: this.path,
                     message: 'Quantiddade max: 1000!',
                 })
+            } else if (typeof value === 'number' && value < 0) {
+                return this.createError({
+                    path: this.path,
+                    message: 'A quantidade não pode ser negativa!',
+                })
             }
     
             const status = this.resolve(yup.ref('status'))
@@ -104,6 +109,7 @@ export const updateByIdValidation = validation(getSchema => ({
 }))
 
 export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res: Response) => {
+
     if (!req.params.id) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             errors: {
@@ -112,7 +118,10 @@ export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res:
         })
     }
 
-    const result = await ProductProvider.updateById(req.params.id, req.body)
+    //Obtendo qual é o nivel do acesso do usuário que fez a requisição
+    const accessLevel = (req.headers.accessLevel) ? req.headers.accessLevel  : ''
+
+    const result = await ProductProvider.updateById(req.params.id, req.body, accessLevel as string)
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {

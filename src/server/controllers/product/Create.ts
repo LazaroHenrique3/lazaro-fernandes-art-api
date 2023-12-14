@@ -32,6 +32,11 @@ export const createValidation = validation((getSchema) => ({
                     path: this.path,
                     message: 'Quantiddade max: 1000!',
                 })
+            } else if (typeof value === 'number' && value < 0) {
+                return this.createError({
+                    path: this.path,
+                    message: 'A quantidade não pode ser negativa!',
+                })
             }
 
             const status = this.resolve(yup.ref('status'))
