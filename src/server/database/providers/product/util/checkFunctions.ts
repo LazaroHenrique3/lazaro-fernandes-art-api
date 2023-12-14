@@ -89,3 +89,19 @@ export const checkValidCategoryTechniqueAndDimension = async (idCategory: number
 
     return true
 }
+
+export const checkIfThereHasBeenChangeInStatusAndType = async (idProduct: number, newStatus: string, newType: string): Promise<boolean> => {
+    const wasChanged = await Knex(ETableNames.product)
+        .select('id')
+        .where('id', '=', idProduct)
+        .andWhere('status', '=', newStatus)
+        .andWhere('type', '=', newType)
+
+    //Se não encontrou significa que houve alteração
+    if(!wasChanged){
+        true // Quesro indicar que houve a alteração
+    }
+
+    //Significa que não houve alteração nesses campos
+    return false
+}
