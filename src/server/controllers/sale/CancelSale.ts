@@ -26,7 +26,7 @@ export const cancelSale = async (req: Request<IParamProps>, res: Response) => {
                 default: 'O parâmetro "id" precisa ser informado.'
             }
         })
-    } 
+    }
 
     if (!req.params.idSale) {
         return res.status(StatusCodes.BAD_REQUEST).json({
@@ -34,10 +34,13 @@ export const cancelSale = async (req: Request<IParamProps>, res: Response) => {
                 default: 'O parâmetro "idSale" precisa ser informado.'
             }
         })
-    } 
+    }
 
-    const result = await SaleProvider.cancelSale(req.params.id, req.params.idSale)
-    if(result instanceof Error){
+    //Obtendo qual é o nivel do acesso do usuário que fez a requisição
+    const typeUser = (req.headers.typeUser) ? req.headers.typeUser : ''
+
+    const result = await SaleProvider.cancelSale(req.params.id, req.params.idSale,  typeUser as string)
+    if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors: {
                 default: result.message

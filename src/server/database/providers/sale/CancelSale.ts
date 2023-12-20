@@ -3,7 +3,7 @@ import { Knex } from '../../knex'
 //Funções auxiliares
 import { SaleUtil } from './util'
 
-export const cancelSale = async (idCustomer: number, idSale: number): Promise<void | Error> => {
+export const cancelSale = async (idCustomer: number, idSale: number,  typeUser: string): Promise<void | Error> => {
 
     try {
         //Verificando se o id de cliente informado é valido
@@ -12,8 +12,17 @@ export const cancelSale = async (idCustomer: number, idSale: number): Promise<vo
             return new Error('Usuário inválido!')
         }
 
+        //Se o tipo do usuario que solicitar for customer, ele só pode cancelar se estive no status 'Ag. Pagamento'
+        if(typeUser === 'customer'){
+            //Verificando, ele só vai retornar como true se a venda estiver como 'Ag. Pagamento'
+            const existsSale = await SaleUtil.checkValidSaleId(idSale, idCustomer, ['Ag. Pagamento'])
+            if(!existsSale) {
+                return new Error('Contate o adminsitrador para cancelar essa venda!')
+            }
+        }
+
         //Verificando se o id de venda informado é valido
-        const existsSale = await SaleUtil.checkValidSaleId(idSale, idCustomer, ['Ag. Pagamento', 'Em preparação'])
+        const existsSale = await SaleUtil.checkValidSaleId(idSale, idCustomer, ['Ag. Pagamento', 'Em preparação', 'Enviado', 'Concluída'])
         if (!existsSale) {
             return new Error('Id informado inválido!')
         }
