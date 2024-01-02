@@ -26,6 +26,8 @@ export interface IFinancialInformations {
     totalRevenue: number
     currentMonthBilling: number
     lastMonthBilling: number
+    totalSaleAwaitingPayment: number
+    totalSaleInPreparation: number
 }
 
 type ProductStatus = 'Ativo' | 'Vendido' | 'Inativo'
@@ -193,11 +195,16 @@ export const getFinancialInformation = async (): Promise<IFinancialInformations 
         const totalLastMonth = await getTotalMonth(lastMonth)
         const topCategories = await getTopCategories()
 
+        const totalSaleAwaitingPayment = await getTotalSaleAwaitingPayment()
+        const totalSaleInPreparation = await getTotalSaleInPreparation()
+
         const financialInfo: IFinancialInformations = {
             topCategories,
             totalRevenue,
             currentMonthBilling: totalCurrentMonth,
             lastMonthBilling: totalLastMonth,
+            totalSaleAwaitingPayment,
+            totalSaleInPreparation
         }
 
         return financialInfo
@@ -379,6 +386,22 @@ export const deleteSaleInDatabase = async (idSale: number, trx: knex.Transaction
 }
 
 //Funções auxiliares
+const getTotalSaleAwaitingPayment = async (): Promise<number> => {
+    const [{ count }] = await Knex(ETableNames.sale)
+        .where('status', '=', 'Ag. Pagamento')
+        .count<[{ count: number }]>('* as count')
+
+    return (count) ? count : 0
+}
+
+const getTotalSaleInPreparation = async (): Promise<number> => {
+    const [{ count }] = await Knex(ETableNames.sale)
+        .where('status', '=', 'Em preparação')
+        .count<[{ count: number }]>('* as count')
+
+    return (count) ? count : 0
+}
+
 const getTotalRevenue = async () => {
     const [{ total_revenue }] = await Knex.raw(`
       SELECT 
