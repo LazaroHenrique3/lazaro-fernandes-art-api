@@ -6,13 +6,45 @@ import { ProductUtil } from './util'
 
 export const updateById = async (idProduct: number, product: Omit<IProductUpdate, 'id'>, accessLevel: string): Promise<void | Error> => {
     try {
-        //Só quem pode atualizar o status e tipo do produto é o 'Admin'
+        //Só quem pode atualizar o status e tipo do produto é o 'Root'
         const wasChanged = await ProductUtil.checkIfThereHasBeenChangeInStatusAndType(idProduct, product.status, product.type)
-        if(wasChanged && accessLevel === 'Root'){
+        if (wasChanged && accessLevel !== 'Root') {
             return new Error('Não tem permissão para este tipo de alteração!')
         }
 
-        //Verificando se a Categoria, Technica e Dimensão enviada esta ativa
+        //Se já estiver em mais de uma venda eu não posso alterar o tipo para Original, já que ele não pode ter mais de um no sistema
+        if (wasChanged && product.type === 'Original') {
+            const productIsInUse = await ProductUtil.checkProductSalesCount(idProduct)
+            if (productIsInUse > 1) {
+                return new Error('Este produto não pode ser Original pois já está vinculado a vendas!')
+            }
+        }
+
+        //Não posso alterar para ativo se ele for Original e já estiver em alguma venda
+        if(wasChanged && product.status === 'Ativo' && product.type === 'Original'){
+            const productIsInUse = await ProductUtil.checkIfProductIsInUse(idProduct)
+            if (productIsInUse) {
+                return new Error('Este produto já foi vendido!')
+            }    
+        }
+
+        //Não posso alterar para vendido se ele não estiver vinculado a nenhuma venda
+        if (wasChanged && product.status === 'Vendido'){
+            const productIsInUse = await ProductUtil.checkIfProductIsInUse(idProduct)
+            if (!productIsInUse) {
+                return new Error('Este produto não esta vinculado a nenhuma venda!')
+            }    
+        }
+
+        //A quantidade deve ser zero caso o tipo for "Original" e já estiver vinculada a vendas
+        if (product.type === 'Original' && product.quantity > 0){
+            const productIsInUse = await ProductUtil.checkIfProductIsInUse(idProduct)
+            if (productIsInUse) {
+                return new Error('Este produto já foi vendido, a quantidade deve ser  0!')
+            }    
+        }
+
+        //Verificando se a Categoria, Tecnica e Dimensão enviada esta ativa
         const isValid = await ProductUtil.checkValidCategoryTechniqueAndDimension(product.category_id, product.technique_id, product.dimension_id)
         if (isValid instanceof Error) {
             return new Error(isValid.message)
