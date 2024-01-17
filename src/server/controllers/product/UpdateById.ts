@@ -61,7 +61,20 @@ export const updateByIdValidation = validation(getSchema => ({
                         message: 'Produtos vendidos precisam ter 0 und!',
                     })
                 }
+            }  else if (status === 'Inativo') {
+                if (typeof value === 'number' && value > 0) {
+                    //Se for do tipo Original só pode ter uma unidade
+                    if (type === 'Original' && value > 1) {
+                        return this.createError({
+                            path: this.path,
+                            message: 'Originais podem ter apenas 1 und!',
+                        })
+                    }
+    
+                    return true
+                }
             }
+            
             return true
         }).required(),
         production_date: yup.date()
