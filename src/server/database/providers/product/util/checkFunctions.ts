@@ -96,24 +96,36 @@ export const checkIfThereHasBeenChangeInStatusAndType = async (idProduct: number
         .where('id', '=', idProduct)
         .andWhere('status', '=', newStatus)
         .andWhere('type', '=', newType)
+        .first()
 
-    //Se não encontrou significa que houve alteração
-    if(!wasChanged){
-        true // Quesro indicar que houve a alteração
+    if (!wasChanged) {
+        return true // Quesro indicar que houve a alteração
     }
 
-    //Significa que não houve alteração nesses campos
     return false
 }
 
-
 export const checkIfProductIsInUse = async (idProduct: number): Promise<boolean> => {
 
-    const customerResult = await Knex(ETableNames.salesItems)
+    const productResult = await Knex(ETableNames.salesItems)
+        .join(ETableNames.sale, 'sale.id', '=', 'sales_items.sale_id')
         .select('sale_id')
         .where('product_id', '=', idProduct)
+        .whereNot('sale.status', '=', 'Cancelada')
         .first()
 
-    return customerResult !== undefined
+    return productResult !== undefined
 
 }
+
+export const checkProductSalesCount = async (idProduct: number): Promise<number> => {
+
+    const [{ count }] = await Knex(ETableNames.salesItems)
+        .join(ETableNames.sale, 'sale.id', '=', 'sales_items.sale_id')
+        .where('product_id', '=', idProduct)
+        .whereNot('sale.status', '=', 'Cancelada')
+        .count<[{ count: number }]>('* as count')
+
+    return count
+
+} 
