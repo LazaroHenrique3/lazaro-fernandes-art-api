@@ -12,7 +12,7 @@ import {
 import path from 'path'
 import { UploadImages } from '../../../../shared/services/UploadImagesServices'
 
-export const getTotalOfRegisters = async (filter: string, category: string, technique: string, type: string): Promise<number | undefined> => {
+export const getTotalOfRegisters = async (filter: string, category: string, technique: string, type: string, status: string): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.product)
         .where('title', 'like', `%${filter}%`)
@@ -24,6 +24,9 @@ export const getTotalOfRegisters = async (filter: string, category: string, tech
             }
             if (technique) {
                 this.where('technique.name', '=', technique)
+            }
+            if (status) {
+                this.where('product.status', '=', status)
             }
             if(type) {
                 this.where('product.type', '=', type)
@@ -48,7 +51,7 @@ export const getAdminTotalOfRegisters = async (filter: string): Promise<number |
 
 }
 
-export const getProductsWithFilter = async (filter: string, category: string, technique: string, order: string, type: string, page: number, limit: number): Promise<IProduct[]> => {
+export const getProductsWithFilter = async (filter: string, category: string, technique: string, order: string, type: string, status: string, page: number, limit: number): Promise<IProduct[]> => {
 
     return Knex(ETableNames.product)
         .select('product.*', 'category.id as category_id', 'category.name as category_name',
@@ -65,6 +68,9 @@ export const getProductsWithFilter = async (filter: string, category: string, te
             }
             if (technique) {
                 this.where('technique.name', '=', technique)
+            }
+            if(status) {
+                this.where('product.status', '=', status)
             }
             if(type) {
                 this.where('product.type', '=', type)
