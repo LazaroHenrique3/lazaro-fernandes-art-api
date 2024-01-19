@@ -98,6 +98,14 @@ export const updateCustomerInDatabase = async (customer: Omit<ICustomerUpdate, '
 
 }
 
+export const inactiveCustomerInTheDatabase = async (id: number): Promise<number> => {
+
+    return await Knex(ETableNames.customer)
+        .update({status: 'Inativo'})
+        .where('id', '=', id)
+
+}
+
 export const hashAndRedefinePasswordInDatabase = async (email: string, password: string): Promise<number> => {
 
     const hashedPassword = await PasswordCrypto.hashPassword(password)
@@ -111,7 +119,7 @@ export const hashAndRedefinePasswordInDatabase = async (email: string, password:
 export const insertNewImageInDatabase = async (idCustomer: number, newImageUpdated: string): Promise<number> => {
 
     const [insertedProductId] = await Knex(ETableNames.customer)
-        .update({image: newImageUpdated})
+        .update({ image: newImageUpdated })
         .where('id', '=', idCustomer)
         .returning('id')
 
