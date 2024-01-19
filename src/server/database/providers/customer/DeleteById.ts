@@ -2,6 +2,7 @@ import { Knex } from '../../knex'
 
 //Funções auxiliares
 import { CustomerUtil } from './util'
+import { inactiveCustomerInTheDatabase } from './util/crudFunctions'
 
 export const deleteById = async (idCustomer: number): Promise<void | Error> => {
 
@@ -12,10 +13,11 @@ export const deleteById = async (idCustomer: number): Promise<void | Error> => {
             return new Error('Id informado inválido!')
         }
 
-        //Verificando se o cliente esta vinculado a vendas
+        //Verificando se o cliente esta vinculado a vendas, caso esteja vinculado apenas inativa ele
         const customerIsInUse = await CustomerUtil.checkIfCustomerIsInUse(idCustomer)
         if (customerIsInUse) {
-            return new Error('Registro associado á vendas!')
+            await inactiveCustomerInTheDatabase(idCustomer)
+            return
         }
 
         const result = await Knex.transaction(async (trx) => {
