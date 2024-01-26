@@ -4,10 +4,10 @@ import { generateReport } from '../../../shared/services'
 //Funções auxiliares
 import { CustomerUtil } from './util'
 
-export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
+export const generatePDF = async (filter: string, status: string, genre: string, dateOfBirth: string): Promise<Buffer | Error> => {
 
     try {
-        const resultSearchReport = await CustomerUtil.getAllAdminsitratorsForReport(filter)
+        const resultSearchReport = await CustomerUtil.getAllAdminsitratorsForReport(filter, status, genre, dateOfBirth)
 
         const body = []
 

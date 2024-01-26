@@ -11,7 +11,14 @@ interface IQueryProps {
     page?: number,
     limit?: number,
     filter?: string,
-    order?: string
+    status?: string,
+    type?: string,
+    orientation?: string,
+    category?: string,
+    technique?: string,
+    dimension?: string,
+    productionDate?: string,
+    orderByPrice?: string
 }
 
 //Midleware
@@ -21,13 +28,42 @@ export const getAllAdminValidation = validation((getSchema) => ({
         page: yup.number().optional().moreThan(0),
         limit: yup.number().optional().moreThan(0),
         filter: yup.string().optional(),
-        order: yup.string().optional()
+        status: yup.string().optional(),
+        type: yup.string().optional(),
+        orientation: yup.string().optional(),
+        category: yup.string().optional(),
+        technique: yup.string().optional(),
+        dimension: yup.string().optional(),
+        productionDate: yup.string().optional(),
+        orderByPrice: yup.string().optional()
     }))
 }))
 
 export const getAllAdmin = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-    const result = await ProductProvider.getAllAdmin(req.query.page || 1, req.query.limit || 7, req.query.filter || '', req.query.order || '', Number(req.query.id))
-    const count = await ProductProvider.countAdmin(req.query.filter)
+    const result = await ProductProvider.getAllAdmin(
+        req.query.page || 1, 
+        req.query.limit || 7, 
+        req.query.filter || '', 
+        req.query.status || '',
+        req.query.type || '',
+        req.query.orientation || '',
+        req.query.category || '',
+        req.query.technique || '',
+        req.query.dimension || '',
+        req.query.productionDate || '',
+        req.query.orderByPrice || '',
+        Number(req.query.id)
+    )
+    const count = await ProductProvider.countAdmin(
+        req.query.filter || '',
+        req.query.status || '',
+        req.query.type || '',
+        req.query.orientation || '',
+        req.query.category || '',
+        req.query.technique || '',
+        req.query.dimension || '',
+        req.query.productionDate || ''
+    )
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

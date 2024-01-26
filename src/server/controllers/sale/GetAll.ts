@@ -10,7 +10,11 @@ interface IQueryProps {
     id?: number,
     page?: number,
     limit?: number,
-    filter?: string
+    filter?: string,
+    status?: string,
+    orderDate?: string,
+    orderByPrice?: string,
+    paymentDueDate?: string,
 }
 
 //Para tipar o param do request, garantindo que ele só liste seus próprios endereços
@@ -27,7 +31,11 @@ export const getAllValidation = validation((getSchema) => ({
         id: yup.number().integer().optional().default(0),
         page: yup.number().optional().moreThan(0),
         limit: yup.number().optional().moreThan(0),
-        filter: yup.string().optional()
+        filter: yup.string().optional(),
+        status: yup.string().optional(),
+        orderDate: yup.string().optional(),
+        orderByPrice: yup.string().optional(),
+        paymentDueDate: yup.string().optional()
     }))
 }))
 
@@ -40,8 +48,8 @@ export const getAll = async (req: Request<IParamProps, {}, {}, IQueryProps>, res
         })
     }
 
-    const result = await SaleProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id), Number(req.params.id))
-    const count = await SaleProvider.count(req.query.filter, Number(req.params.id), Number(req.params.id))
+    const result = await SaleProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '',  req.query.status || '', req.query.orderDate || '', req.query.orderByPrice || '', req.query.paymentDueDate || '', Number(req.query.id), Number(req.params.id))
+    const count = await SaleProvider.count(req.query.filter, req.query.orderDate || '',  req.query.status || '',  req.query.paymentDueDate || '', Number(req.params.id), Number(req.params.id))
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

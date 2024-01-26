@@ -4,10 +4,10 @@ import { IAdministrator } from '../../models'
 import { AdministratorUtil } from './util'
 
 //Recebe aquele id para caso um item não esteja na primeira pagina, ele possa retornar junto
-export const getAll = async (page: number, limit: number, filter: string, id = 0): Promise<(Omit<IAdministrator, 'password'>)[] | Error> => {
+export const getAll = async (page: number, limit: number, filter: string, status: string, id = 0): Promise<(Omit<IAdministrator, 'password'>)[] | Error> => {
 
     try {
-        let resultSearchFilter = await AdministratorUtil.getAdministratorsWithFilter(filter, page, limit)
+        let resultSearchFilter = await AdministratorUtil.getAdministratorsWithFilter(filter, page, limit, status)
 
         //Caso passe um id, e ele não esteja na pagina em questão, porém eu desejo retornar ele junto
         if (id > 0 && resultSearchFilter.every(item => item.id !== id)) {

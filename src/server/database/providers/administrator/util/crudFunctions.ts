@@ -12,11 +12,15 @@ export const getAdministratorById = async (idAdministrator: number): Promise<Omi
 
 }
 
-export const getAdministratorsWithFilter = async (filter: string, page: number, limit: number): Promise<Omit<IAdministrator, 'password'>[]> => {
+export const getAdministratorsWithFilter = async (filter: string, page: number, limit: number, status: string): Promise<Omit<IAdministrator, 'password'>[]> => {
 
     return Knex(ETableNames.administrator)
         .select('id', 'status', 'admin_access_level', 'name', 'email')
-        .where('name', 'like', `%${filter}%`)
+        .where('status', 'like', `${status}%`)
+        .andWhere(function () {
+            this.andWhere('name', 'like', `%${filter}%`)
+                .orWhere('email', 'like', `${filter}%`)
+        })
         .andWhere('admin_access_level', '<>', 'Root')
         .offset((page - 1) * limit)
         .limit(limit)
@@ -32,10 +36,14 @@ export const getAdministratorByEmail = async (email: string): Promise<IAdministr
 
 }
 
-export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
+export const getTotalOfRegisters = async (filter: string, status: string): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.administrator)
-        .where('name', 'like', `%${filter}%`)
+        .where('status', 'like', `${status}%`)
+        .andWhere(function () {
+            this.andWhere('name', 'like', `%${filter}%`)
+                .orWhere('email', 'like', `${filter}%`)
+        })
         .andWhere('admin_access_level', '<>', 'Root')
         .count<[{ count: number }]>('* as count')
 
@@ -43,12 +51,16 @@ export const getTotalOfRegisters = async (filter: string): Promise<number | unde
 
 }
 
-export const getAllAdminsitratorsForReport = async (filter: string): Promise<Omit<IAdministrator, 'admin_access_level' | 'password'>[]> => {
+export const getAllAdminsitratorsForReport = async (filter: string, status: string): Promise<Omit<IAdministrator, 'admin_access_level' | 'password'>[]> => {
 
     return Knex(ETableNames.administrator)
         .select('id', 'status', 'name', 'email')
+        .where('status', 'like', `${status}%`)
+        .andWhere(function () {
+            this.andWhere('name', 'like', `%${filter}%`)
+                .orWhere('email', 'like', `${filter}%`)
+        })
         .andWhere('admin_access_level', '<>', 'Root')
-        .where('name', 'like', `%${filter}%`)
 
 }
 

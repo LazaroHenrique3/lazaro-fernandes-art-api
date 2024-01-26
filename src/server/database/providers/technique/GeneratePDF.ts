@@ -4,10 +4,10 @@ import { generateReport } from '../../../shared/services'
 //Funções auxiliares
 import { TechniqueUtil } from './util'
 
-export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
+export const generatePDF = async (filter: string, status: string): Promise<Buffer | Error> => {
 
     try {
-        const resultSearchReport = await TechniqueUtil.getAllTechniquesForReport(filter)
+        const resultSearchReport = await TechniqueUtil.getAllTechniquesForReport(filter, status)
 
         const body = []
 

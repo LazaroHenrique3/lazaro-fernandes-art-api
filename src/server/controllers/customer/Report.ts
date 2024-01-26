@@ -9,18 +9,24 @@ import { CustomerProvider } from '../../database/providers/customer'
 //Para tipar o body do request
 interface IQueryProps {
     filter?: string
+    status?: string
+    genre?: string
+    dateOfBirth?: string
 }
 
 //Midleware
 export const reportValidation = validation((getSchema) => ({
     query: getSchema<IQueryProps>(yup.object().shape({
-        filter: yup.string().optional()
+        filter: yup.string().optional(),
+        status: yup.string().optional(),
+        genre: yup.string().optional(),
+        dateOfBirth: yup.string().optional()
     }))
 })) 
 
 export const report = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
 
-    const result = await CustomerProvider.generatePDF(req.query.filter || '')
+    const result = await CustomerProvider.generatePDF(req.query.filter || '', req.query.status || '', req.query.genre || '', req.query.dateOfBirth || '')
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

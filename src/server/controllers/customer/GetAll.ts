@@ -10,7 +10,10 @@ interface IQueryProps {
     id?: number,
     page?: number,
     limit?: number,
-    filter?: string
+    filter?: string,
+    status?: string,
+    genre?: string,
+    dateOfBirth?: string
 }
 
 //Midleware
@@ -19,13 +22,16 @@ export const getAllValidation = validation((getSchema) => ({
         id: yup.number().integer().optional().default(0),
         page: yup.number().optional().moreThan(0),
         limit: yup.number().optional().moreThan(0),
-        filter: yup.string().optional()
+        filter: yup.string().optional(),
+        status: yup.string().optional(),
+        genre: yup.string().optional(),
+        dateOfBirth: yup.string().optional(),
     }))
 }))
 
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-    const result = await CustomerProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id))
-    const count = await CustomerProvider.count(req.query.filter)
+    const result = await CustomerProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', req.query.status || '', req.query.genre || '', req.query.dateOfBirth || '', Number(req.query.id))
+    const count = await CustomerProvider.count(req.query.filter, req.query.status || '', req.query.genre || '', req.query.dateOfBirth || '')
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

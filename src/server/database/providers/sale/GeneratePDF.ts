@@ -6,10 +6,10 @@ import { generateReport } from '../../../shared/services'
 //Funções auxiliares
 import { SaleUtil } from './util'
 
-export const generatePDF = async (filter: string): Promise<Buffer | Error> => {
+export const generatePDF = async (filter: string, status: string, orderDate: string, orderByPrice: string, paymentDueDate: string): Promise<Buffer | Error> => {
 
     try {
-        const resultSearchReport = await SaleUtil.getAllSalesForReport(filter)
+        const resultSearchReport = await SaleUtil.getAllSalesForReport(filter, status, orderDate, orderByPrice, paymentDueDate)
 
         const body = []
 

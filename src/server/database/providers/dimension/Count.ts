@@ -1,9 +1,9 @@
 //Funções auxiliares
 import { DimensionUtil } from './util'
 
-export const count = async (filter = '', showInative = false): Promise<number | Error> => {
+export const count = async (filter = '', status = '', showInative = false): Promise<number | Error> => {
     try {
-        const count = await DimensionUtil.getTotalOfRegisters(filter, showInative)
+        const count = await DimensionUtil.getTotalOfRegisters(filter, status, showInative)
 
         if(Number.isInteger(Number(count))) return Number(count)
 

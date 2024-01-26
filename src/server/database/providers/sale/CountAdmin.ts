@@ -1,9 +1,9 @@
 //Funções auxiliares
 import { SaleUtil } from './util'
 
-export const countAdmin = async (filter = ''): Promise<number | Error> => {
+export const countAdmin = async (filter = '', orderDate = '', status = '', paymentDueDate = ''): Promise<number | Error> => {
     try {
-        const count = await SaleUtil.getTotalOfRegistersAdmin(filter)
+        const count = await SaleUtil.getTotalOfRegistersAdmin(filter, orderDate, status, paymentDueDate)
 
         if(Number.isInteger(Number(count))) return Number(count)
 

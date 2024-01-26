@@ -26,32 +26,52 @@ export const getCustomerById = async (idCustomer: number): Promise<Omit<ICustome
 
 }
 
-export const getCustomersWithFilter = async (filter: string, page: number, limit: number, id: number): Promise<Omit<ICustomer, 'password'>[]> => {
+export const getCustomersWithFilter = async (filter: string, page: number, limit: number, status: string, genre: string, dateOfBirth: string): Promise<Omit<ICustomer, 'password'>[]> => {
 
     return await Knex(ETableNames.customer)
         .select('id', 'status', 'image', 'name', 'email', 'cell_phone', 'genre', 'date_of_birth', 'cpf')
-        .where('id', Number(id))
-        .orWhere('name', 'like', `%${filter}%`)
+        .where('status', 'like', `${status}%`)
+        .andWhere('genre', 'like', `${genre}%`)
+        .andWhere('date_of_birth', 'like', `${dateOfBirth}%`)
+        .andWhere(function () {
+            this.where('name', 'like', `%${filter}%`)
+                .orWhere('email', 'like', `${filter}%`)
+                .orWhere('cpf', 'like', `${filter}%`)
+        })
         .offset((page - 1) * limit)
         .limit(limit)
 
 }
 
-export const getTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
+export const getTotalOfRegisters = async (filter: string, status: string, genre: string, dateOfBirth: string): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.customer)
-        .where('name', 'like', `%${filter}%`)
+        .where('status', 'like', `${status}%`)
+        .andWhere('genre', 'like', `${genre}%`)
+        .andWhere('date_of_birth', 'like', `${dateOfBirth}%`)
+        .andWhere(function () {
+            this.where('name', 'like', `%${filter}%`)
+                .orWhere('email', 'like', `${filter}%`)
+                .orWhere('cpf', 'like', `${filter}%`)
+        })
         .count<[{ count: number }]>('* as count')
 
     return count
 
 }
 
-export const getAllAdminsitratorsForReport = async (filter: string): Promise<Omit<ICustomer, 'image' | 'password'>[]> => {
+export const getAllAdminsitratorsForReport = async (filter: string, status: string, genre: string, dateOfBirth: string): Promise<Omit<ICustomer, 'image' | 'password'>[]> => {
 
     return Knex(ETableNames.customer)
         .select('id', 'status', 'name', 'email', 'cell_phone', 'genre', 'date_of_birth', 'cpf')
-        .where('name', 'like', `%${filter}%`)
+        .where('status', 'like', `${status}%`)
+        .andWhere('genre', 'like', `${genre}%`)
+        .andWhere('date_of_birth', 'like', `${dateOfBirth}%`)
+        .andWhere(function () {
+            this.where('name', 'like', `%${filter}%`)
+                .orWhere('email', 'like', `${filter}%`)
+                .orWhere('cpf', 'like', `${filter}%`)
+        })
 
 }
 
@@ -101,7 +121,7 @@ export const updateCustomerInDatabase = async (customer: Omit<ICustomerUpdate, '
 export const inactiveCustomerInTheDatabase = async (id: number): Promise<number> => {
 
     return await Knex(ETableNames.customer)
-        .update({status: 'Inativo'})
+        .update({ status: 'Inativo' })
         .where('id', '=', id)
 
 }

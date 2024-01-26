@@ -10,12 +10,13 @@ export const getDimensionById = async (idDimension: number): Promise<IDimension 
 
 }
 
-export const getDimensionsWithFilter = async (filter: string, page: number, limit: number, showInative: boolean): Promise<IDimension[]> => {
+export const getDimensionsWithFilter = async (filter: string, page: number, limit: number, status: string, showInative: boolean): Promise<IDimension[]> => {
 
     const dimensions = await Knex(ETableNames.dimension)
         .select('dimension.*', Knex.raw('COUNT(product.id) as product_count'))
         .leftJoin(ETableNames.product, 'dimension.id', 'product.dimension_id')
         .where('dimension.dimension', 'like', `%${filter}%`)
+        .andWhere('dimension.status', 'like',  `${status}%`)
         .groupBy('dimension.id')
         .andWhereNot('dimension.status', '=', `${(showInative) ? '' : 'Inativo'}`)
         .offset((page - 1) * limit)
@@ -31,18 +32,20 @@ export const getDimensionsWithFilter = async (filter: string, page: number, limi
     return dimensions
 }
 
-export const getAllDimensionsForReport = async (filter: string): Promise<IDimension[]> => {
+export const getAllDimensionsForReport = async (filter: string, status: string): Promise<IDimension[]> => {
 
     return Knex(ETableNames.dimension)
         .select('*')
         .where('dimension', 'like', `%${filter}%`)
+        .andWhere('status', 'like',  `${status}%`)
 
 }
 
-export const getTotalOfRegisters = async (filter: string, showInative: boolean): Promise<number | undefined> => {
+export const getTotalOfRegisters = async (filter: string, status: string, showInative: boolean): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.dimension)
         .where('dimension', 'like', `%${filter}%`)
+        .andWhere('status', 'like', `${status}%`)
         .andWhereNot('dimension.status', '=', `${(showInative) ? '' : 'Inativo'}`)
         .count<[{ count: number }]>('* as count')
 

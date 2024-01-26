@@ -58,7 +58,7 @@ export const getSaleItemsById = async (idSale: number): Promise<ISaleItemsList[]
 
 }
 
-export const getSaleWithFilterAdmin = async (filter: string, page: number, limit: number): Promise<ISaleListAll[]> => {
+export const getSaleWithFilterAdmin = async (filter: string, status: string, orderDate: string, orderByPrice: string, paymentDueDate: string, page: number, limit: number): Promise<ISaleListAll[]> => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -69,10 +69,15 @@ export const getSaleWithFilterAdmin = async (filter: string, page: number, limit
             Knex.raw('(SELECT SUM(quantity * price) FROM sales_items WHERE sales_items.sale_id = sale.id) as total')
         )
         .leftJoin(ETableNames.customer, 'sale.customer_id', 'customer.id')
-        .whereIn('sale.customer_id', function () {
-            this.select('id')
-                .from(ETableNames.customer)
-                .where('name', 'like', `%${filter}%`)
+        .where('sale.status', 'like', `${status}%`)
+        .andWhere('sale.order_date', 'like', `${orderDate}%`)
+        .andWhere('sale.payment_due_date', 'like', `${paymentDueDate}%`)
+        .andWhere(function () {
+            this.whereIn('sale.customer_id', function () {
+                this.select('id')
+                    .from(ETableNames.customer)
+                    .where('name', 'like', `%${filter}%`)
+            }).orWhere('sale.id', 'like', `${filter}%`)
         })
         .orderByRaw(`
         CASE 
@@ -85,12 +90,18 @@ export const getSaleWithFilterAdmin = async (filter: string, page: number, limit
         END
         ASC`
         )
+        .modify((qb) => {
+            // Lógica condicional para ordenação por preço, se necessário
+            if (orderByPrice && (orderByPrice === 'ASC' || orderByPrice === 'DESC')) {
+                qb.orderBy('total', orderByPrice)
+            }
+        })
         .offset((page - 1) * limit)
         .limit(limit)
 
 }
 
-export const getSaleWithFilter = async (filter: string, page: number, limit: number, idSale: number, idCustomer: number): Promise<ISaleListAll[]> => {
+export const getSaleWithFilter = async (filter: string, status: string, orderDate: string, orderByPrice: string, paymentDueDate: string, page: number, limit: number, idSale: number, idCustomer: number): Promise<ISaleListAll[]> => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -101,7 +112,10 @@ export const getSaleWithFilter = async (filter: string, page: number, limit: num
             Knex.raw('(SELECT SUM(quantity * price) FROM sales_items WHERE sales_items.sale_id = sale.id) as total')
         )
         .leftJoin(ETableNames.customer, 'sale.customer_id', 'customer.id')
-        .where(function () {
+        .where('sale.status', 'like', `${status}%`)
+        .andWhere('sale.order_date', 'like', `${orderDate}%`)
+        .andWhere('sale.payment_due_date', 'like', `${paymentDueDate}%`)
+        .andWhere(function () {
             this.where('customer_id', '=', idCustomer)
                 .andWhere(function () {
                     this.where('sale.id', '=', idSale)
@@ -123,12 +137,18 @@ export const getSaleWithFilter = async (filter: string, page: number, limit: num
             END
             ASC`
         )
+        .modify((qb) => {
+            // Lógica condicional para ordenação por preço, se necessário
+            if (orderByPrice && (orderByPrice === 'ASC' || orderByPrice === 'DESC')) {
+                qb.orderBy('total', orderByPrice)
+            }
+        })
         .offset((page - 1) * limit)
         .limit(limit)
 
 }
 
-export const getAllSalesForReport = async (filter: string): Promise<ISaleListAll[]> => {
+export const getAllSalesForReport = async (filter: string, status: string, orderDate: string, orderByPrice: string, paymentDueDate: string): Promise<ISaleListAll[]> => {
 
     return await Knex(ETableNames.sale)
         .select(
@@ -137,10 +157,15 @@ export const getAllSalesForReport = async (filter: string): Promise<ISaleListAll
             Knex.raw('(SELECT SUM(quantity * price) FROM sales_items WHERE sales_items.sale_id = sale.id) as total')
         )
         .leftJoin(ETableNames.customer, 'sale.customer_id', 'customer.id')
-        .whereIn('sale.customer_id', function () {
-            this.select('id')
-                .from(ETableNames.customer)
-                .where('name', 'like', `%${filter}%`)
+        .where('sale.status', 'like', `${status}%`)
+        .andWhere('sale.order_date', 'like', `${orderDate}%`)
+        .andWhere('sale.payment_due_date', 'like', `${paymentDueDate}%`)
+        .andWhere(function () {
+            this.whereIn('sale.customer_id', function () {
+                this.select('id')
+                    .from(ETableNames.customer)
+                    .where('name', 'like', `%${filter}%`)
+            }).orWhere('sale.id', 'like', `${filter}%`)
         })
         .orderByRaw(`
         CASE 
@@ -153,13 +178,21 @@ export const getAllSalesForReport = async (filter: string): Promise<ISaleListAll
         END
         ASC`
         )
+        .modify((qb) => {
+            // Lógica condicional para ordenação por preço, se necessário
+            if (orderByPrice && (orderByPrice === 'ASC' || orderByPrice === 'DESC')) {
+                qb.orderBy('total', orderByPrice)
+            }
+        })
 
 }
 
-export const getTotalOfRegisters = async (filter: string, idSale: number, idCustomer: number): Promise<number | undefined> => {
+export const getTotalOfRegisters = async (filter: string, orderDate: string, status: string, paymentDueDate: string, idSale: number, idCustomer: number): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.sale)
         .join(ETableNames.customer, `${ETableNames.sale}.customer_id`, '=', `${ETableNames.customer}.id`)
+        .where('sale.status', 'like', `${status}%`)
+        .andWhere('sale.order_date', 'like', `${orderDate}%`)
         .where(function () {
             this.where('customer_id', '=', idCustomer)
                 .andWhere(function () {
@@ -167,17 +200,24 @@ export const getTotalOfRegisters = async (filter: string, idSale: number, idCust
                         .orWhere(`${ETableNames.customer}.name`, 'like', `%${filter}%`)
                 })
         })
+        .andWhere('sale.payment_due_date', 'like', `${paymentDueDate}%`)
         .count<[{ count: number }]>('* as count')
 
     return count
 
 }
 
-export const getTotalOfRegistersAdmin = async (filter: string): Promise<number | undefined> => {
+export const getTotalOfRegistersAdmin = async (filter: string, orderDate: string, status: string, paymentDueDate: string): Promise<number | undefined> => {
 
     const [{ count }] = await Knex(ETableNames.sale)
         .join(ETableNames.customer, `${ETableNames.sale}.customer_id`, '=', `${ETableNames.customer}.id`)
-        .where(`${ETableNames.customer}.name`, 'like', `%${filter}%`)
+        .where('sale.status', 'like', `${status}%`)
+        .andWhere('sale.order_date', 'like', `${orderDate}%`)
+        .andWhere(function () {
+            this.andWhere(`${ETableNames.customer}.name`, 'like', `%${filter}%`)
+                .orWhere('sale.id', 'like', `${filter}%`)
+        })
+        .andWhere('sale.payment_due_date', 'like', `${paymentDueDate}%`)
         .count<[{ count: number }]>('* as count')
 
     return count

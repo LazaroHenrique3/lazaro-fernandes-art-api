@@ -10,12 +10,13 @@ export const getCategoryById = async (idCategory: number): Promise<ICategory | u
 
 }
 
-export const getCategoriesWithFilter = async (filter: string, page: number, limit: number, showInative: boolean): Promise<ICategory[]> => {
+export const getCategoriesWithFilter = async (filter: string, page: number, limit: number, status: string, showInative: boolean): Promise<ICategory[]> => {
 
     const categories = await Knex(ETableNames.category)
         .select('category.*', Knex.raw('COUNT(CASE WHEN product.status <> "Inativo" THEN product.id END) as product_count'))
         .leftJoin(ETableNames.product, 'category.id', 'product.category_id')
         .where('category.name', 'like', `%${filter}%`)
+        .andWhere('category.status', 'like', `${status}%`)
         .groupBy('category.id')
         .andWhereNot('category.status', '=', `${(showInative) ? '' : 'Inativo'}`)
         .offset((page - 1) * limit)
@@ -31,17 +32,19 @@ export const getCategoriesWithFilter = async (filter: string, page: number, limi
     return categories
 }
 
-export const getAllCategoriesForReport = async (filter: string): Promise<ICategory[]> => {
+export const getAllCategoriesForReport = async (filter: string, status: string): Promise<ICategory[]> => {
 
     return Knex(ETableNames.category)
         .select('*')
         .where('name', 'like', `%${filter}%`)
+        .andWhere('status', 'like', `${status}%`)
 
 }
 
-export const getTotalOfRegisters = async (filter: string, showInative: boolean): Promise<number | undefined> => {
+export const getTotalOfRegisters = async (filter: string, status: string, showInative: boolean): Promise<number | undefined> => {
     const [{ count }] = await Knex(ETableNames.category)
         .where('name', 'like', `%${filter}%`)
+        .andWhere('status', 'like', `${status}%`)
         .andWhereNot('status', '=', `${(showInative) ? '' : 'Inativo'}`)
         .count<[{ count: number }]>('* as count')
 

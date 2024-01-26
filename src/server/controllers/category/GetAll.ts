@@ -11,7 +11,8 @@ interface IQueryProps {
     page?: number,
     limit?: number,
     showInative?: string,
-    filter?: string
+    filter?: string,
+    status?: string
 }
 
 //Midleware
@@ -22,14 +23,15 @@ export const getAllValidation = validation((getSchema) => ({
         limit: yup.number().optional().moreThan(0),
         showInative: yup.string().optional(),
         filter: yup.string().optional(),
+        status: yup.string().optional(),
     }))
 }))
 
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
     const showInative: boolean = req.query.showInative === 'true'
 
-    const result = await CategoryProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', Number(req.query.id), showInative)
-    const count = await CategoryProvider.count(req.query.filter, showInative)
+    const result = await CategoryProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || '', req.query.status || '', Number(req.query.id), showInative)
+    const count = await CategoryProvider.count(req.query.filter, req.query.status || '', showInative)
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

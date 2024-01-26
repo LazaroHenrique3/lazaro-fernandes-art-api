@@ -6,11 +6,17 @@ import {
     IImageProductList,
     IDeleteImageData,
     IImageObject,
-    IProductUpdate
+    IProductUpdate,
+    ICategory,
+    ITechnique,
+    IDimension
 } from '../../../models'
 
 import path from 'path'
 import { UploadImages } from '../../../../shared/services/UploadImagesServices'
+import { getCategoryById } from '../../category/util/crudFunctions'
+import { getTechniqueById } from '../../technique/util/crudFunctions'
+import { getDimensionById } from '../../dimension/util/crudFunctions'
 
 export const getTotalOfRegisters = async (filter: string, category: string, technique: string, type: string, status: string): Promise<number | undefined> => {
 
@@ -39,12 +45,43 @@ export const getTotalOfRegisters = async (filter: string, category: string, tech
 
 }
 
-export const getAdminTotalOfRegisters = async (filter: string): Promise<number | undefined> => {
+export const getAdminTotalOfRegisters = async (
+    filter: string, 
+    status: string, 
+    type: string, 
+    orientation: string, 
+    category: string, 
+    technique: string, 
+    dimension: string, 
+    productionDate: string
+): Promise<number | undefined> => {
+
+    let categoryName: ICategory | undefined
+    let techniqueName: ITechnique | undefined
+    let dimensionName: IDimension | undefined
+
+    if (category && category !== '') {
+        categoryName = await getCategoryById(Number(category))
+    }
+    if (technique && technique !== '') {
+        techniqueName = await getTechniqueById(Number(technique))
+    }
+    if (dimension && dimension !== '') {
+        dimensionName = await getDimensionById(Number(dimension))
+    }
 
     const [{ count }] = await Knex(ETableNames.product)
-        .where('title', 'like', `%${filter}%`)
         .leftJoin(ETableNames.category, 'product.category_id', 'category.id')
         .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
+        .leftJoin(ETableNames.dimension, 'product.dimension_id', 'dimension.id')
+        .where('product.title', 'like', `%${filter}%`)
+        .andWhere('product.status', 'like', `${status}%`)
+        .andWhere('product.orientation', 'like', `${orientation}%`)
+        .andWhere('product.type', 'like', `${type}%`)
+        .andWhere('product.production_date', 'like', `${productionDate}%`)
+        .andWhere('category.name', 'like', `${categoryName ? categoryName.name : ''}%`)
+        .andWhere('technique.name', 'like', `${techniqueName ? techniqueName.name : ''}%`)
+        .andWhere('dimension.dimension', 'like', `${dimensionName ? dimensionName.dimension : ''}%`)
         .count<[{ count: number }]>('* as count')
 
     return count
@@ -90,8 +127,34 @@ export const getProductsWithFilter = async (filter: string, category: string, te
 
 }
 
-export const getAdminProductsWithFilter = async (filter: string, order: string, page: number, limit: number): Promise<IProduct[]> => {
+export const getAdminProductsWithFilter = async (
+    filter: string, 
+    page: number, 
+    limit: number,
+    status: string,
+    type: string,
+    orientation: string,
+    category: string,
+    technique: string,
+    dimension: string,
+    productionDate: string,
+    orderByPrice: string
+): Promise<IProduct[]> => {
 
+    let categoryName: ICategory | undefined
+    let techniqueName: ITechnique | undefined
+    let dimensionName: IDimension | undefined
+
+    if (category && category !== '') {
+        categoryName = await getCategoryById(Number(category))
+    }
+    if (technique && technique !== '') {
+        techniqueName = await getTechniqueById(Number(technique))
+    }
+    if (dimension && dimension !== '') {
+        dimensionName = await getDimensionById(Number(dimension))
+    }
+    
     return Knex(ETableNames.product)
         .select('product.*', 'category.id as category_id', 'category.name as category_name',
             'technique.id as technique_id', 'technique.name as technique_name',
@@ -101,6 +164,13 @@ export const getAdminProductsWithFilter = async (filter: string, order: string, 
         .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
         .leftJoin(ETableNames.dimension, 'product.dimension_id', 'dimension.id')
         .where('product.title', 'like', `%${filter}%`)
+        .andWhere('product.status', 'like', `${status}%`)
+        .andWhere('product.orientation', 'like', `${orientation}%`)
+        .andWhere('product.type', 'like', `${type}%`)
+        .andWhere('product.production_date', 'like', `${productionDate}%`)
+        .andWhere('category_name', 'like', `${categoryName ? categoryName.name : ''}%`)
+        .andWhere('technique_name', 'like', `${techniqueName ? techniqueName.name : ''}%`)
+        .andWhere('dimension_name', 'like', `${dimensionName ? dimensionName.dimension : ''}%`)
         .offset((page - 1) * limit)
         .limit(limit)
         .orderByRaw(`
@@ -110,12 +180,35 @@ export const getAdminProductsWithFilter = async (filter: string, order: string, 
             WHEN product.status = 'Inativo' THEN 3
         END
         ASC,
-        product.price ${order}
+        product.price ${orderByPrice}
         `)
-
 }
 
-export const getAllProductsForReport = async (filter: string): Promise<IProduct[]> => {
+export const getAllProductsForReport = async (
+    filter: string,  
+    status: string,
+    type: string,
+    orientation: string,
+    category: string,
+    technique: string,
+    dimension: string,
+    productionDate: string,
+    orderByPrice: string
+): Promise<IProduct[]> => {
+
+    let categoryName: ICategory | undefined
+    let techniqueName: ITechnique | undefined
+    let dimensionName: IDimension | undefined
+
+    if (category && category !== '') {
+        categoryName = await getCategoryById(Number(category))
+    }
+    if (technique && technique !== '') {
+        techniqueName = await getTechniqueById(Number(technique))
+    }
+    if (dimension && dimension !== '') {
+        dimensionName = await getDimensionById(Number(dimension))
+    }
 
     return Knex(ETableNames.product)
         .select('product.*', 'category.name as category_id', 'technique.name as technique_id', 'dimension.dimension as dimension_id')
@@ -123,6 +216,23 @@ export const getAllProductsForReport = async (filter: string): Promise<IProduct[
         .leftJoin(ETableNames.technique, 'product.technique_id', 'technique.id')
         .leftJoin(ETableNames.dimension, 'product.dimension_id', 'dimension.id')
         .where('product.title', 'like', `%${filter}%`)
+        .andWhere('product.status', 'like', `${status}%`)
+        .andWhere('product.orientation', 'like', `${orientation}%`)
+        .andWhere('product.type', 'like', `${type}%`)
+        .andWhere('product.production_date', 'like', `${productionDate}%`)
+        .andWhere('category.name', 'like', `${categoryName ? categoryName.name : ''}%`)
+        .andWhere('technique.name', 'like', `${techniqueName ? techniqueName.name : ''}%`)
+        .andWhere('dimension.dimension', 'like', `${dimensionName ? dimensionName.dimension : ''}%`)
+        .orderByRaw(`
+        CASE 
+            WHEN product.status = 'Ativo' THEN 1
+            WHEN product.status = 'Vendido' THEN 2
+            WHEN product.status = 'Inativo' THEN 3
+        END
+        ASC,
+        product.price ${orderByPrice}
+        `)
+      
 
 }
 

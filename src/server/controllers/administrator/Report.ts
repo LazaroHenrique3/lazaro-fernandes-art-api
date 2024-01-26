@@ -9,18 +9,20 @@ import { AdministratorProvider } from '../../database/providers/administrator'
 //Para tipar o body do request
 interface IQueryProps {
     filter?: string
+    status?: string
 }
 
 //Midleware
 export const reportValidation = validation((getSchema) => ({
     query: getSchema<IQueryProps>(yup.object().shape({
-        filter: yup.string().optional()
+        filter: yup.string().optional(),
+        status: yup.string().optional()
     }))
 })) 
 
 export const report = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
 
-    const result = await AdministratorProvider.generatePDF(req.query.filter || '')
+    const result = await AdministratorProvider.generatePDF(req.query.filter || '', req.query.status || '')
 
     if (result instanceof Error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
