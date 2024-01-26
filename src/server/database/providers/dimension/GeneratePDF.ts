@@ -32,7 +32,7 @@ export const generatePDF = async (filter: string, status: string): Promise<Buffe
             body.push(rows)
         }
 
-        const widths = [20, 80, '100%']
+        const widths = [20, 80, '80%']
 
         const generatePdf = await generateReport('Dimensões', widths, body)
         return generatePdf
