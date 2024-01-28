@@ -7,6 +7,8 @@ import {
 } from '../../../models'
 import { Knex } from '../../../knex'
 import { Knex as knex } from 'knex'
+import { getLast12Months } from './formatFunctions'
+import { format, subMonths } from 'date-fns'
 
 interface ISalesItems {
     idProduct: number
@@ -28,6 +30,11 @@ export interface IFinancialInformations {
     lastMonthBilling: number
     totalSaleAwaitingPayment: number
     totalSaleInPreparation: number
+    monthsWithFullBilling: {
+        formattedDate: string
+        monthName: string
+        total: number
+    }[]
 }
 
 type ProductStatus = 'Ativo' | 'Vendido' | 'Inativo'
@@ -226,9 +233,19 @@ export const getTotalOfRegistersAdmin = async (filter: string, orderDate: string
 
 export const getFinancialInformation = async (): Promise<IFinancialInformations | Error> => {
     try {
+        const last12Months = getLast12Months()
+
+        const monthsWithFullBilling = await Promise.all(
+            last12Months.map(async (month) => {
+                const totalMonth: number = await getTotalMonth(month.formattedDate)
+        
+                return { formattedDate: month.formattedDate, monthName: month.monthName, total: totalMonth }
+            })
+        )
+
         const today = new Date()
-        const currentMonth = String(today.getMonth() + 1).padStart(2, '0')
-        const lastMonth = String(today.getMonth()).padStart(2, '0')
+        const currentMonth = format(today, 'yyyy-MM')
+        const lastMonth = format(subMonths(today, 1), 'yyyy-MM')
 
         const totalRevenue = await getTotalRevenue()
         const totalCurrentMonth = await getTotalMonth(currentMonth)
@@ -244,7 +261,8 @@ export const getFinancialInformation = async (): Promise<IFinancialInformations 
             currentMonthBilling: totalCurrentMonth,
             lastMonthBilling: totalLastMonth,
             totalSaleAwaitingPayment,
-            totalSaleInPreparation
+            totalSaleInPreparation,
+            monthsWithFullBilling
         }
 
         return financialInfo
@@ -458,7 +476,7 @@ const getTotalRevenue = async () => {
     return total_revenue === null ? 0 : total_revenue
 }
 
-const getTotalMonth = async (month: string) => {
+/* const getTotalMonth = async (month: string) => {
     const [{ total_month }] = await Knex.raw(`
       SELECT 
         SUM(sales_total.total_sales + s.shipping_cost) as total_month
@@ -469,6 +487,23 @@ const getTotalMonth = async (month: string) => {
         GROUP BY sale_id
       ) as sales_total ON s.id = sales_total.sale_id
       WHERE strftime("%m", s.order_date) = ?
+        AND s.status NOT IN ('Ag. Pagamento', 'Cancelada')
+    `, [month])
+
+    return total_month === null ? 0 : total_month
+} */
+
+const getTotalMonth = async (month: string) => {
+    const [{ total_month }] = await Knex.raw(`
+      SELECT 
+        SUM(sales_total.total_sales + s.shipping_cost) as total_month
+      FROM sale s
+      JOIN (
+        SELECT sale_id, SUM(quantity * price) as total_sales
+        FROM sales_items
+        GROUP BY sale_id
+      ) as sales_total ON s.id = sales_total.sale_id
+      WHERE strftime("%Y-%m", s.order_date) = ?
         AND s.status NOT IN ('Ag. Pagamento', 'Cancelada')
     `, [month])
 
@@ -492,6 +527,8 @@ const getTopCategories = async () => {
 
     return topCategories
 }
+
+
 
 
 

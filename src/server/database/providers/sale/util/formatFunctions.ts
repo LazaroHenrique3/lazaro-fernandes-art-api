@@ -1,5 +1,7 @@
 import { ETableNames } from '../../../ETablesNames'
 import { Knex as knex } from 'knex'
+import { format, subMonths } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 import {
     ISaleItems, 
@@ -125,4 +127,18 @@ export const formattedPrice = (value: number | string) => {
         style: 'currency',
         currency: 'BRL',
     })
+}
+
+export const getLast12Months = (): { formattedDate: string, monthName: string }[]  => {
+    const currentDate = new Date()
+    const monthsArray: { formattedDate: string; monthName: string }[] = []
+
+    for (let i = 0; i < 12; i++) {
+        const date = subMonths(currentDate, i)
+        const formattedDate = format(date, 'yyyy-MM')
+        const monthName = format(date, 'MMMM yyyy', { locale: ptBR })
+        monthsArray.push({ formattedDate, monthName })
+    }
+
+    return monthsArray.reverse()
 }
