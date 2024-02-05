@@ -1,5 +1,7 @@
+import { SendEmail } from '../../../shared/services'
 import { Knex } from '../../knex'
 import { ISale } from '../../models'
+import { CustomerUtil } from '../customer/util'
 
 //Funções auxiliares
 import { SaleUtil } from './util'
@@ -59,7 +61,24 @@ export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 
             return idOfNewSale
         })
 
-        return (result) ? result : new Error('Erro ao criar registro!')
+        if (result) {
+            //enviando o email
+            try {
+                //Buscando o email do cliente através do id 
+                const customer = await CustomerUtil.getCustomerById(sale.customer_id)
+
+                if (customer) {
+                    await SendEmail.newSaleNotification(customer.email, result)
+                }
+            } catch (error) {
+                console.error(error)
+            }
+
+            return result
+        }
+
+        return new Error('Erro ao criar registro!')
+
     } catch (error) {
         console.log(error)
         return new Error('Erro ao criar registro!')
