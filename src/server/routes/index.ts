@@ -81,6 +81,7 @@ router.get('/customer/report/generate', ensureAuthenticated, ensureAccess(['admi
 
 //--Sale
 router.post('/sale/:id/:idAddress', ensureAuthenticated, ensureAccess(['customer']), SaleController.createValidation, SaleController.create)
+router.post('/sale/recalculate-shipping/:id/:idSale/:cep', SaleController.recalculateShippingValueSaleValidation, SaleController.recalculateShippingValueSale)
 router.get('/sale/:id', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.getAllValidation, SaleController.getAll)
 router.get('/admin/sale', ensureAuthenticated, ensureAccess(['admin']), SaleController.getAllAdminValidation, SaleController.getAllAdmin)
 router.get('/sale/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.getByIdValidation, SaleController.getById)
@@ -88,6 +89,7 @@ router.put('/sale/cancel/:id/:idSale', ensureAuthenticated, ensureAccess(['custo
 router.put('/sale/pay/:id/:idSale', ensureAuthenticated, ensureAccess(['customer']), SaleController.paySaleValidation, SaleController.paySale)
 router.put('/sale/send/:id/:idSale', ensureAuthenticated, ensureAccess(['admin']), SaleController.sendSaleValidation, SaleController.sendSale)
 router.put('/sale/update/tracking-code/:id/:idSale', ensureAuthenticated, ensureAccess(['admin']), SaleController.updateTrackingCodeByIdValidation, SaleController.updateTrackingCodeById)
+router.put('/sale/update/sale-address/:id/:idSale/:idNewAddress/:shippingMethod', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.updateSaleAddressValidation, SaleController.updateSaleAddress)
 router.put('/sale/concluded/:id/:idSale', ensureAuthenticated, ensureAccess(['customer', 'admin']), SaleController.concludeSaleValidation, SaleController.concludeSale)
 router.delete('/sale/:id/:idSale', ensureAuthenticated, ensureAccess(['admin'], true), SaleController.deleteByIdValidation, SaleController.deleteById)
 router.get('/sales/financial-information', ensureAuthenticated, ensureAccess(['admin']), SaleController.getFinancialInformation)
@@ -113,5 +115,6 @@ router.post('/customer/redefinepassword', CustomerController.redefinePasswordVal
 
 //--Shipping
 router.post('/shipping/calculateshipping', ShippingController.calculateValidation, ShippingController.calculate)
+router.post('/shipping/trackOrder/:trackingCode', ShippingController.trackOrderValidation, ShippingController.trackOrder)
 
 export { router }

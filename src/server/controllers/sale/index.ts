@@ -6,10 +6,12 @@ import * as cancelSale from './CancelSale'
 import * as paySale from './PaySale'
 import * as sendSale from './SendSale'
 import * as updateTrackingCodeById from './UpdateTrackingCodeById'
+import * as updateSaleAddress from './UpdateSaleAddress'
 import * as concludeSale from './ConcludeSale'
 import * as deleteById from './DeleteById'
 import * as getFinancialInformation from './GetFinancialInformation'
 import * as report from './Report'
+import * as recalculateShippingValueSale from './RecalculateShippingValueSale'
 
 export const SaleController = {
     ...create,
@@ -20,8 +22,10 @@ export const SaleController = {
     ...paySale,
     ...sendSale,
     ...updateTrackingCodeById,
+    ...updateSaleAddress,
     ...concludeSale,
     ...deleteById,
     ...getFinancialInformation,
-    ...report
+    ...report,
+    ...recalculateShippingValueSale
 }

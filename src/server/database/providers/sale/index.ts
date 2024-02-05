@@ -12,6 +12,8 @@ import * as UpdateTrackingCodeById from './UpdateTrackingCodeById'
 import * as sendSale from './SendSale'
 import * as concludeSale from './ConcludeSale'
 import * as getFinancialInformation from './GetFinancialInformation'
+import * as updateSaleAddress from './UpdateSaleAddress'
+import * as recalculateShippingValueSale from './RecalculateShippingValueSale'
 
 export const SaleProvider = {
     ...count,
@@ -27,5 +29,7 @@ export const SaleProvider = {
     ...UpdateTrackingCodeById,
     ...sendSale,
     ...concludeSale,
-    ...getFinancialInformation
+    ...getFinancialInformation,
+    ...updateSaleAddress,
+    ...recalculateShippingValueSale 
 }
