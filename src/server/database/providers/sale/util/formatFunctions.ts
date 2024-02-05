@@ -4,6 +4,7 @@ import { format, subMonths } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 import {
+    IProductCart,
     ISaleItems, 
     ISaleListById
 } from '../../../models'
@@ -15,6 +16,7 @@ import {
 import {
     AddressProvider
 } from '../.././address'
+import { IPriceDeadlineResponse, Shipping } from '../../../../shared/services'
 
 
 interface ISalesItemsDetails {
@@ -142,3 +144,81 @@ export const getLast12Months = (): { formattedDate: string, monthName: string }[
 
     return monthsArray.reverse()
 }
+
+export async function calculateNewShippingValue(formattedSaleItemsProductCart: any): Promise<IPriceDeadlineResponse| Error> {
+    try {
+        const calculateShippingValue = await Shipping.checkPriceAndDeliveryTime(
+            formattedSaleItemsProductCart.cep,
+            formattedSaleItemsProductCart.weight,
+            formattedSaleItemsProductCart.width,
+            formattedSaleItemsProductCart.length,
+            formattedSaleItemsProductCart.height
+        )
+
+        if (calculateShippingValue instanceof Error) {
+            throw new Error('Erro ao calcular frete!')
+        }
+
+        return calculateShippingValue
+    } catch (error) {
+        throw new Error('Erro ao calcular frete!')
+    }
+}
+
+export const getTotalWeightInKilograms = (productsInCart: IProductCart[]): number => {
+    const productWeightInGrams = productsInCart.reduce((acc, product) => {
+        return acc + (product.weight * product.quantitySelected)
+    }, 0)
+
+    // Convertendo de gramas para quilogramas (dividir por 1000)
+    return productWeightInGrams / 1000
+}
+
+export const getLargestWidth = (productsInCart: IProductCart[]): number => {
+    return productsInCart.reduce((acc, product) => {
+        const dimensions = product.dimension.split('x').map(Number)
+        const width = dimensions[0]
+
+        return Math.max(acc, width)
+    }, 0)
+}
+
+export const getLargestLength = (productsInCart: IProductCart[]): number => {
+    return productsInCart.reduce((acc, product) => {
+        const dimensions = product.dimension.split('x').map(Number)
+        const length = dimensions[1]
+
+        return Math.max(acc, length)
+    }, 0)
+}
+
+export const getTotalHeight = (productsInCart: IProductCart[]): number => {
+    return productsInCart.reduce((acc, product) => {
+        const dimensions = product.dimension.split('x').map(Number)
+        const height = dimensions[2]
+        return acc + (height * product.quantitySelected)
+    }, 0)
+}
+
+export const calculateEstimatedDeliveryTime = (estimatedDeadline: string): string => {
+    const ExpectedDeliveryTimePac = new Date()
+    ExpectedDeliveryTimePac.setDate(ExpectedDeliveryTimePac.getDate() + Number(estimatedDeadline))
+    const formattedDeadlinePac = formatDate(ExpectedDeliveryTimePac)
+
+    return formattedDeadlinePac
+}
+
+export const formatDate = (date: Date): string => {
+    const year = date.getFullYear()
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const day = date.getDate().toString().padStart(2, '0')
+
+    return `${year}-${month}-${day}`
+}
+
+export const replaceCommaWithDot = (inputString: string) => {
+    // Use a função replace para substituir todas as vírgulas por pontos
+    const resultString = inputString.replace(/,/g, '.')
+    return resultString
+}
+

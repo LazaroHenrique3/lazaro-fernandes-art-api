@@ -3,12 +3,14 @@ import {
     ISale,
     ISaleItemsList,
     ISaleListAll,
-    ISaleListById
+    ISaleListById,
+    IUpdatedSaleAddress
 } from '../../../models'
 import { Knex } from '../../../knex'
 import { Knex as knex } from 'knex'
 import { getLast12Months } from './formatFunctions'
 import { format, subMonths } from 'date-fns'
+import { getAddressById } from '../../address/util/crudFunctions'
 
 interface ISalesItems {
     idProduct: number
@@ -238,7 +240,7 @@ export const getFinancialInformation = async (): Promise<IFinancialInformations 
         const monthsWithFullBilling = await Promise.all(
             last12Months.map(async (month) => {
                 const totalMonth: number = await getTotalMonth(month.formattedDate)
-        
+
                 return { formattedDate: month.formattedDate, monthName: month.monthName, total: totalMonth }
             })
         )
@@ -345,14 +347,48 @@ export const updateSaleToConcluded = async (idSale: number, idCustomer: number, 
 
 }
 
+export const updateSaleAddress = async (
+    idSale: number, 
+    idCustomer: number, 
+    idNewAddress: number, 
+    estimatedDeliveryDate: string, 
+    shippingMethod: 'PAC' | 'SEDEX', 
+    shippingCost: number,
+    subtotal: number
+): Promise<IUpdatedSaleAddress | Error> => {
+
+    try {
+        await Knex(ETableNames.sale)
+            .update({ address_id: idNewAddress, estimated_delivery_date: estimatedDeliveryDate, shipping_method: shippingMethod, shipping_cost: shippingCost })
+            .where('id', '=', idSale)
+            .andWhere('customer_id', '=', idCustomer)
+
+        const updatedAddress = await getAddressById(idNewAddress, idCustomer)
+
+        if (updatedAddress) {
+            return { 
+                updatedAddress: updatedAddress,
+                estimated_delivery_date: estimatedDeliveryDate, 
+                shipping_method: shippingMethod, 
+                shipping_cost: shippingCost,
+                subtotal: subtotal
+            }
+        }
+        
+        return new Error
+
+    } catch (error) {
+        return new Error
+    }
+
+}
+
 export const updateTrackingCode = async (idSale: number, idCustomer: number, trackingCode: string): Promise<void> => {
 
     await Knex(ETableNames.sale)
         .update({ tracking_code: trackingCode })
         .where('id', '=', idSale)
         .andWhere('customer_id', '=', idCustomer)
-
-    return
 
 }
 
