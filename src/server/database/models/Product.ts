@@ -54,3 +54,11 @@ export interface IImageProductList {
     id: number
     name_image: string
 }
+
+export interface IProductCart  {
+    id: number,
+    price: number,
+    weight: number,
+    dimension: string,
+    quantitySelected: number
+}
