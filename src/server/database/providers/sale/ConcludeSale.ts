@@ -1,4 +1,6 @@
 //Funções auxiliares
+import { SendEmail } from '../../../shared/services'
+import { CustomerUtil } from '../customer/util'
 import { SaleUtil } from './util'
 
 export const concludeSale = async (idCustomer: number, idSale: number): Promise<void | Error> => {
@@ -18,8 +20,26 @@ export const concludeSale = async (idCustomer: number, idSale: number): Promise<
             return new Error('Id informado inválido!')
         }
 
-        await SaleUtil.updateSaleToConcluded(idSale, idCustomer, deliveryDate)
-        return void 0
+        const result = await SaleUtil.updateSaleToConcluded(idSale, idCustomer, deliveryDate)
+
+        if (result === undefined) {
+            //enviando o email
+            try {
+                //Buscando o email do cliente através do id 
+                const customer = await CustomerUtil.getCustomerById(idCustomer)
+
+                if (customer) {
+                    await SendEmail.saleConcludeNotification(customer.email, idSale)
+                }
+
+            } catch (error) {
+                console.error(error)
+            }
+
+            return
+        }
+
+        return new Error('Erro ao concluir venda!')
 
     } catch (error) {
         console.log(error)

@@ -1,4 +1,6 @@
 //Funções auxiliares
+import { SendEmail } from '../../../shared/services'
+import { CustomerUtil } from '../customer/util'
 import { SaleUtil } from './util'
 
 export const sendSale = async (idCustomer: number, idSale: number, trackingCode: string): Promise<void | Error> => {
@@ -17,12 +19,30 @@ export const sendSale = async (idCustomer: number, idSale: number, trackingCode:
             return new Error('Id informado inválido!')
         }
 
-        await SaleUtil.updateSaleToSent(idSale, idCustomer, trackingCode)
-        return void 0
+        const result = await SaleUtil.updateSaleToSent(idSale, idCustomer, trackingCode)
+
+        if (result === undefined) {
+            //enviando o email
+            try {
+                //Buscando o email do cliente através do id 
+                const customer = await CustomerUtil.getCustomerById(idCustomer)
+
+                if (customer) {
+                    await SendEmail.saleSendNotification(customer.email, trackingCode, idSale)
+                }
+
+            } catch (error) {
+                console.error(error)
+            }
+
+            return
+        }
+
+        return new Error('Erro ao registrar envio!')
 
     } catch (error) {
         console.log(error)
-        return new Error('Erro ao realizar pagamento!')
+        return new Error('Erro ao registrar envio!')
     }
 
 }

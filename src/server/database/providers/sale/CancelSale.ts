@@ -1,9 +1,11 @@
+import { SendEmail } from '../../../shared/services'
 import { Knex } from '../../knex'
+import { CustomerUtil } from '../customer/util'
 
 //Funções auxiliares
 import { SaleUtil } from './util'
 
-export const cancelSale = async (idCustomer: number, idSale: number,  typeUser: string): Promise<void | Error> => {
+export const cancelSale = async (idCustomer: number, idSale: number, typeUser: string): Promise<void | Error> => {
 
     try {
         //Verificando se o id de cliente informado é valido
@@ -13,10 +15,10 @@ export const cancelSale = async (idCustomer: number, idSale: number,  typeUser: 
         }
 
         //Se o tipo do usuario que solicitar for customer, ele só pode cancelar se estive no status 'Ag. Pagamento'
-        if(typeUser === 'customer'){
+        if (typeUser === 'customer') {
             //Verificando, ele só vai retornar como true se a venda estiver como 'Ag. Pagamento'
             const existsSale = await SaleUtil.checkValidSaleId(idSale, idCustomer, ['Ag. Pagamento'])
-            if(!existsSale) {
+            if (!existsSale) {
                 return new Error('Contate o adminsitrador para cancelar essa venda!')
             }
         }
@@ -42,6 +44,18 @@ export const cancelSale = async (idCustomer: number, idSale: number,  typeUser: 
         })
 
         if (result === undefined) {
+            //enviando o email
+            try {
+                //Buscando o email do cliente através do id 
+                const customer = await CustomerUtil.getCustomerById(idCustomer)
+
+                if (customer) {
+                    await SendEmail.saleCancelNotification(customer.email, idSale)
+                }
+            } catch (error) {
+                console.error(error)
+            }
+
             return
         }
 

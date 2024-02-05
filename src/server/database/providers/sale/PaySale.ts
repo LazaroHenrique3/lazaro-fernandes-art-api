@@ -1,4 +1,6 @@
 //Funções auxiliares
+import { SendEmail } from '../../../shared/services'
+import { CustomerUtil } from '../customer/util'
 import { SaleUtil } from './util'
 
 export const paySale = async (idCustomer: number, idSale: number): Promise<void | Error> => {
@@ -24,8 +26,26 @@ export const paySale = async (idCustomer: number, idSale: number): Promise<void 
             return new Error('O prazo de pagamento já expirou!')
         }
 
-        await SaleUtil.updateSaleToInPreparation(idSale, idCustomer, paymentDate)
-        return void 0
+        const result = await SaleUtil.updateSaleToInPreparation(idSale, idCustomer, paymentDate)
+        
+        if (result === undefined) {
+            //enviando o email
+            try {
+                //Buscando o email do cliente através do id 
+                const customer = await CustomerUtil.getCustomerById(idCustomer)
+
+                if (customer) {
+                    await SendEmail.saleInPreparationNotification(customer.email, idSale)
+                }
+
+            } catch (error) {
+                console.error(error)
+            }
+
+            return
+        }
+
+        return new Error('Erro ao realizar pagamento!')
 
     } catch (error) {
         console.log(error)
