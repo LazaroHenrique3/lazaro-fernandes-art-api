@@ -24,7 +24,7 @@ export const concludeSale = async (idCustomer: number, idSale: number): Promise<
 
         if (result === undefined) {
             //enviando o email
-            try {
+            /* try {
                 //Buscando o email do cliente através do id 
                 const customer = await CustomerUtil.getCustomerById(idCustomer)
 
@@ -34,7 +34,7 @@ export const concludeSale = async (idCustomer: number, idSale: number): Promise<
 
             } catch (error) {
                 console.error(error)
-            }
+            } */
 
             return
         }

@@ -23,7 +23,7 @@ export const sendSale = async (idCustomer: number, idSale: number, trackingCode:
 
         if (result === undefined) {
             //enviando o email
-            try {
+            /* try {
                 //Buscando o email do cliente através do id 
                 const customer = await CustomerUtil.getCustomerById(idCustomer)
 
@@ -33,7 +33,7 @@ export const sendSale = async (idCustomer: number, idSale: number, trackingCode:
 
             } catch (error) {
                 console.error(error)
-            }
+            } */
 
             return
         }

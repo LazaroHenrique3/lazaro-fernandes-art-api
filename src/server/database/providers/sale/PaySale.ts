@@ -30,7 +30,7 @@ export const paySale = async (idCustomer: number, idSale: number): Promise<void 
         
         if (result === undefined) {
             //enviando o email
-            try {
+            /* try {
                 //Buscando o email do cliente através do id 
                 const customer = await CustomerUtil.getCustomerById(idCustomer)
 
@@ -40,7 +40,7 @@ export const paySale = async (idCustomer: number, idSale: number): Promise<void 
 
             } catch (error) {
                 console.error(error)
-            }
+            } */
 
             return
         }

@@ -45,7 +45,7 @@ export const cancelSale = async (idCustomer: number, idSale: number, typeUser: s
 
         if (result === undefined) {
             //enviando o email
-            try {
+            /* try {
                 //Buscando o email do cliente através do id 
                 const customer = await CustomerUtil.getCustomerById(idCustomer)
 
@@ -54,7 +54,7 @@ export const cancelSale = async (idCustomer: number, idSale: number, typeUser: s
                 }
             } catch (error) {
                 console.error(error)
-            }
+            } */
 
             return
         }
