@@ -13,7 +13,7 @@ export async function up(knex: Knex) {
         table.string('complement').nullable()
         table.string('neighborhood').notNullable()
         table.string('street').notNullable()
-        table.bigInteger('customer_id').notNullable().index().references('id').inTable(ETableNames.customer).onUpdate('CASCADE').onDelete('RESTRICT')
+        table.bigInteger('customer_id').notNullable().index().references('id').inTable(ETableNames.customer).onUpdate('CASCADE').onDelete('CASCADE')
 
         table.comment('Tabela usada para armazenar o endereço dos clientes do sistema.')
     }).then(() => {
