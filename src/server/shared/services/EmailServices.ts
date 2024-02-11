@@ -4,8 +4,8 @@ const transporter = nodemailer.createTransport({
     host: 'sandbox.smtp.mailtrap.io',
     port: 2525,
     auth: {
-        user: 'f0c1d857be1788',
-        pass: '78cc6a7fb1ffe9'
+        user: process.env.MAILTRAP_USER,
+        pass: process.env.MAILTRAP_PASS
     }
 })
 
@@ -179,7 +179,7 @@ const newAdministradorPasswordEmail = async (email: string, token: string) => {
     const info = await transporter.sendMail({
         from: process.env.EMAIL_SERVICE,
         to: email,
-        subject: 'Novo pedido ✔',
+        subject: 'Novo administrador ✔',
         // eslint-disable-next-line quotes
         html: `
         <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
