@@ -92,7 +92,7 @@ export const createValidation = validation((getSchema) => ({
                 }
 
                 // Verifica se o tamanho da imagem é maior que 1MB (em bytes)
-                const maxSize = 1 * 1024 * 1024 // 1MB
+                const maxSize = 2 * 1024 * 1024 // 2MB
                 if (Number(value) > maxSize) {
                     return false
                 }
