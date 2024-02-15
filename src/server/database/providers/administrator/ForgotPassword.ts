@@ -23,7 +23,10 @@ export const forgotPassword = async (email: string): Promise<void | Error> => {
 
         //enviando o email
         try {
-            await SendEmail.forgotPasswordEmail(email, sixCharacterToken)
+            const result = await SendEmail.forgotPasswordEmail(email, sixCharacterToken)
+
+            if (result instanceof Error) return new Error('Erro inesperado, tente novamente!')
+
         } catch (error) {
             return new Error('Erro inesperado, tente novamente!')
         }

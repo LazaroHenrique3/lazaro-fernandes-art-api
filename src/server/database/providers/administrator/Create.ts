@@ -27,7 +27,10 @@ export const create = async (administrator: Omit<IAdministrator, 'id' | 'passwor
 
         //enviando o email
         try {
-            await SendEmail.newAdministradorPasswordEmail(administrator.email, sixCharacterToken)
+            const result = await SendEmail.newAdministradorPasswordEmail(administrator.email, sixCharacterToken)
+
+            if (result instanceof Error) return new Error('Erro inesperado, tente novamente!')
+
         } catch (error) {
             return new Error('Erro inesperado, tente novamente!')
         }

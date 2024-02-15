@@ -9,13 +9,14 @@ const transporter = nodemailer.createTransport({
     }
 })
 
-const forgotPasswordEmail = async (email: string, token: string) => {
-    const info = await transporter.sendMail({
-        from: process.env.EMAIL_SERVICE,
-        to: email,
-        subject: 'Recuperação de senha ✔',
-        // eslint-disable-next-line quotes
-        html: `
+const forgotPasswordEmail = async (email: string, token: string): Promise<void | Error> => {
+    try {
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_SERVICE,
+            to: email,
+            subject: 'Recuperação de senha ✔',
+            // eslint-disable-next-line quotes
+            html: `
         <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
         <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
             <b>👋 Olá, tudo bem?</b><br>
@@ -34,100 +35,112 @@ const forgotPasswordEmail = async (email: string, token: string) => {
         </div>
         </section>
         `
-    }, (err) => {
-        if (err) throw new Error
-    })
+        })
+    } catch (error) {
+        console.log(error)
+        return new Error('Erro ao enviar email!')
+    }
 }
 
-const newSaleNotification = async (email: string, idSale: number) => {
-    const info = await transporter.sendMail({
-        from: process.env.EMAIL_SERVICE,
-        to: email,
-        subject: 'Pedido confirmado ✔',
-        // eslint-disable-next-line quotes
-        html: `
-        <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
-        <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
-            <p>
-                Cód. Pedido: <strong style="font-size: 40px; color: #1B98E0">#${idSale}</strong>
-            </p>
-            <br>
-            <b>👋 Olá, tudo bem?</b><br>
-            <p>🎉 Pedido confirmado com sucesso!</p>
-            <p>Agora, o seu item está a um passo de ser seu! Assim que o pagamento for confirmado, iniciaremos com entusiasmo a preparação do seu pedido. 🚀</p>
-            <br>
-            <p>Atenciosamente, Lázaro Fernandes Art.</p>
-        </div>
-        </section>
-        `
-    }, (err) => {
-        if (err) throw new Error
-    })
+const newSaleNotification = async (email: string, idSale: number): Promise<void | Error> => {
+    try {
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_SERVICE,
+            to: email,
+            subject: 'Pedido confirmado ✔',
+            // eslint-disable-next-line quotes
+            html: `
+            <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
+            <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
+                <p>
+                    Cód. Pedido: <strong style="font-size: 40px; color: #1B98E0">#${idSale}</strong>
+                </p>
+                <br>
+                <b>👋 Olá, tudo bem?</b><br>
+                <p>🎉 Pedido confirmado com sucesso!</p>
+                <p>Agora, o seu item está a um passo de ser seu! Assim que o pagamento for confirmado, iniciaremos com entusiasmo a preparação do seu pedido. 🚀</p>
+                <br>
+                <p>Atenciosamente, Lázaro Fernandes Art.</p>
+            </div>
+            </section>
+            `
+        })
+    } catch (error) {
+        console.log(error)
+        return new Error('Erro ao enviar email!')
+    }
 }
 
-const saleInPreparationNotification = async (email: string, idSale: number) => {
-    const info = await transporter.sendMail({
-        from: process.env.EMAIL_SERVICE,
-        to: email,
-        subject: 'Preparando pedido ✔',
-        // eslint-disable-next-line quotes
-        html: `
-        <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
-        <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
-            <p>
-                Cód. Pedido: <strong style="font-size: 40px; color: #1B98E0">#${idSale}</strong>
-            </p>
-            <br>
-            <b>👋 Olá, tudo bem?</b><br>
-            <p>🎉 Estamos preparando o seu pedido!</p>
-            <p> Estamos preparando com carinho o seu pedido, garantindo que cada detalhe seja perfeito. Em breve, você estará desfrutando do que escolheu. 🌟</p>
-            <br>
-            <p>Atenciosamente, Lázaro Fernandes Art.</p>
-        </div>
-        </section>
-        `
-    }, (err) => {
-        if (err) throw new Error
-    })
+const saleInPreparationNotification = async (email: string, idSale: number): Promise<void | Error> => {
+    try {
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_SERVICE,
+            to: email,
+            subject: 'Preparando pedido ✔',
+            // eslint-disable-next-line quotes
+            html: `
+            <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
+            <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
+                <p>
+                    Cód. Pedido: <strong style="font-size: 40px; color: #1B98E0">#${idSale}</strong>
+                </p>
+                <br>
+                <b>👋 Olá, tudo bem?</b><br>
+                <p>🎉 Estamos preparando o seu pedido!</p>
+                <p> Estamos preparando com carinho o seu pedido, garantindo que cada detalhe seja perfeito. Em breve, você estará desfrutando do que escolheu. 🌟</p>
+                <br>
+                <p>Atenciosamente, Lázaro Fernandes Art.</p>
+            </div>
+            </section>
+            `
+        })
+    } catch (error) {
+        console.log(error)
+        return new Error('Erro ao enviar email!')
+    }
 }
 
-const saleSendNotification = async (email: string, trackingCode: string, idSale: number) => {
-    const info = await transporter.sendMail({
-        from: process.env.EMAIL_SERVICE,
-        to: email,
-        subject: 'Pedido enviado ✔',
-        // eslint-disable-next-line quotes
-        html: `
-        <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
-        <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
-            <p>
-                Cód. Pedido: <strong style="font-size: 40px; color: #1B98E0">#${idSale}</strong>
-            </p>
-            <br>
-            <b>👋 Olá, tudo bem?</b><br>
-            <p>🎉 Seu pedido foi enviado!</p>
-            <p>🚀 Boas notícias! Seu pedido foi enviado com sucesso e está a caminho do seu destino. Para acompanhar a jornada da sua(s) obra(s) de arte, utilize o código de rastreio abaixo. Mal podemos esperar para saber que chegou em suas mãos e trouxe ainda mais cor à sua vida!</p>
-            <br>
-            <p>🔍 Código de Rastreio: <br>
-                <strong style="font-size: 40px; color: #1B98E0">${trackingCode}</strong>
-            </p>
-            <br>
-            <p>Atenciosamente, Lázaro Fernandes Art.</p>
-        </div>
-        </section>
-        `
-    }, (err) => {
-        if (err) throw new Error
-    })
+const saleSendNotification = async (email: string, trackingCode: string, idSale: number): Promise<void | Error> => {
+    try {
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_SERVICE,
+            to: email,
+            subject: 'Pedido enviado ✔',
+            // eslint-disable-next-line quotes
+            html: `
+            <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
+            <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
+                <p>
+                    Cód. Pedido: <strong style="font-size: 40px; color: #1B98E0">#${idSale}</strong>
+                </p>
+                <br>
+                <b>👋 Olá, tudo bem?</b><br>
+                <p>🎉 Seu pedido foi enviado!</p>
+                <p>🚀 Boas notícias! Seu pedido foi enviado com sucesso e está a caminho do seu destino. Para acompanhar a jornada da sua(s) obra(s) de arte, utilize o código de rastreio abaixo. Mal podemos esperar para saber que chegou em suas mãos e trouxe ainda mais cor à sua vida!</p>
+                <br>
+                <p>🔍 Código de Rastreio: <br>
+                    <strong style="font-size: 40px; color: #1B98E0">${trackingCode}</strong>
+                </p>
+                <br>
+                <p>Atenciosamente, Lázaro Fernandes Art.</p>
+            </div>
+            </section>
+            `
+        })
+    } catch (error) {
+        console.log(error)
+        return new Error('Erro ao enviar email!')
+    }
 }
 
-const saleConcludeNotification = async (email: string, idSale: number) => {
-    const info = await transporter.sendMail({
-        from: process.env.EMAIL_SERVICE,
-        to: email,
-        subject: 'Pedido concluído ✔',
-        // eslint-disable-next-line quotes
-        html: `
+const saleConcludeNotification = async (email: string, idSale: number): Promise<void | Error> => {
+    try {
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_SERVICE,
+            to: email,
+            subject: 'Pedido concluído ✔',
+            // eslint-disable-next-line quotes
+            html: `
         <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
         <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
             <p>
@@ -144,18 +157,21 @@ const saleConcludeNotification = async (email: string, idSale: number) => {
         </div>
         </section>
         `
-    }, (err) => {
-        if (err) throw new Error
-    })
+        })
+    } catch (error) {
+        console.log(error)
+        return new Error('Erro ao enviar email!')
+    }
 }
 
-const saleCancelNotification = async (email: string, idSale: number) => {
-    const info = await transporter.sendMail({
-        from: process.env.EMAIL_SERVICE,
-        to: email,
-        subject: 'Pedido cancelado ✔',
-        // eslint-disable-next-line quotes
-        html: `
+const saleCancelNotification = async (email: string, idSale: number): Promise<void | Error> => {
+    try {
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_SERVICE,
+            to: email,
+            subject: 'Pedido cancelado ✔',
+            // eslint-disable-next-line quotes
+            html: `
         <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
         <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
             <p>
@@ -170,37 +186,42 @@ const saleCancelNotification = async (email: string, idSale: number) => {
         </div>
         </section>
         `
-    }, (err) => {
-        if (err) throw new Error
-    })
+        })
+    } catch (error) {
+        console.log(error)
+        return new Error('Erro ao enviar email!')
+    }
 }
 
-const newAdministradorPasswordEmail = async (email: string, token: string) => {
-    const info = await transporter.sendMail({
-        from: process.env.EMAIL_SERVICE,
-        to: email,
-        subject: 'Novo administrador ✔',
-        // eslint-disable-next-line quotes
-        html: `
-        <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
-        <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
-            <b>👋 Olá, tudo bem?</b><br>
-            <p>Sua conta admnistrativa, acabou de ser criada em nosso ecommerce.</p>
-            <p>Seu token de acesso é: <br>
-            <strong style="font-size: 40px; color: #1B98E0">${token}</strong></p>
-            <p>Acesse o link abaixo, faça login e redefina sua senha: 👇 <br>
-                <a style="word-wrap: break-word;" href="www.example.com.br/redefinepassword&email=${email}" target="_blank">
-                    ${process.env.LOCAL_FRONTEND_ADDRESS}/admin/login&email=${email}
-                </a>
-            </p>
-            <br>
-            <p>Atenciosamente, Lázaro Fernandes Art.</p>
-        </div>
-        </section>
-        `
-    }, (err) => {
-        if (err) throw new Error
-    })
+const newAdministradorPasswordEmail = async (email: string, token: string): Promise<void | Error> => {
+    try {
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_SERVICE,
+            to: email,
+            subject: 'Novo administrador ✔',
+            // eslint-disable-next-line quotes
+            html: `
+            <section style="font-size: 20px; text-align: justify; display: flex; justify-content: center; align-items: center; font-family: 'Trebuchet MS', Arial, sans-serif; box-sizing: border-box;">
+            <div style=" padding: 20px; width: 100%; max-width: 500px; min-width: 300px; border-top: 60px solid black; border-bottom: 40px solid black; background: #E9F7FF; box-sizing: border-box;">
+                <b>👋 Olá, tudo bem?</b><br>
+                <p>Sua conta admnistrativa, acabou de ser criada em nosso ecommerce.</p>
+                <p>Seu token de acesso é: <br>
+                <strong style="font-size: 40px; color: #1B98E0">${token}</strong></p>
+                <p>Acesse o link abaixo, faça login e redefina sua senha: 👇 <br>
+                    <a style="word-wrap: break-word;" href="www.example.com.br/redefinepassword&email=${email}" target="_blank">
+                        ${process.env.LOCAL_FRONTEND_ADDRESS}/admin/login&email=${email}
+                    </a>
+                </p>
+                <br>
+                <p>Atenciosamente, Lázaro Fernandes Art.</p>
+            </div>
+            </section>
+            `
+        })
+    } catch (error) {
+        console.log(error)
+        return new Error('Erro ao enviar email!')
+    }
 }
 
 export const SendEmail = {

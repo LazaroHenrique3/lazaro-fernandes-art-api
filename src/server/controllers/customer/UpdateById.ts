@@ -19,7 +19,7 @@ export const updateByIdValidation = validation(getSchema => ({
     body: getSchema<IBodyProps>(yup.object().shape({
         status: yup.string().oneOf(['Ativo', 'Inativo']).required(),
         name: yup.string().required().min(3).max(100),
-        email: yup.string().required().email().min(5).max(100),
+        email: yup.string().email().min(5).max(100).matches(/^[\w!#$%&'*+/=?`{|}~.-]+@([\w-]+\.)+[\w-]{2,4}$/, 'Ex: exemplo@dominio.com').required(),
         password: yup.string().optional().min(6),
         confirmPassword: yup.string().test({
             name: 'password-match',
@@ -54,6 +54,21 @@ export const updateByIdValidation = validation(getSchema => ({
 
                 if (value) {
                     return value <= eighteenYearsAgo
+                }
+
+                return false
+            })
+            .test('max-date', 'Data de nascimento inválida', value => {
+                const currentDate = new Date()
+                //Idade máxima de 100 anos
+                const oneHundredYearsAgo = new Date(
+                    currentDate.getFullYear() - 100,
+                    currentDate.getMonth(),
+                    currentDate.getDate()
+                )
+
+                if (value) {
+                    return value > oneHundredYearsAgo
                 }
 
                 return false

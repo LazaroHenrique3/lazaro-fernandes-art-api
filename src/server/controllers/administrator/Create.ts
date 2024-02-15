@@ -14,7 +14,7 @@ export const createValidation = validation((getSchema) => ({
     body: getSchema<IBodyProps>(yup.object().shape({
         status: yup.string().oneOf(['Ativo', 'Inativo']).default('Ativo').required(),
         name: yup.string().required().min(3).max(100),
-        email: yup.string().required().email().min(5).max(100),
+        email: yup.string().email().min(5).max(100).matches(/^[\w!#$%&'*+/=?`{|}~.-]+@([\w-]+\.)+[\w-]{2,4}$/, 'Ex: exemplo@dominio.com').required(),
     }))
 }))
 

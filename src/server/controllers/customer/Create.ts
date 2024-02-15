@@ -23,7 +23,7 @@ export const createValidation = validation((getSchema) => ({
         status: yup.string().oneOf(['Ativo', 'Inativo']).required(),
         image: yup.mixed().optional().nullable(),
         name: yup.string().required().min(3).max(100),
-        email: yup.string().required().email().min(5).max(100),
+        email: yup.string().email().min(5).max(100).matches(/^[\w!#$%&'*+/=?`{|}~.-]+@([\w-]+\.)+[\w-]{2,4}$/, 'Ex: exemplo@dominio.com').required(),
         password: yup.string().required().min(6),
         confirmPassword: yup.string().oneOf([yup.ref('password')], 'As senhas devem ser iguais').required(),
         cell_phone: yup.string().length(11).matches(/^\d{11}$/, 'O valor deve corresponder ao padrão: 44999999999').required(),
@@ -59,6 +59,21 @@ export const createValidation = validation((getSchema) => ({
 
                 if (value) {
                     return value <= eighteenYearsAgo
+                }
+
+                return false
+            })
+            .test('max-date', 'Data de nascimento inválida', value => {
+                const currentDate = new Date()
+                //Idade máxima de 100 anos
+                const oneHundredYearsAgo = new Date(
+                    currentDate.getFullYear() - 100,
+                    currentDate.getMonth(),
+                    currentDate.getDate()
+                )
+
+                if (value) {
+                    return value > oneHundredYearsAgo
                 }
 
                 return false
