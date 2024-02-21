@@ -24,6 +24,14 @@ export const getAdministratorsWithFilter = async (filter: string, page: number, 
         .andWhere('admin_access_level', '<>', 'Root')
         .offset((page - 1) * limit)
         .limit(limit)
+        .orderByRaw(`
+        CASE 
+            WHEN status = 'Ativo' THEN 1
+            WHEN status = 'Inativo' THEN 2
+            ELSE 3 -- Ordem padrão para outros status
+        END
+        ASC`
+        )
 
 }
 
@@ -79,7 +87,7 @@ export const insertAdministratorInDatabase = async (administrator: Omit<IAdminis
     const [administratorId] = await trx(ETableNames.administrator)
         .insert(administrator)
         .returning('id')
-        
+
     return typeof administratorId === 'number' ? administratorId : administratorId.id
 
 }

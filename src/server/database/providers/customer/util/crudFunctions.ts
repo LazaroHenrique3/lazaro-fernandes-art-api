@@ -40,6 +40,14 @@ export const getCustomersWithFilter = async (filter: string, page: number, limit
         })
         .offset((page - 1) * limit)
         .limit(limit)
+        .orderByRaw(`
+            CASE 
+                WHEN status = 'Ativo' THEN 1
+                WHEN status = 'Inativo' THEN 2
+                ELSE 3 -- Ordem padrão para outros status
+            END
+            ASC`
+        )
 
 }
 

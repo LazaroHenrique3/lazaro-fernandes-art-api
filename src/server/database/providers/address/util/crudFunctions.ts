@@ -17,8 +17,7 @@ export const getAddressWithFilter = async (filter: string, page: number, limit: 
         .select('*')
         .where('customer_id', '=', idCustomer)
         .andWhere(function () {
-            this.where('id', idAdress)
-                .orWhere('street', 'like', `%${filter}%`)
+            this.where('street', 'like', `%${filter}%`)
         })
         .andWhereNot('status', '=', `${(showInative) ? '' : 'Inativo'}`)
         .offset((page - 1) * limit)
@@ -34,11 +33,11 @@ export const getAddressWithFilter = async (filter: string, page: number, limit: 
 }
 
 export const getTotalOfRegisters = async (filter: string, idAdress: number, idCustomer: number, showInative: boolean): Promise<number | undefined> => {
+
     const [{ count }] = await Knex(ETableNames.address)
         .where('customer_id', '=', idCustomer)
         .andWhere(function () {
-            this.where('id', idAdress)
-                .orWhere('street', 'like', `%${filter}%`)
+            this.where('street', 'like', `%${filter}%`)
         })
         .andWhereNot('status', '=', `${(showInative) ? '' : 'Inativo'}`)
         .count<[{ count: number }]>('* as count')
