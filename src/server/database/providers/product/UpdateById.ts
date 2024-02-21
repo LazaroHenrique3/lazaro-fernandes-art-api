@@ -45,7 +45,7 @@ export const updateById = async (idProduct: number, product: Omit<IProductUpdate
         }
 
         //Verificando se a Categoria, Tecnica e Dimensão enviada esta ativa
-        const isValid = await ProductUtil.checkValidCategoryTechniqueAndDimension(product.category_id, product.technique_id, product.dimension_id)
+        const isValid = await ProductUtil.checkValidCategoryTechniqueAndDimension(product.category_id, product.technique_id, product.dimension_id, true, idProduct)
         if (isValid instanceof Error) {
             return new Error(isValid.message)
         }
