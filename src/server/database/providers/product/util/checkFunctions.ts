@@ -1,5 +1,6 @@
 import { ETableNames } from '../../../ETablesNames'
 import { Knex } from '../../../knex'
+import { getCategoryTechniqueDimensionOfProduct } from './crudFunctions'
 
 export const checkValidProductId = async (idProduct: number): Promise<boolean> => {
 
@@ -69,7 +70,41 @@ export const checkValidDimensionId = async (idDimension: number): Promise<boolea
     return dimensionResult !== undefined
 }
 
-export const checkValidCategoryTechniqueAndDimension = async (idCategory: number, idTechnique: number, idDimension: number): Promise<boolean | Error> => {
+export const checkValidCategoryTechniqueAndDimension = async (idCategory: number, idTechnique: number, idDimension: number, isUpdate: boolean, idProduct?: number): Promise<boolean | Error> => {
+
+    if (isUpdate && idProduct) {
+        const result = await getCategoryTechniqueDimensionOfProduct(idProduct)
+
+        if (!result) return new Error('Erro ao buscar informações!')
+
+        if (idCategory !== result.category_id) {
+            //Verificando se existe e esta ativa
+            const isValidCategory = await checkValidCategoryId(idCategory)
+            if (!isValidCategory) {
+                return new Error('Categoria inválida!')
+            }
+        }
+
+        if (idTechnique !== result.technique_id) {
+            //Verificando se existe e esta ativa
+            const isValidTechnique = await checkValidTechniqueId(idTechnique)
+            if (!isValidTechnique) {
+                return new Error('Técnica inválida!')
+            }
+        }
+
+        if (idDimension !== result.dimension_id) {
+            //Verificando se existe e esta ativa
+            const isValidDimension = await checkValidDimensionId(idDimension)
+            if (!isValidDimension) {
+                return new Error('Dimensão inválida!')
+            }
+        }
+
+        return true
+    }
+
+    //Verificando se existe e esta ativa
     const isValidCategory = await checkValidCategoryId(idCategory)
     if (!isValidCategory) {
         return new Error('Categoria inválida!')

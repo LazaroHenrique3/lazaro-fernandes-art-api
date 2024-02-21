@@ -278,6 +278,17 @@ export const getMainImage = async (idProduct: number): Promise<string | undefine
 
 }
 
+export const getCategoryTechniqueDimensionOfProduct = async (idProduct: number): Promise<{ technique_id: number, category_id: number, dimension_id: number } | undefined> => {
+
+    const result = await Knex(ETableNames.product)
+        .select('technique_id', 'category_id', 'dimension_id')
+        .where('id', '=', idProduct)
+        .first()
+
+    return result
+
+}
+
 export const insertProductInDatabase = async (product: Omit<IProduct, 'id' | 'product_images'>, trx: knex.Transaction): Promise<number> => {
 
     const [productId] = await trx(ETableNames.product)
