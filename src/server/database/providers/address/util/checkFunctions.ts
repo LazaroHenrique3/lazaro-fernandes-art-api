@@ -20,3 +20,17 @@ export const checkValidCustomerId = async (idCustomer: number): Promise<boolean>
 
     return productResult !== undefined
 }
+
+export const checkIfAddressIsLinkedToSaleInPreparation = async (idAddress: number): Promise<boolean> => {
+
+    const checkResult = await Knex(ETableNames.sale)
+        .select('id')
+        .where('address_id', '=', idAddress)
+        .andWhere(function () {
+            this.where('status', '=', 'Ag. Pagamento')
+                .orWhere('status', '=', 'Em preparação')
+        })
+        .first()
+
+    return checkResult !== undefined
+}
