@@ -7,6 +7,7 @@ import { ICustomerUpdate } from '../../database/models'
 import { CustomerProvider } from '../../database/providers/customer'
 
 import { cpf } from 'cpf-cnpj-validator'
+import { checkIsLeapYear } from '../utils/date'
 
 interface IParamProps {
     id?: number;
@@ -54,6 +55,14 @@ export const updateByIdValidation = validation(getSchema => ({
 
                 if (value) {
                     return value <= eighteenYearsAgo
+                }
+
+                return false
+            })
+            .test('is-leap-year', 'Essa data só é valida em anos bissextos!', value => {
+                if (value) {
+                    //Verificando se a data é valida caso o ano for bissexto
+                    return checkIsLeapYear(new Date(value))
                 }
 
                 return false

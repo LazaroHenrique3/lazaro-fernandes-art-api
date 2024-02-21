@@ -5,6 +5,7 @@ import * as yup from 'yup'
 import { validation } from '../../shared/middleware'
 import { IProductUpdate } from '../../database/models'
 import { ProductProvider } from '../../database/providers/product'
+import { checkIsLeapYear } from '../utils/date'
 
 interface IParamProps {
     id?: number;
@@ -104,6 +105,14 @@ export const updateByIdValidation = validation(getSchema => ({
                     const productDate = new Date(value)
 
                     return productDate <= currentDate
+                }
+
+                return false
+            })
+            .test('is-leap-year', 'Essa data só é valida em anos bissextos!', value => {
+                if (value) {
+                    //Verificando se a data é valida caso o ano for bissexto
+                    return checkIsLeapYear(new Date(value))
                 }
 
                 return false

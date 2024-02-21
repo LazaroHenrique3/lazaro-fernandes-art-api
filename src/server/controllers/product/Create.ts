@@ -6,6 +6,7 @@ import { validation } from '../../shared/middleware'
 import { IProductFile } from '../../database/models'
 import { ProductProvider } from '../../database/providers/product'
 import { existsImage, existsImagesAndIsSmallerThanMax, isValidMainImageDimensions, isValidProductImagesDimensions, isValidSize, isValidType } from '../utils/validationUtils'
+import { checkIsLeapYear } from '../utils/date'
 
 //Para tipar o body do request
 interface IBodyProps extends Omit<IProductFile, 'id'> { }
@@ -110,6 +111,14 @@ export const createValidation = validation((getSchema) => ({
                     const productDate = new Date(value)
 
                     return productDate <= currentDate
+                }
+
+                return false
+            })
+            .test('is-leap-year', 'Essa data só é valida em anos bissextos!', value => {
+                if (value) {
+                    //Verificando se a data é valida caso o ano for bissexto
+                    return checkIsLeapYear(new Date(value))
                 }
 
                 return false
