@@ -7,6 +7,7 @@ import { ICustomer } from '../../database/models'
 import { CustomerProvider } from '../../database/providers/customer'
 
 import { cpf } from 'cpf-cnpj-validator'
+import { checkIsLeapYear } from '../utils/date'
 
 //Para tipar o body do request
 interface IBodyProps extends Omit<ICustomer, 'id' | 'verification_token' | 'verification_token_expiration'> { }
@@ -45,6 +46,14 @@ export const createValidation = validation((getSchema) => ({
                     const productDate = new Date(value)
 
                     return productDate <= currentDate
+                }
+
+                return false
+            })
+            .test('is-leap-year', 'Essa data só é valida em anos bissextos!', value => {
+                if (value) {
+                    //Verificando se a data é valida caso o ano for bissexto
+                    return checkIsLeapYear(new Date(value))
                 }
 
                 return false
@@ -100,13 +109,13 @@ export const createValidation = validation((getSchema) => ({
                 return supportedFormats.includes(value)
             }),
         size: yup.string()
-            .test('fileSize', 'Tamanho de imagem excede 1MB', (value) => {
+            .test('fileSize', 'Tamanho de imagem excede 2MB', (value) => {
 
                 if (value === undefined) {
                     return true // Permitir quando nenhum arquivo foi selecionado
                 }
 
-                // Verifica se o tamanho da imagem é maior que 1MB (em bytes)
+                // Verifica se o tamanho da imagem é maior que 2MB (em bytes)
                 const maxSize = 2 * 1024 * 1024 // 2MB
                 if (Number(value) > maxSize) {
                     return false
