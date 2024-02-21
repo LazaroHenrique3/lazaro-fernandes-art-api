@@ -7,7 +7,7 @@ import { AddressUtil } from './util'
 export const getAll = async (page: number, limit: number, filter: string, idAddress: number, idCustomer: number, showInative = false): Promise<IAddress[] | Error> => {
 
     try {
-        const result = AddressUtil.getAddressWithFilter(filter, page, limit, idAddress, idCustomer, showInative)
+        const result = await AddressUtil.getAddressWithFilter(filter, page, limit, idAddress, idCustomer, showInative)
 
         return result
     } catch (error) {
