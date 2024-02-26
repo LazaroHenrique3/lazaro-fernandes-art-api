@@ -81,7 +81,11 @@ export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 
 
     } catch (error) {
         console.log(error)
-        return new Error('Erro ao criar registro!')
+
+        // Verifica se o erro é uma instância de Error e se possui uma mensagem
+        const errorMessage = error instanceof Error ? error.message : 'Erro ao criar registro!'
+
+        return new Error(errorMessage)
     }
 
 }
