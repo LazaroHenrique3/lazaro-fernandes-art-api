@@ -63,7 +63,7 @@ export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 
 
         if (result) {
             //enviando o email
-            /* try {
+            try {
                 //Buscando o email do cliente através do id 
                 const customer = await CustomerUtil.getCustomerById(sale.customer_id)
 
@@ -72,7 +72,7 @@ export const create = async (sale: Omit<ISale, 'id' | 'status' | 'order_date' | 
                 }
             } catch (error) {
                 console.error(error)
-            } */
+            }
 
             return result
         }

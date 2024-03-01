@@ -3,4 +3,5 @@
 /coverage
 .env
 *.sqlite
+/src/server/images
 
